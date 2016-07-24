@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        checkiPhoneType()
+        
+        FIRApp.configure()
+        
+        FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
+            
+            let isAnonymous = user!.anonymous  // true
+            let uid = user!.uid
+            
+            NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
+        
+            print(uid)
+            
+            DataService.ds.REF_USERS.child(uid).setValue(true)
+
+        }
+
+        
+//        if NSUserDefaults.standardUserDefaults().valueForKey("userID") == nil {
+//            print("First login")
+//            
+////            FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
+////                
+////                let isAnonymous = user!.anonymous  // true
+////                let uid = user!.uid
+////                
+//////                DataService.ds.REF_BASE.child("users").child(uid).setValue(true)
+////                
+////                NSUserDefaults.standardUserDefaults().setValue(uid, forKey: "userID")
+////            }
+//            
+//        } else {
+//            print("Standard login")
+//            let uid = NSUserDefaults.standardUserDefaults().valueForKey("userID") as! String
+//            print(uid)
+//        }
+        
         return true
     }
 

@@ -7,14 +7,57 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4937FB8231D5DCA0B74D0DBC /* Pods_DSEK_Sa_ngbok.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5CE73EF963798B683AF00E60 /* Pods_DSEK_Sa_ngbok.framework */; };
+		6F6060911D44E393005DA452 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F6060901D44E393005DA452 /* GoogleService-Info.plist */; };
+		6F6060931D44E425005DA452 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6060921D44E425005DA452 /* DataService.swift */; };
+		6F6060961D454B82005DA452 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6060951D454B82005DA452 /* Constants.swift */; };
 		6FD200211D415F0A00A36E41 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200201D415F0A00A36E41 /* AppDelegate.swift */; };
 		6FD200231D415F0A00A36E41 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200221D415F0A00A36E41 /* ViewController.swift */; };
 		6FD200261D415F0A00A36E41 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200241D415F0A00A36E41 /* Main.storyboard */; };
 		6FD200281D415F0A00A36E41 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200271D415F0A00A36E41 /* Assets.xcassets */; };
 		6FD2002B1D415F0A00A36E41 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200291D415F0A00A36E41 /* LaunchScreen.storyboard */; };
+		6FD200341D415F6000A36E41 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200321D415F6000A36E41 /* Realm.framework */; };
+		6FD200351D415F6100A36E41 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200321D415F6000A36E41 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6FD200361D415F6100A36E41 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200331D415F6000A36E41 /* RealmSwift.framework */; };
+		6FD200371D415F6100A36E41 /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200331D415F6000A36E41 /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		6FD2003E1D415FE200A36E41 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2003D1D415FE200A36E41 /* Song.swift */; };
+		6FD200451D415FEF00A36E41 /* AllSongsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2003F1D415FEF00A36E41 /* AllSongsVC.swift */; };
+		6FD200461D415FEF00A36E41 /* AllSongsVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200401D415FEF00A36E41 /* AllSongsVC.xib */; };
+		6FD200471D415FEF00A36E41 /* FavoritesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200411D415FEF00A36E41 /* FavoritesVC.swift */; };
+		6FD200481D415FEF00A36E41 /* FavoritesVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200421D415FEF00A36E41 /* FavoritesVC.xib */; };
+		6FD200491D415FEF00A36E41 /* ToplistVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200431D415FEF00A36E41 /* ToplistVC.swift */; };
+		6FD2004A1D415FEF00A36E41 /* ToplistVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200441D415FEF00A36E41 /* ToplistVC.xib */; };
+		6FD2004D1D41600100A36E41 /* SongCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2004B1D41600100A36E41 /* SongCell.swift */; };
+		6FD2004E1D41600100A36E41 /* SongCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FD2004C1D41600100A36E41 /* SongCell.xib */; };
+		6FD200541D41670F00A36E41 /* GlobalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200531D41670F00A36E41 /* GlobalData.swift */; };
+		6FD200571D416FB800A36E41 /* DetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200551D416FB800A36E41 /* DetailVC.swift */; };
+		6FD200581D416FB800A36E41 /* DetailVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200561D416FB800A36E41 /* DetailVC.xib */; };
+		6FD2005A1D4178D600A36E41 /* DateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200591D4178D600A36E41 /* DateHandler.swift */; };
+		6FD2005C1D41790800A36E41 /* GlobalFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2005B1D41790800A36E41 /* GlobalFunctions.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		6FD200381D415F6100A36E41 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				6FD200371D415F6100A36E41 /* RealmSwift.framework in Embed Frameworks */,
+				6FD200351D415F6100A36E41 /* Realm.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		5CE73EF963798B683AF00E60 /* Pods_DSEK_Sa_ngbok.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DSEK_Sa_ngbok.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		68652BFE6E5AD617C1CF5EBF /* Pods-DSEK-Sångbok.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DSEK-Sångbok.release.xcconfig"; path = "Pods/Target Support Files/Pods-DSEK-Sångbok/Pods-DSEK-Sångbok.release.xcconfig"; sourceTree = "<group>"; };
+		6F3A01B71D434E0D0026390D /* DSEK-Sångbok-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DSEK-Sångbok-Bridging-Header.h"; sourceTree = "<group>"; };
+		6F6060901D44E393005DA452 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		6F6060921D44E425005DA452 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
+		6F6060951D454B82005DA452 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		6FD2001D1D415F0900A36E41 /* DSEK-Sångbok.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DSEK-Sångbok.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FD200201D415F0A00A36E41 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6FD200221D415F0A00A36E41 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +65,23 @@
 		6FD200271D415F0A00A36E41 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6FD2002A1D415F0A00A36E41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6FD2002C1D415F0A00A36E41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6FD200321D415F6000A36E41 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Realm.framework; sourceTree = "<group>"; };
+		6FD200331D415F6000A36E41 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = ../RealmSwift.framework; sourceTree = "<group>"; };
+		6FD2003D1D415FE200A36E41 /* Song.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Song.swift; sourceTree = "<group>"; };
+		6FD2003F1D415FEF00A36E41 /* AllSongsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AllSongsVC.swift; sourceTree = "<group>"; };
+		6FD200401D415FEF00A36E41 /* AllSongsVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AllSongsVC.xib; sourceTree = "<group>"; };
+		6FD200411D415FEF00A36E41 /* FavoritesVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesVC.swift; sourceTree = "<group>"; };
+		6FD200421D415FEF00A36E41 /* FavoritesVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FavoritesVC.xib; sourceTree = "<group>"; };
+		6FD200431D415FEF00A36E41 /* ToplistVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToplistVC.swift; sourceTree = "<group>"; };
+		6FD200441D415FEF00A36E41 /* ToplistVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ToplistVC.xib; sourceTree = "<group>"; };
+		6FD2004B1D41600100A36E41 /* SongCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongCell.swift; sourceTree = "<group>"; };
+		6FD2004C1D41600100A36E41 /* SongCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SongCell.xib; sourceTree = "<group>"; };
+		6FD200531D41670F00A36E41 /* GlobalData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalData.swift; sourceTree = "<group>"; };
+		6FD200551D416FB800A36E41 /* DetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
+		6FD200561D416FB800A36E41 /* DetailVC.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DetailVC.xib; sourceTree = "<group>"; };
+		6FD200591D4178D600A36E41 /* DateHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateHandler.swift; sourceTree = "<group>"; };
+		6FD2005B1D41790800A36E41 /* GlobalFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalFunctions.swift; sourceTree = "<group>"; };
+		DA61E0B3B0125DFF5C51604F /* Pods-DSEK-Sångbok.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DSEK-Sångbok.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DSEK-Sångbok/Pods-DSEK-Sångbok.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,17 +89,41 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FD200341D415F6000A36E41 /* Realm.framework in Frameworks */,
+				4937FB8231D5DCA0B74D0DBC /* Pods_DSEK_Sa_ngbok.framework in Frameworks */,
+				6FD200361D415F6100A36E41 /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2892C0687FE45A4E1C5BC82D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DA61E0B3B0125DFF5C51604F /* Pods-DSEK-Sångbok.debug.xcconfig */,
+				68652BFE6E5AD617C1CF5EBF /* Pods-DSEK-Sångbok.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		6F6060941D454B71005DA452 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				6F6060951D454B82005DA452 /* Constants.swift */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
 		6FD200141D415F0900A36E41 = {
 			isa = PBXGroup;
 			children = (
+				6F6060901D44E393005DA452 /* GoogleService-Info.plist */,
 				6FD2001F1D415F0A00A36E41 /* DSEK-Sångbok */,
 				6FD2001E1D415F0900A36E41 /* Products */,
+				2892C0687FE45A4E1C5BC82D /* Pods */,
+				B12C0FD8F1624A9292932B8A /* Frameworks */,
+				6F3A01B71D434E0D0026390D /* DSEK-Sångbok-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -54,14 +138,80 @@
 		6FD2001F1D415F0A00A36E41 /* DSEK-Sångbok */ = {
 			isa = PBXGroup;
 			children = (
+				6F6060941D454B71005DA452 /* Utilities */,
+				6FD200521D4166FA00A36E41 /* Global */,
+				6FD200511D4163EA00A36E41 /* Framworks */,
+				6FD2003C1D415FDB00A36E41 /* Cells */,
+				6FD2003B1D415FD000A36E41 /* Controllers */,
+				6FD2003A1D415FCA00A36E41 /* Model */,
 				6FD200201D415F0A00A36E41 /* AppDelegate.swift */,
 				6FD200221D415F0A00A36E41 /* ViewController.swift */,
+				6F6060921D44E425005DA452 /* DataService.swift */,
 				6FD200241D415F0A00A36E41 /* Main.storyboard */,
 				6FD200271D415F0A00A36E41 /* Assets.xcassets */,
 				6FD200291D415F0A00A36E41 /* LaunchScreen.storyboard */,
 				6FD2002C1D415F0A00A36E41 /* Info.plist */,
 			);
 			path = "DSEK-Sångbok";
+			sourceTree = "<group>";
+		};
+		6FD2003A1D415FCA00A36E41 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				6FD2003D1D415FE200A36E41 /* Song.swift */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		6FD2003B1D415FD000A36E41 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				6FD2003F1D415FEF00A36E41 /* AllSongsVC.swift */,
+				6FD200401D415FEF00A36E41 /* AllSongsVC.xib */,
+				6FD200411D415FEF00A36E41 /* FavoritesVC.swift */,
+				6FD200421D415FEF00A36E41 /* FavoritesVC.xib */,
+				6FD200431D415FEF00A36E41 /* ToplistVC.swift */,
+				6FD200441D415FEF00A36E41 /* ToplistVC.xib */,
+				6FD200551D416FB800A36E41 /* DetailVC.swift */,
+				6FD200561D416FB800A36E41 /* DetailVC.xib */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		6FD2003C1D415FDB00A36E41 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				6FD2004B1D41600100A36E41 /* SongCell.swift */,
+				6FD2004C1D41600100A36E41 /* SongCell.xib */,
+			);
+			name = Cells;
+			sourceTree = "<group>";
+		};
+		6FD200511D4163EA00A36E41 /* Framworks */ = {
+			isa = PBXGroup;
+			children = (
+				6FD200321D415F6000A36E41 /* Realm.framework */,
+				6FD200331D415F6000A36E41 /* RealmSwift.framework */,
+			);
+			name = Framworks;
+			sourceTree = "<group>";
+		};
+		6FD200521D4166FA00A36E41 /* Global */ = {
+			isa = PBXGroup;
+			children = (
+				6FD200531D41670F00A36E41 /* GlobalData.swift */,
+				6FD200591D4178D600A36E41 /* DateHandler.swift */,
+				6FD2005B1D41790800A36E41 /* GlobalFunctions.swift */,
+			);
+			name = Global;
+			sourceTree = "<group>";
+		};
+		B12C0FD8F1624A9292932B8A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5CE73EF963798B683AF00E60 /* Pods_DSEK_Sa_ngbok.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -71,9 +221,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6FD2002F1D415F0A00A36E41 /* Build configuration list for PBXNativeTarget "DSEK-Sångbok" */;
 			buildPhases = (
+				DE1E39F6790CBE9ED7005F79 /* 📦 Check Pods Manifest.lock */,
 				6FD200191D415F0900A36E41 /* Sources */,
 				6FD2001A1D415F0900A36E41 /* Frameworks */,
 				6FD2001B1D415F0900A36E41 /* Resources */,
+				495F8454637DC2FACFFF303A /* 📦 Embed Pods Frameworks */,
+				72A0DEEBF252BE3D1D25A6D7 /* 📦 Copy Pods Resources */,
+				6FD200381D415F6100A36E41 /* Embed Frameworks */,
+				6FD200391D415FA600A36E41 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -123,20 +278,98 @@
 			buildActionMask = 2147483647;
 			files = (
 				6FD2002B1D415F0A00A36E41 /* LaunchScreen.storyboard in Resources */,
+				6FD200581D416FB800A36E41 /* DetailVC.xib in Resources */,
 				6FD200281D415F0A00A36E41 /* Assets.xcassets in Resources */,
+				6FD2004E1D41600100A36E41 /* SongCell.xib in Resources */,
+				6F6060911D44E393005DA452 /* GoogleService-Info.plist in Resources */,
+				6FD2004A1D415FEF00A36E41 /* ToplistVC.xib in Resources */,
+				6FD200481D415FEF00A36E41 /* FavoritesVC.xib in Resources */,
 				6FD200261D415F0A00A36E41 /* Main.storyboard in Resources */,
+				6FD200461D415FEF00A36E41 /* AllSongsVC.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		495F8454637DC2FACFFF303A /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DSEK-Sångbok/Pods-DSEK-Sångbok-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		6FD200391D415FA600A36E41 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework/strip-frameworks.sh\"";
+		};
+		72A0DEEBF252BE3D1D25A6D7 /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DSEK-Sångbok/Pods-DSEK-Sångbok-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DE1E39F6790CBE9ED7005F79 /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6FD200191D415F0900A36E41 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FD2005C1D41790800A36E41 /* GlobalFunctions.swift in Sources */,
+				6FD2005A1D4178D600A36E41 /* DateHandler.swift in Sources */,
+				6FD200471D415FEF00A36E41 /* FavoritesVC.swift in Sources */,
+				6F6060931D44E425005DA452 /* DataService.swift in Sources */,
+				6FD2003E1D415FE200A36E41 /* Song.swift in Sources */,
+				6FD200491D415FEF00A36E41 /* ToplistVC.swift in Sources */,
+				6FD2004D1D41600100A36E41 /* SongCell.swift in Sources */,
+				6F6060961D454B82005DA452 /* Constants.swift in Sources */,
 				6FD200231D415F0A00A36E41 /* ViewController.swift in Sources */,
+				6FD200571D416FB800A36E41 /* DetailVC.swift in Sources */,
 				6FD200211D415F0A00A36E41 /* AppDelegate.swift in Sources */,
+				6FD200541D41670F00A36E41 /* GlobalData.swift in Sources */,
+				6FD200451D415FEF00A36E41 /* AllSongsVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -247,23 +480,40 @@
 		};
 		6FD200301D415F0A00A36E41 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA61E0B3B0125DFF5C51604F /* Pods-DSEK-Sångbok.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "DSEK-Sångbok/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.spiking.DSEK-Sa-ngbok";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.spiking.DSEK-Sangbok";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DSEK-Sångbok-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		6FD200311D415F0A00A36E41 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 68652BFE6E5AD617C1CF5EBF /* Pods-DSEK-Sångbok.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = "DSEK-Sångbok/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.spiking.DSEK-Sa-ngbok";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.spiking.DSEK-Sangbok";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DSEK-Sångbok-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -286,6 +536,7 @@
 				6FD200311D415F0A00A36E41 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

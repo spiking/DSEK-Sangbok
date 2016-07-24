@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AllSongsVC" customModule="DSEK_Sa_ngbok" customModuleProvider="target">
+            <connections>
+                <outlet property="searchBar" destination="av9-0t-Uls" id="LHR-Oz-QdX"/>
+                <outlet property="tableView" destination="nxV-T5-3q6" id="OYN-oi-lgI"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" restorationIdentifier="AllSongsVC" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" sectionIndexMinimumDisplayRowCount="1" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="nxV-T5-3q6">
+                    <rect key="frame" x="0.0" y="45" width="600" height="555"/>
+                    <color key="backgroundColor" red="0.1176470588" green="0.1176470588" blue="0.1176470588" alpha="1" colorSpace="calibratedRGB"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="2Le-Re-A9r"/>
+                        <outlet property="delegate" destination="-1" id="Ld4-jL-c8J"/>
+                    </connections>
+                </tableView>
+                <searchBar contentMode="redraw" barStyle="black" showsBookmarkButton="YES" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="av9-0t-Uls">
+                    <rect key="frame" x="0.0" y="0.0" width="600" height="45"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="45" id="7C3-9P-BBn"/>
+                    </constraints>
+                    <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <textInputTraits key="textInputTraits" keyboardAppearance="alert"/>
+                </searchBar>
+            </subviews>
+            <color key="backgroundColor" red="0.1176470588" green="0.1176470588" blue="0.1176470588" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="nxV-T5-3q6" firstAttribute="top" secondItem="av9-0t-Uls" secondAttribute="bottom" id="2vZ-a6-tPc"/>
+                <constraint firstItem="nxV-T5-3q6" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="44" id="48J-Ak-uoA"/>
+                <constraint firstAttribute="bottom" secondItem="nxV-T5-3q6" secondAttribute="bottom" id="8SC-p2-k9W"/>
+                <constraint firstItem="av9-0t-Uls" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="9a1-XI-860"/>
+                <constraint firstAttribute="trailing" secondItem="nxV-T5-3q6" secondAttribute="trailing" id="LlY-8v-EII"/>
+                <constraint firstItem="av9-0t-Uls" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Uiu-8D-lkx"/>
+                <constraint firstItem="nxV-T5-3q6" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Vf1-z6-6b4"/>
+                <constraint firstItem="nxV-T5-3q6" firstAttribute="top" secondItem="av9-0t-Uls" secondAttribute="bottom" id="Yub-NC-6te"/>
+                <constraint firstAttribute="trailing" secondItem="av9-0t-Uls" secondAttribute="trailing" id="mB8-Ca-9uI"/>
+                <constraint firstItem="av9-0t-Uls" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="o3P-zD-ZRh"/>
+                <constraint firstAttribute="trailing" secondItem="av9-0t-Uls" secondAttribute="trailing" id="qqQ-Pg-YhW"/>
+            </constraints>
+            <variation key="default">
+                <mask key="constraints">
+                    <exclude reference="mB8-Ca-9uI"/>
+                    <exclude reference="48J-Ak-uoA"/>
+                </mask>
+            </variation>
+        </view>
+    </objects>
+</document>
