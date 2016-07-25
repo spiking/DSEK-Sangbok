@@ -20,6 +20,7 @@ class DetailVC: UIViewController {
     @IBOutlet weak var lyricsTextView: UITextView!
     @IBOutlet weak var melodyTitleLbl: UILabel!
     @IBOutlet weak var createdLbl: UILabel!
+    @IBOutlet weak var ratingLbl: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +36,9 @@ class DetailVC: UIViewController {
         formatter.dateFormat = "MMM dd, yyyy"
         
         createdLbl.text = "\(formatter.stringFromDate(date))"
+        
+        setRating()
+        
         lyricsTextView.text = song.lyrics
         lyricsTextView.font = UIFont(name: "Avenir-Book", size: 15)
         lyricsTextView.textAlignment = .Center
@@ -42,6 +46,29 @@ class DetailVC: UIViewController {
         setupMenuButton()
         setupMenu()
         
+    }
+    
+    
+    
+    func setRating() {
+        
+        var rating: Double = 0
+        
+        DataService.ds.REF_SONGS.child(self.song.key).observeEventType(.Value) { (snapshot: FIRDataSnapshot) in
+            
+            if let nbrOfVotes = snapshot.childSnapshotForPath("nbr_of_votes").value as? Int {
+                
+                if let totalRatings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
+                    
+                    if nbrOfVotes != 0 && totalRatings != 0 {
+                        rating = Double(totalRatings) / Double(nbrOfVotes)
+                        self.ratingLbl.text = "\(rating)"
+                    } else {
+                        self.ratingLbl.text = "Ej betygsatt"
+                    }
+                }
+            }
+        }
     }
     
     func setupMenuButton() {
@@ -57,14 +84,24 @@ class DetailVC: UIViewController {
         actionSheet.show()
     }
     
-    func showFavoriteAlert() {
+    func showFavoriteAlert(favorite: Bool) {
         let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
         hud.mode = MBProgressHUDMode.CustomView
-        let image = UIImage(named: "Checkmark")
+        
+        var image: UIImage
+        
+        if favorite {
+            image = UIImage(named: "Checkmark")!
+            hud.labelText = "SPARAD"
+        } else {
+            image = UIImage(named: "Delete")!
+            hud.labelText = "BORTTAGEN"
+        }
+        
         hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        hud.labelText = "FAVORIT"
         hud.customView = UIImageView(image: image)
         hud.square = true
+        hud.minSize = CGSizeMake(125, 125)
         hud.hide(true, afterDelay: 1.0)
     }
     
@@ -95,18 +132,51 @@ class DetailVC: UIViewController {
 
         song_ref.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
-            if var votes = snapshot.childSnapshotForPath("nbr_of_votes").value as? Int {
-                votes += 1
-                song_ref.child("nbr_of_votes").setValue(votes)
-                print(votes)
-            }
-            
-            if var ratings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
-                ratings += rating
-                song_ref.child("total_ratings").setValue(ratings)
-                print(ratings)
+            if snapshot.childSnapshotForPath("votes").hasChild(getUserID()) {
+                
+               print("USER ALREADY VOTED FOR THIS SONG!")
+                
+                if let oldRating = snapshot.childSnapshotForPath("votes").childSnapshotForPath(getUserID()).value as? Int {
+                    
+                    let difference = rating - oldRating
+                    
+                    if var totalRatings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
+                        totalRatings += difference
+                        song_ref.child("total_ratings").setValue(totalRatings)
+                    }
+                }
+                
+            } else {
+                
+                if var votes = snapshot.childSnapshotForPath("nbr_of_votes").value as? Int {
+                    votes += 1
+                    song_ref.child("nbr_of_votes").setValue(votes)
+                }
+                
+                if var ratings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
+                    ratings += rating
+                    song_ref.child("total_ratings").setValue(ratings)
+                }
             }
         }
+        
+        delay(0.5) {
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+                song_ref.child("votes").child(getUserID()).setValue(rating)
+            }
+            
+        }
+
+    }
+    
+    func delay(delay:Double, closure:()->()) {
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(delay * Double(NSEC_PER_SEC))
+            ),
+            dispatch_get_main_queue(), closure)
     }
     
     func setupMenu() {
@@ -164,12 +234,16 @@ class DetailVC: UIViewController {
                 
                 if self.song._favorite == "TRUE" {
                     self.song._favorite = "FALSE"
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).removeValue()
+                    self.showFavoriteAlert(false)
                 } else {
                     self.song._favorite = "TRUE"
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).setValue(true)
+                    self.showFavoriteAlert(true)
                 }
             }
             
-            self.showFavoriteAlert()
+            
         }
     }
     

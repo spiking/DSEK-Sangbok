@@ -24,13 +24,17 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         
         tableView.delegate = self
         tableView.dataSource = self
-        searchBar.delegate = self
         tableView.estimatedRowHeight = 70
         
-        searchBar.keyboardAppearance = .Dark
+        searchBar.delegate = self
         
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
         
+        searchBar.keyboardAppearance = .Dark
+        searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
+        
+        UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
+    
         tableView.reloadData()
     }
     

@@ -26,7 +26,7 @@ class ViewController: UIViewController {
         
 //        for song in songs {
 //            
-//            let firebaseSong = ["total_ratings" : 0, "nbr_of_votes" : 0]
+//            let firebaseSong = ["total_ratings" : 0, "nbr_of_votes" : 0, "votes" : "No Votes"]
 //            
 //            DataService.ds.REF_SONGS.child(song.key).setValue(firebaseSong)
 //        }
@@ -103,7 +103,7 @@ class ViewController: UIViewController {
         // MARK: - UI Setup
         
         self.title = "D-SEK SÅNGBOK"
-        self.navigationController?.navigationBar.barTintColor = UIColor(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0, alpha: 1.0)
+        self.navigationController?.navigationBar.barTintColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
         self.navigationController?.navigationBar.barStyle = UIBarStyle.Black

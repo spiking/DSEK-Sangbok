@@ -9,6 +9,7 @@
 import Foundation
 import RealmSwift
 import Realm
+import Firebase
 
 class Song: Object {
     

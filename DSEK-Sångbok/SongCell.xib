@@ -46,7 +46,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
-                <color key="backgroundColor" red="0.1176470588" green="0.1176470588" blue="0.1176470588" alpha="1" colorSpace="calibratedRGB"/>
+                <color key="backgroundColor" red="0.090196078431372548" green="0.090196078431372548" blue="0.090196078431372548" alpha="1" colorSpace="calibratedRGB"/>
                 <constraints>
                     <constraint firstItem="1X4-ss-vBj" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottomMargin" id="4wF-je-YPS"/>
                     <constraint firstItem="dtc-BS-QBN" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="5" id="QXS-3Y-K6p"/>
@@ -59,11 +59,12 @@
                     <constraint firstAttribute="trailingMargin" secondItem="1X4-ss-vBj" secondAttribute="trailing" constant="47" id="sec-eN-2gS"/>
                 </constraints>
             </tableViewCellContentView>
+            <color key="backgroundColor" red="0.1176470588" green="0.1176470588" blue="0.1176470588" alpha="1" colorSpace="calibratedRGB"/>
             <connections>
                 <outlet property="songMelodyLbl" destination="1X4-ss-vBj" id="6Dl-1C-qhK"/>
                 <outlet property="songTitleLbl" destination="dtc-BS-QBN" id="q2f-Rf-SKX"/>
             </connections>
-            <point key="canvasLocation" x="320" y="208"/>
+            <point key="canvasLocation" x="320" y="216"/>
         </tableViewCell>
     </objects>
     <resources>
