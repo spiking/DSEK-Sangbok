@@ -7,7 +7,7 @@ target 'DSEK-Sångbok' do
   pod 'PageMenu'
   pod 'MBProgressHUD', '~> 0.9.2'
   pod 'AHKActionSheet'
-  pod 'Firebase'
+  pod 'Firebase/Core'
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
   # Pods for DSEK-Sångbok

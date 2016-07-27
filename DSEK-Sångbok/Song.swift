@@ -20,7 +20,11 @@ class Song: Object {
     dynamic var _categoryTitle: String!
     dynamic var _key: String!
     dynamic var _favorite: String!
-//    dynamic var _grade: String!
+    dynamic var _rating: Double = 0
+    
+    override class func primaryKey() -> String {
+        return "_key"
+    }
     
     var title: String {
         return _title
@@ -46,9 +50,13 @@ class Song: Object {
         return _key
     }
 
-//    var grade: String {
-//        return _grade
-//    }
+    var rating: Double {
+        return _rating
+    }
+    
+    var favorite: String {
+        return _favorite
+    }
 
 }
 

@@ -41,7 +41,24 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         setupMenu()
         
         tableView.reloadData()
+        
+        loadToplistFromFirebase()
 
+    }
+    
+    func loadToplistFromFirebase() {
+        
+        DataService.ds.REF_SONGS.queryOrderedByChild("ratings").observeEventType(.Value, withBlock: { (snapshot) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                for snap in snapshot {
+                    
+                    print(snap.childSnapshotForPath("rating").value)
+                    
+                    
+                }
+            }
+        })
     }
     
     

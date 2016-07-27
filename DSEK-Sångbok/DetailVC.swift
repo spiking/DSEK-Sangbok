@@ -61,7 +61,11 @@ class DetailVC: UIViewController {
                 if let totalRatings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
                     
                     if nbrOfVotes != 0 && totalRatings != 0 {
+                        
                         rating = Double(totalRatings) / Double(nbrOfVotes)
+                        
+                        DataService.ds.REF_SONGS.child(self.song.key).child("rating").setValue(rating)
+                        
                         self.ratingLbl.text = "\(rating)"
                     } else {
                         self.ratingLbl.text = "Ej betygsatt"
@@ -168,15 +172,6 @@ class DetailVC: UIViewController {
             
         }
 
-    }
-    
-    func delay(delay:Double, closure:()->()) {
-        dispatch_after(
-            dispatch_time(
-                DISPATCH_TIME_NOW,
-                Int64(delay * Double(NSEC_PER_SEC))
-            ),
-            dispatch_get_main_queue(), closure)
     }
     
     func setupMenu() {

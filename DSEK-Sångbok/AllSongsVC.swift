@@ -10,6 +10,7 @@ import UIKit
 import Realm
 import RealmSwift
 import MBProgressHUD
+import Firebase
 
 
 class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
@@ -50,15 +51,32 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         setupMenu()
         
         loadSortMode()
+        
+//        setupLoadingIndicator()
+    }
+    
+    
+    func loadToplistFromFirebase() {
+        
+        DataService.ds.REF_SONGS.queryOrderedByChild("ratings").observeEventType(.Value, withBlock: { (snapshot) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                for snap in snapshot {
+                    
+                    print(snap.childSnapshotForPath("rating").value)
+                    
+                }
+            }
+        })
     }
     
     func saveSortMode() {
-        NSUserDefaults.standardUserDefaults().setValue("\(self.mode)", forKey: "SORT_MODE")
+        NSUserDefaults.standardUserDefaults().setValue("\(self.mode)", forKey: "SORT_MODE_ALL")
     }
     
     func loadSortMode() {
         
-        if let sortMode = NSUserDefaults.standardUserDefaults().valueForKey("SORT_MODE") as? String {
+        if let sortMode = NSUserDefaults.standardUserDefaults().valueForKey("SORT_MODE_ALL") as? String {
             
             switch sortMode {
             case "TITEL":
@@ -78,8 +96,8 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     func setupLoadingIndicator() {
-        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.labelText = "HÄMTAR..."
+//        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
+//        hud.labelText = "HÄMTAR..."
         
         //        NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: #selector(AllSongsVC.doSomeWorkWithProgress(hud)), userInfo: nil, repeats: true)
         
@@ -124,7 +142,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-//        loadSortMode()
+        loadSortMode()
     }
     
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
@@ -156,27 +174,23 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
-            
             self.mode = .TITEL
-            self.allSongs = realm.objects(Song.self).sorted("_title")
             self.realoadData()
         }
         
         actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
             self.mode = .MELODI
-            self.allSongs = realm.objects(Song.self).sorted("_melodyTitle")
             self.realoadData()
         }
         
         actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
-            
             self.mode = .SKAPAD
-            self.allSongs = realm.objects(Song.self).sorted("_created")
             self.realoadData()
         }
         
         actionSheet.addButtonWithTitle("Betyg", type: .Default) { (actionSheet) in
             self.mode = .BETYG
+            self.realoadData()
         }
     }
     
@@ -193,16 +207,12 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             self.allSongs = realm.objects(Song.self).sorted("_created")
             self.tableView.reloadData()
         case .BETYG:
-            self.allSongs = realm.objects(Song.self).sorted("_created")
+            self.allSongs = realm.objects(Song.self).sorted("_rating")
             self.tableView.reloadData()
         default:
             print("Default")
             self.tableView.reloadData()
         }
-    }
-    
-    func updateTableView() {
-        self.tableView.reloadData()
     }
     
     func dismisskeyboard() {
@@ -217,17 +227,19 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         if searchBar.text == nil && searchBar.text != "" {
             inSearchMode = false
             dismisskeyboard()
-            realoadData()
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
             filteredSongs = allSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
-            realoadData()
         }
+        
+        realoadData()
     }
     
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
+        dismisskeyboard()
         
         let song: Song!
         

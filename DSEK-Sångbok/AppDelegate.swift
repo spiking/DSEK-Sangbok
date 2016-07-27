@@ -28,35 +28,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let uid = user!.uid
             
             NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
-        
+
             print(uid)
             
             DataService.ds.REF_USERS.child(uid).setValue(true)
 
         }
-
-        
-//        if NSUserDefaults.standardUserDefaults().valueForKey("userID") == nil {
-//            print("First login")
-//            
-////            FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
-////                
-////                let isAnonymous = user!.anonymous  // true
-////                let uid = user!.uid
-////                
-//////                DataService.ds.REF_BASE.child("users").child(uid).setValue(true)
-////                
-////                NSUserDefaults.standardUserDefaults().setValue(uid, forKey: "userID")
-////            }
-//            
-//        } else {
-//            print("Standard login")
-//            let uid = NSUserDefaults.standardUserDefaults().valueForKey("userID") as! String
-//            print(uid)
-//        }
         
         return true
     }
+
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.

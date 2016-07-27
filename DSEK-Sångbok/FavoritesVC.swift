@@ -7,17 +7,27 @@
 //
 
 import UIKit
+import AHKActionSheet
 
 class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
+    var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     var parentNavigationController : UINavigationController?
     
     private var inSearchMode = false
     private var filteredSongs = [Song]()
-    private var allSongs = realm.objects(Song.self).filter("_favorite = 'TRUE'")
+    private var favoriteSongs = realm.objects(Song.self).filter("_favorite = 'TRUE'")
+    private var mode = SORT_MODE.TITEL
+    
+    enum SORT_MODE: String {
+        case TITEL = "TITEL"
+        case MELODI = "MELODI"
+        case SKAPAD = "SKAPAD"
+        case BETYG = "BETYG"
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,18 +44,119 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
-    
-        tableView.reloadData()
+        
+        setupMenu()
+        
+        loadSortMode()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         inSearchMode = false
+        print(self.mode)
+        
+        saveSortMode()
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        self.tableView.reloadData()
+        loadSortMode()
+    }
+    
+    func saveSortMode() {
+        NSUserDefaults.standardUserDefaults().setValue("\(self.mode)", forKey: "SORT_MODE_FAV")
+    }
+    
+    func loadSortMode() {
+        
+        if let sortMode = NSUserDefaults.standardUserDefaults().valueForKey("SORT_MODE_FAV") as? String {
+            
+            switch sortMode {
+            case "TITEL":
+                self.mode = .TITEL
+            case "MELODI":
+                self.mode = .MELODI
+            case "SKAPAD":
+                self.mode = .SKAPAD
+            case "BETYG":
+                self.mode = .BETYG
+            default:
+                self.mode = .TITEL
+            }
+        }
+        
+        self.realoadData()
+    }
+    
+    
+    func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
+        dismisskeyboard()
+        actionSheet.show()
+    }
+    
+    func setupMenu() {
+        actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+        actionSheet.blurRadius = 8.0
+        
+        if iPhoneType == "4" || iPhoneType == "5" {
+            actionSheet.buttonHeight = 50.0
+            actionSheet.cancelButtonHeight = 70
+        } else {
+            actionSheet.buttonHeight = 60.0
+            actionSheet.cancelButtonHeight = 80
+        }
+        
+        actionSheet.cancelButtonHeight = 80
+        actionSheet.animationDuration = 0.5
+        actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
+        actionSheet.separatorColor = UIColor(red: 30, green: 30, blue: 30, alpha: 0.2)
+        actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
+        let font = UIFont(name: "Avenir", size: 17)
+        actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
+        actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
+        actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
+        actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
+        
+        actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
+            self.mode = .TITEL
+            self.realoadData()
+        }
+        
+        actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
+            self.mode = .MELODI
+            self.realoadData()
+        }
+        
+        actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
+            self.mode = .SKAPAD
+            self.realoadData()
+        }
+        
+        actionSheet.addButtonWithTitle("Betyg", type: .Default) { (actionSheet) in
+            self.mode = .BETYG
+            self.realoadData()
+        }
+    }
+    
+    func realoadData() {
+        
+        switch self.mode {
+        case .TITEL:
+            self.favoriteSongs = self.favoriteSongs.sorted("_title")
+            self.tableView.reloadData()
+        case .MELODI:
+            self.favoriteSongs = self.favoriteSongs.sorted("_melodyTitle")
+            self.tableView.reloadData()
+        case .SKAPAD:
+            self.favoriteSongs = self.favoriteSongs.sorted("_created")
+            self.tableView.reloadData()
+        case .BETYG:
+            self.favoriteSongs = realm.objects(Song.self).filter("_favorite = 'TRUE'").sorted("_rating")
+            self.tableView.reloadData()
+        default:
+            print("Default")
+            self.tableView.reloadData()
+        }
     }
     
     func dismisskeyboard() {
@@ -56,6 +167,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         dismisskeyboard()
     }
     
+    
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == nil && searchBar.text != "" {
             inSearchMode = false
@@ -64,7 +176,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
-            filteredSongs = allSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
+            filteredSongs = favoriteSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
             
             tableView.reloadData()
         }
@@ -78,7 +190,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         if inSearchMode {
             song = filteredSongs[indexPath.row]
         } else {
-            song = allSongs[indexPath.row]
+            song = favoriteSongs[indexPath.row]
         }
         
         let detailVC = DetailVC()
@@ -97,7 +209,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         if inSearchMode {
             return filteredSongs.count
         } else {
-            return allSongs.count
+            return favoriteSongs.count
         }
     }
     
@@ -109,7 +221,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             if inSearchMode {
                 song = filteredSongs[indexPath.row]
             } else {
-                song = allSongs[indexPath.row]
+                song = favoriteSongs[indexPath.row]
             }
             
             cell.configureCell(song)
@@ -126,3 +238,4 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     }
     
 }
+

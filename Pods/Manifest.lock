@@ -1,7 +1,5 @@
 PODS:
   - AHKActionSheet (0.5.4)
-  - Firebase (3.3.0):
-    - Firebase/Core (= 3.3.0)
   - Firebase/Analytics (3.3.0):
     - FirebaseAnalytics (= 3.2.1)
   - Firebase/Auth (3.3.0):
@@ -40,8 +38,8 @@ PODS:
 
 DEPENDENCIES:
   - AHKActionSheet
-  - Firebase
   - Firebase/Auth
+  - Firebase/Core
   - Firebase/Database
   - MBProgressHUD (~> 0.9.2)
   - PageMenu
@@ -61,6 +59,6 @@ SPEC CHECKSUMS:
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
   PageMenu: ba19ff267f7a19e444e93c20a7847b78954a7011
 
-PODFILE CHECKSUM: 44dd6fe41256f55ce9a5c630e7330eeff88c8362
+PODFILE CHECKSUM: 49e3a6ac8fea5b1dc5096f4c30cafe808f2e5f75
 
 COCOAPODS: 1.0.0
