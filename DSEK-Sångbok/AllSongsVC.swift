@@ -16,13 +16,15 @@ import Firebase
 class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
     
-    @IBOutlet weak var tableView: UITableView!
+
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var tableView: UITableView!
     
     private var inSearchMode = false
     private var filteredSongs = [Song]()
     private var allSongs = realm.objects(Song.self)
     private var mode = SORT_MODE.TITEL
+    private var hud = MBProgressHUD()
     
     enum SORT_MODE: String {
         case TITEL = "TITEL"
@@ -37,11 +39,15 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationItem.title = "SÅNGER"
+        
         tableView.delegate = self
         tableView.dataSource = self
         searchBar.delegate = self
         tableView.estimatedRowHeight = 70
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
         searchBar.keyboardAppearance = .Dark
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
@@ -52,7 +58,24 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         loadSortMode()
         
-//        setupLoadingIndicator()
+        if songs.count == 0 {
+            hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
+            hud.square = true
+//            hud.labelFont = UIFont(name: "Avenir-Medium", size: 12)
+//            hud.labelText = "HÄMTAR..."
+        }
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "reloadTableData:", name: "reload", object: nil)
+        
+    }
+    
+    func reloadTableData(notification: NSNotification) {
+        self.realoadData()
+        hud.mode = MBProgressHUDMode.CustomView
+        let image = UIImage(named: "Checkmark")
+        hud.customView = UIImageView(image: image)
+        hud.square = true
+        hud.hide(true, afterDelay: 2)
     }
     
     
@@ -96,8 +119,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     func setupLoadingIndicator() {
-//        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-//        hud.labelText = "HÄMTAR..."
         
         //        NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: #selector(AllSongsVC.doSomeWorkWithProgress(hud)), userInfo: nil, repeats: true)
         
@@ -249,11 +270,18 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             song = allSongs[indexPath.row]
         }
         
-        let detailVC = DetailVC()
-        detailVC.song = song
+        self.performSegueWithIdentifier("detailVC", sender: song)
         
-        parentNavigationController!.pushViewController(detailVC, animated: true)
-        
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "detailVC" {
+            if let detailVC = segue.destinationViewController as? DetailVC {
+                if let song = sender as? Song {
+                    detailVC.song = song
+                }
+            }
+        }
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

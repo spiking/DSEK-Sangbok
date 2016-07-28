@@ -35,6 +35,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         }
         
+        UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
+        UINavigationBar.appearance().titleTextAttributes = [
+            NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 15)!, NSForegroundColorAttributeName: UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+        ]
+        UINavigationBar.appearance().tintColor = UIColor.whiteColor()
+        
         return true
     }
 

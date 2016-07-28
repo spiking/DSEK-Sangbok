@@ -14,12 +14,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>MediumMenu.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>PageMenu.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>Pods-DSEK-Sångbok.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RAMAnimatedTabBarController.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -32,7 +42,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B5F1F3E08E975D5664A842355F3F5CC6</key>
+		<key>32322F2E3951CC2ED56F1E26274D1737</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>9CEAD0495F88A5458B3D7F8570A0EA3E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -43,6 +58,11 @@
 			<true/>
 		</dict>
 		<key>E61CE3B6DFA1FE6B3E296965C76C0E10</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>F8C22B19B14945905C86450E18DBEBBC</key>
 		<dict>
 			<key>primary</key>
 			<true/>

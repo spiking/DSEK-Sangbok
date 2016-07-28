@@ -10,6 +10,8 @@ target 'DSEK-Sångbok' do
   pod 'Firebase/Core'
   pod 'Firebase/Database'
   pod 'Firebase/Auth'
+  pod 'MediumMenu'
+  pod 'RAMAnimatedTabBarController'
   # Pods for DSEK-Sångbok
 
 end

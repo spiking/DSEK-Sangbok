@@ -30,9 +30,11 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         searchBar.delegate = self
         tableView.estimatedRowHeight = 70
         
+        navigationItem.title = "TOPPLISTA"
+        
         searchBar.keyboardAppearance = .Dark
         
-        tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
+        tableView.registerNib(UINib(nibName: "ToplistCell", bundle: nil), forCellReuseIdentifier: "ToplistCell")
         
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
@@ -178,18 +180,18 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let song: Song!
-        
-        if inSearchMode {
-            song = filteredSongs[indexPath.row]
-        } else {
-            song = allSongs[indexPath.row]
-        }
-        
-        let detailVC = DetailVC()
-        detailVC.song = song
-        
-        parentNavigationController!.pushViewController(detailVC, animated: true)
+//        let song: Song!
+//        
+//        if inSearchMode {
+//            song = filteredSongs[indexPath.row]
+//        } else {
+//            song = allSongs[indexPath.row]
+//        }
+//        
+//        let detailVC = DetailVC()
+//        detailVC.song = song
+//        
+//        parentNavigationController!.pushViewController(detailVC, animated: true)
         
     }
     
@@ -207,7 +209,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
+        if let cell = tableView.dequeueReusableCellWithIdentifier("ToplistCell") as? ToplistCell {
             
             let song: Song!
             
@@ -217,7 +219,9 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
                 song = allSongs[indexPath.row]
             }
             
-            cell.configureCell(song)
+            let number = indexPath.row
+            
+            cell.configureCell(song, number: number)
             
             let backgroundColorView = UIView()
             backgroundColorView.backgroundColor = UIColor.blackColor()
@@ -226,7 +230,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
             return cell
             
         } else {
-            return SongCell()
+            return ToplistCell()
         }
     }
     

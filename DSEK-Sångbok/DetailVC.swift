@@ -15,7 +15,6 @@ class DetailVC: UIViewController {
     var song: Song!
     var actionSheet = AHKActionSheet(title: "BETYGSÄTT SONG")
     
-    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var lyricsTextView: UITextView!
     @IBOutlet weak var melodyTitleLbl: UILabel!
@@ -26,7 +25,6 @@ class DetailVC: UIViewController {
         super.viewDidLoad()
         
         title = song.title
-        
         titleLbl.text = song.title
         melodyTitleLbl.text = song.melodyTitle
         
@@ -37,18 +35,15 @@ class DetailVC: UIViewController {
         
         createdLbl.text = "\(formatter.stringFromDate(date))"
         
-        setRating()
-        
         lyricsTextView.text = song.lyrics
         lyricsTextView.font = UIFont(name: "Avenir-Book", size: 15)
         lyricsTextView.textAlignment = .Center
         
+        setRating()
         setupMenuButton()
         setupMenu()
         
     }
-    
-    
     
     func setRating() {
         

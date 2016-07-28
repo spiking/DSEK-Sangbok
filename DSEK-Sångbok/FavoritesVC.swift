@@ -11,8 +11,9 @@ import AHKActionSheet
 
 class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
-    @IBOutlet weak var tableView: UITableView!
+
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var tableView: UITableView!
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     var parentNavigationController : UINavigationController?
@@ -32,9 +33,13 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationItem.title = "FAVORITER"
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.estimatedRowHeight = 70
+        
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
         searchBar.delegate = self
         
@@ -94,6 +99,14 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         actionSheet.show()
     }
     
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        dismisskeyboard()
+        
+        inSearchMode = false
+        self.searchBar.text = ""
+        self.realoadData()
+    }
+    
     func setupMenu() {
         actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
         actionSheet.blurRadius = 8.0
@@ -135,6 +148,16 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         actionSheet.addButtonWithTitle("Betyg", type: .Default) { (actionSheet) in
             self.mode = .BETYG
             self.realoadData()
+        }
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "detailVC" {
+            if let detailVC = segue.destinationViewController as? DetailVC {
+                if let song = sender as? Song {
+                    detailVC.song = song
+                }
+            }
         }
     }
     
@@ -193,11 +216,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             song = favoriteSongs[indexPath.row]
         }
         
-        let detailVC = DetailVC()
-        detailVC.song = song
-        
-        parentNavigationController!.pushViewController(detailVC, animated: true)
-        
+        self.performSegueWithIdentifier("detailVC", sender: song)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {

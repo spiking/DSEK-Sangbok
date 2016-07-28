@@ -25,9 +25,10 @@ class ViewController: UIViewController {
         //            realm.deleteAll()
         //        }
         //
-
         
-        delay(5.0) {
+//        setupMenuButton()
+        
+        delay(3.0) {
             
             if songs.count == 0 {
                 self.downloadSongsFromFirebase()
@@ -45,6 +46,19 @@ class ViewController: UIViewController {
         }
     }
     
+//    func setupMenuButton() {
+//        let menuButton = UIButton(type: UIButtonType.Custom)
+//        menuButton.setImage(UIImage(named: "List.png"), forState: UIControlState.Normal)
+//        menuButton.addTarget(navigationController, action: #selector(NavigationController.showMenu), forControlEvents: UIControlEvents.TouchUpInside)
+//        menuButton.frame = CGRectMake(0, 0, 20, 20)
+//        let barButton = UIBarButtonItem(customView: menuButton)
+//        self.navigationItem.leftBarButtonItem = barButton
+//        
+////        let icon = UIBarButtonItem(image: UIImage(named: "List.png"), style: .Plain, target: navigationController, action: #selector(NavigationController.showMenu))
+////        icon.imageInsets = UIEdgeInsetsMake(-10, 0, 0, 0)
+////        navigationItem.leftBarButtonItem = icon
+//    }
+//    
     
     func downloadNewSongs() {
         
@@ -143,6 +157,8 @@ class ViewController: UIViewController {
                     realm.add(song, update: true)
                 }
             }
+            
+             NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
         }
     }
     
@@ -155,14 +171,15 @@ class ViewController: UIViewController {
         
         // MARK: - UI Setup
         
-        self.title = "D-SEK SÅNGBOK"
-        self.navigationController?.navigationBar.barTintColor = UIColor(red: 23/255.0, green: 23/255.0, blue: 23/255.0, alpha: 1.0)
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
-        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black
-        self.navigationController?.navigationBar.tintColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
-        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
-        ]
+//        self.title = "D-SEK SÅNGBOK"
+//        self.navigationController?.navigationBar.barTintColor = UIColor(red: 0/255.0, green: 0/255.0, blue: 0/255.0, alpha: 1.0)
+//        self.navigationController?.navigationBar.shadowImage = UIImage()
+//        self.navigationController?.navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
+//        self.navigationController?.navigationBar.barStyle = UIBarStyle.Black
+//        self.navigationController?.navigationBar.tintColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+//        self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)]
+        
+        
         
         //        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "<-", style: UIBarButtonItemStyle.Done, target: self, action: "didTapGoToLeft")
         //        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "->", style: UIBarButtonItemStyle.Done, target: self, action: "didTapGoToRight")
@@ -189,7 +206,7 @@ class ViewController: UIViewController {
         
         // Customize menu (Optional)
         let parameters: [CAPSPageMenuOption] = [
-            .ScrollMenuBackgroundColor(UIColor(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0, alpha: 1.0)),
+            .ScrollMenuBackgroundColor(UIColor(red: 23/255.0, green: 23/255.0, blue: 23/255.0, alpha: 1.0)),
             .ViewBackgroundColor(UIColor(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0, alpha: 1.0)),
             .SelectionIndicatorColor(UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)),
             .BottomMenuHairlineColor(UIColor(red: 70.0/255.0, green: 70.0/255.0, blue: 80.0/255.0, alpha: 1.0)),
@@ -198,7 +215,6 @@ class ViewController: UIViewController {
             .MenuItemWidth(100),
             .CenterMenuItems(true)
         ]
-        
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
