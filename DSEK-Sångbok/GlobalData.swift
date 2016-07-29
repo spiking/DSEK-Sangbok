@@ -11,5 +11,4 @@ import RealmSwift
 import Realm
 
 var realm = try! Realm()
-var songs = realm.objects(Song.self)
 var iPhoneType = ""

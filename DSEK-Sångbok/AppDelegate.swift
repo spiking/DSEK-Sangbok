@@ -16,9 +16,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
         
-        checkiPhoneType()
+        // Auth
         
         FIRApp.configure()
         
@@ -27,13 +26,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let isAnonymous = user!.anonymous  // true
             let uid = user!.uid
             
-            NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
-
-            print(uid)
-            
-            DataService.ds.REF_USERS.child(uid).setValue(true)
-
+            if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) != nil {
+                 print("Already signed up")
+            } else {
+                print("First login")
+                NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
+                DataService.ds.REF_USERS.child(uid).setValue(true)
+    
+            }
         }
+        
+        // Database
+        
+        let downloader = Downloader()
+        downloader.toplistObserver()
+        
+        if realm.isEmpty {
+            downloader.downloadSongsFromFirebase()
+        }
+        
+        checkiPhoneModel()
+        
+        // Layout
         
         UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.whiteColor()]
         UINavigationBar.appearance().titleTextAttributes = [

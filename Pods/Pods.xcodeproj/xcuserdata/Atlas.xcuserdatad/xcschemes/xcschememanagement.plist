@@ -9,12 +9,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>MBProgressHUD.xcscheme</key>
+		<key>Alamofire.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>MediumMenu.xcscheme</key>
+		<key>DZNEmptyDataSet.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>MBProgressHUD.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -29,25 +34,25 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>RAMAnimatedTabBarController.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>16FB872D0D2D4BA0F378AB34D47CF95F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>21C461B0CAD90DE64B07A5D212C5F829</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>32322F2E3951CC2ED56F1E26274D1737</key>
+		<key>79C040AFDDCE1BCBF6D8B5EB0B85887F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>9CEAD0495F88A5458B3D7F8570A0EA3E</key>
+		<key>CD789F21F5D2B3D42E0D0E11A95A8601</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -58,11 +63,6 @@
 			<true/>
 		</dict>
 		<key>E61CE3B6DFA1FE6B3E296965C76C0E10</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F8C22B19B14945905C86450E18DBEBBC</key>
 		<dict>
 			<key>primary</key>
 			<true/>

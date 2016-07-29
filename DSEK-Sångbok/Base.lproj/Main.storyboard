@@ -26,10 +26,12 @@
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="9sP-zp-vyW">
                                 <rect key="frame" x="0.0" y="44" width="600" height="443"/>
                                 <color key="backgroundColor" red="0.090196078430000007" green="0.090196078430000007" blue="0.090196078430000007" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="separatorColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                             </tableView>
-                            <searchBar contentMode="redraw" barStyle="black" showsBookmarkButton="YES" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LPg-Xw-7Na">
+                            <searchBar contentMode="redraw" barStyle="black" showsCancelButton="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LPg-Xw-7Na">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <color key="barTintColor" red="0.090196078430000007" green="0.090196078430000007" blue="0.090196078430000007" alpha="1" colorSpace="calibratedRGB"/>
                                 <textInputTraits key="textInputTraits"/>
                             </searchBar>
@@ -49,6 +51,7 @@
                     <connections>
                         <outlet property="searchBar" destination="LPg-Xw-7Na" id="le4-Vz-4UD"/>
                         <outlet property="tableView" destination="9sP-zp-vyW" id="cRN-KC-Ove"/>
+                        <segue destination="Zap-D5-JOd" kind="show" identifier="detailVC" id="5Cy-Px-d3k"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5i0-hk-cWG" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -591,6 +594,6 @@
         <image name="TabbarToplistEmpty" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="zVz-Pf-fex"/>
+        <segue reference="5Cy-Px-d3k"/>
     </inferredMetricsTieBreakers>
 </document>

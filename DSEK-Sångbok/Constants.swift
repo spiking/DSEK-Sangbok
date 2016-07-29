@@ -9,3 +9,4 @@
 import Foundation
 
 let KEY_UID = "uid"
+let SEUGE_DETAILVC = "detailVC"

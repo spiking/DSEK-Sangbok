@@ -15,7 +15,7 @@ func dateSincePosted(timestamp: String) -> String {
     return dateDiff
 }
 
-func checkiPhoneType() {
+func checkiPhoneModel() {
     if UIDevice().userInterfaceIdiom == .Phone {
         switch UIScreen.mainScreen().nativeBounds.height {
         case 480:
@@ -40,7 +40,6 @@ func checkiPhoneType() {
 
 func getUserID() -> String {
     if let uid = NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) as? String {
-        print(uid)
         return uid
     } else {
         return ""

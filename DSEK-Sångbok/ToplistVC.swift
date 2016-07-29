@@ -18,10 +18,11 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     
     private var inSearchMode = false
     private var filteredSongs = [Song]()
-    private var allSongs = realm.objects(Song.self)
+    private var allSongs = realm.objects(Song.self).filter("_rating > 0")
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
-
+    var hud = MBProgressHUD()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -36,61 +37,54 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         
         tableView.registerNib(UINib(nibName: "ToplistCell", bundle: nil), forCellReuseIdentifier: "ToplistCell")
         
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
+        
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
         
         setupMenu()
         
-        tableView.reloadData()
+        self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
+        self.tableView.reloadData()
         
-        loadToplistFromFirebase()
-
-    }
-    
-    func loadToplistFromFirebase() {
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ToplistVC.reloadTableData(_:)), name: "reloadToplist", object: nil)
         
-        DataService.ds.REF_SONGS.queryOrderedByChild("ratings").observeEventType(.Value, withBlock: { (snapshot) in
-            
-            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
-                for snap in snapshot {
-                    
-                    print(snap.childSnapshotForPath("rating").value)
-                    
-                    
-                }
-            }
-        })
-    }
-    
-    
-    func setupLoadingIndicator() {
-        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.labelText = "HÄMTAR..."
-        
-        //        NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: #selector(AllSongsVC.doSomeWorkWithProgress(hud)), userInfo: nil, repeats: true)
-        
-        //        hud.hide(true)
-        //
-        //        hud.mode = MBProgressHUDMode.CustomView
-        //        let image = UIImage(named: "Checkmark")
-        //        hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        //        hud.labelText = "FAVORIT"
-        //        hud.customView = UIImageView(image: image)
-        //        hud.square = true
-        //        hud.hide(true, afterDelay: 1.0)
+        showDownloadIndicator()
+        let downloader = Downloader()
+        downloader.loadToplistFromFirebase()
         
     }
     
-    func doSomeWorkWithProgress() {
-        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
+    func reloadTableData(notification: NSNotification) {
+        
+        print("UPDATE!")
+        
+        dismissDownloadIndicator()
+        
+        self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
+        self.tableView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+        dismisskeyboard()
+        
+        inSearchMode = false
+        self.searchBar.text = ""
+    }
+    
+    func showDownloadIndicator() {
+        hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
+        hud.square = true
+    }
+    
+    func dismissDownloadIndicator() {
         hud.mode = MBProgressHUDMode.CustomView
         let image = UIImage(named: "Checkmark")
-        hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        hud.labelText = "KLAR"
+        hud.labelText = "Klar"
         hud.customView = UIImageView(image: image)
         hud.square = true
-        hud.hide(true, afterDelay: 1.0)
+        hud.hide(true, afterDelay: 2)
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -106,6 +100,16 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
         dismisskeyboard()
         actionSheet.show()
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "detailVC" {
+            if let detailVC = segue.destinationViewController as? DetailVC {
+                if let song = sender as? Song {
+                    detailVC.song = song
+                }
+            }
+        }
     }
     
     func setupMenu() {
@@ -132,23 +136,20 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
-            self.allSongs = realm.objects(Song.self).sorted("_title")
+            self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_title")
             self.tableView.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
-            self.allSongs = realm.objects(Song.self).sorted("_melodyTitle")
+            self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_melodyTitle")
             self.tableView.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
-            self.allSongs = realm.objects(Song.self).sorted("_created")
+            self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_created")
             self.tableView.reloadData()
         }
         
-        actionSheet.addButtonWithTitle("Betyg", type: .Default) { (actionSheet) in
-            
-        }
     }
     
     func updateTableView() {
@@ -180,19 +181,15 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-//        let song: Song!
-//        
-//        if inSearchMode {
-//            song = filteredSongs[indexPath.row]
-//        } else {
-//            song = allSongs[indexPath.row]
-//        }
-//        
-//        let detailVC = DetailVC()
-//        detailVC.song = song
-//        
-//        parentNavigationController!.pushViewController(detailVC, animated: true)
+        let song: Song!
         
+        if inSearchMode {
+            song = filteredSongs[indexPath.row]
+        } else {
+            song = allSongs[indexPath.row]
+        }
+        
+        self.performSegueWithIdentifier("detailVC", sender: song)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -219,6 +216,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
                 song = allSongs[indexPath.row]
             }
             
+            
             let number = indexPath.row
             
             cell.configureCell(song, number: number)
@@ -230,8 +228,10 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
             return cell
             
         } else {
+            
             return ToplistCell()
         }
+        
     }
     
 }

@@ -31,7 +31,6 @@ class SongCell: UITableViewCell {
         
         self._song = song
         self.songTitleLbl.text = song.title
-//        let time = dateSincePosted(song.created)
         self.songMelodyLbl.text = song.melodyTitle
     }
     

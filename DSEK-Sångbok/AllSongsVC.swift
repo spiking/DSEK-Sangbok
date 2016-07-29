@@ -58,39 +58,31 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         loadSortMode()
         
-        if songs.count == 0 {
-            hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-            hud.square = true
-//            hud.labelFont = UIFont(name: "Avenir-Medium", size: 12)
-//            hud.labelText = "HÄMTAR..."
+        if realm.isEmpty {
+            showDownloadIndicator()
         }
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: "reloadTableData:", name: "reload", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: "reload", object: nil)
         
     }
     
-    func reloadTableData(notification: NSNotification) {
-        self.realoadData()
+    func showDownloadIndicator() {
+        hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
+        hud.square = true
+    }
+    
+    func dismissDownloadIndicator() {
         hud.mode = MBProgressHUDMode.CustomView
         let image = UIImage(named: "Checkmark")
+        hud.labelText = "\(realm.objects(Song.self).count)"
         hud.customView = UIImageView(image: image)
         hud.square = true
         hud.hide(true, afterDelay: 2)
     }
     
-    
-    func loadToplistFromFirebase() {
-        
-        DataService.ds.REF_SONGS.queryOrderedByChild("ratings").observeEventType(.Value, withBlock: { (snapshot) in
-            
-            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
-                for snap in snapshot {
-                    
-                    print(snap.childSnapshotForPath("rating").value)
-                    
-                }
-            }
-        })
+    func reloadTableData(notification: NSNotification) {
+        self.realoadData()
+        dismissDownloadIndicator()
     }
     
     func saveSortMode() {
@@ -108,8 +100,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
                 self.mode = .MELODI
             case "SKAPAD":
                 self.mode = .SKAPAD
-            case "BETYG":
-                self.mode = .BETYG
             default:
                 self.mode = .TITEL
             }
@@ -208,11 +198,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             self.mode = .SKAPAD
             self.realoadData()
         }
-        
-        actionSheet.addButtonWithTitle("Betyg", type: .Default) { (actionSheet) in
-            self.mode = .BETYG
-            self.realoadData()
-        }
     }
     
     func realoadData() {
@@ -226,9 +211,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             self.tableView.reloadData()
         case .SKAPAD:
             self.allSongs = realm.objects(Song.self).sorted("_created")
-            self.tableView.reloadData()
-        case .BETYG:
-            self.allSongs = realm.objects(Song.self).sorted("_rating")
             self.tableView.reloadData()
         default:
             print("Default")

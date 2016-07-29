@@ -26,7 +26,7 @@ class ToplistCell: UITableViewCell {
         
         self._song = song
         self.songLbl.text = song.title
-        self.numberLbl.text = "\(number)."
+        self.numberLbl.text = "\(number + 1)."
         
         let timestamp = song.created
         let date = NSDate(timeIntervalSince1970: Double(timestamp)!)

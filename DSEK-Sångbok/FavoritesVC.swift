@@ -8,8 +8,9 @@
 
 import UIKit
 import AHKActionSheet
+import DZNEmptyDataSet
 
-class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
 
 
     @IBOutlet weak var searchBar: UISearchBar!
@@ -38,6 +39,8 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         tableView.delegate = self
         tableView.dataSource = self
         tableView.estimatedRowHeight = 70
+        tableView.emptyDataSetSource = self
+        tableView.emptyDataSetDelegate = self
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
@@ -66,6 +69,10 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         loadSortMode()
+        
+        if favoriteSongs.count == 0 {
+            self.tableView.tableFooterView = UIView()
+        }
     }
     
     func saveSortMode() {
@@ -83,8 +90,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
                 self.mode = .MELODI
             case "SKAPAD":
                 self.mode = .SKAPAD
-            case "BETYG":
-                self.mode = .BETYG
             default:
                 self.mode = .TITEL
             }
@@ -144,11 +149,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             self.mode = .SKAPAD
             self.realoadData()
         }
-        
-        actionSheet.addButtonWithTitle("Betyg", type: .Default) { (actionSheet) in
-            self.mode = .BETYG
-            self.realoadData()
-        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -172,9 +172,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             self.tableView.reloadData()
         case .SKAPAD:
             self.favoriteSongs = self.favoriteSongs.sorted("_created")
-            self.tableView.reloadData()
-        case .BETYG:
-            self.favoriteSongs = realm.objects(Song.self).filter("_favorite = 'TRUE'").sorted("_rating")
             self.tableView.reloadData()
         default:
             print("Default")
@@ -254,6 +251,24 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         } else {
             return SongCell()
         }
+    }
+    
+    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = "Inga favoritsånger"
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+//    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+//        var str = "För att "
+//
+//        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
+//        return NSAttributedString(string: str, attributes: attrs)
+//    }
+    
+    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
+        var imgName = "StarFilled"
+        return UIImage(named: imgName)
     }
     
 }
