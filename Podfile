@@ -14,7 +14,7 @@ target 'DSEK-Sångbok' do
   pod 'DZNEmptyDataSet'
   pod 'BRYXBanner'
   pod "GSMessages"
-  pod 'Toast-Swift', '~> 1.3.0'
+  pod 'MGSwipeTableCell'
   # Pods for DSEK-Sångbok
 
 end

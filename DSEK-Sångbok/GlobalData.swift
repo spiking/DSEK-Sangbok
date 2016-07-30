@@ -9,7 +9,9 @@
 import Foundation
 import RealmSwift
 import Realm
+import MBProgressHUD
 
 var realm = try! Realm()
 var iPhoneType = ""
-var categories = [String]()
+var hud = MBProgressHUD()
+var loginComplete = false

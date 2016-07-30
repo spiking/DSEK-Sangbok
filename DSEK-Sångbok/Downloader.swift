@@ -23,18 +23,23 @@ class Downloader {
                     if let songData = snap.value as? Dictionary<String, AnyObject> {
                         let key = snap.key
                         
-                        if let title = songData["title"] as? String, let created = songData["created"] as? String, let lyrics = songData["lyrics"] as? String, let melodyTitle = songData["melodyTitle"] as? String, let categoryTitle = songData["categoryTitle"] as? String, let rating = songData["rating"] as? Double {
+                        if let title = songData["title"] as? String, let created = songData["created"] as? String, let lyrics = songData["lyrics"] as? String, let categoryTitle = songData["categoryTitle"] as? String, let rating = songData["rating"] as? Double {
                             
                             let song = Song()
                             
                             song._title = title
                             song._created = created
-                            song._melodyTitle = melodyTitle
                             song._lyrics = lyrics
                             song._categoryTitle = categoryTitle
                             song._rating = rating
                             song._key = key
                             song._favorite = "FALSE"
+                            
+                            if let melodyTitle = songData["melodyTitle"] as? String {
+                                song._melodyTitle = melodyTitle
+                            } else {
+                                song._melodyTitle = "Okänd"
+                            }
                             
                             let category = Category()
                             category._name = categoryTitle

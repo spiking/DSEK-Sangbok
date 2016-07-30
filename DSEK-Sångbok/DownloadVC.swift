@@ -24,7 +24,7 @@ class DownloadVC: UIViewController {
         super.viewDidLoad()
         
         navigationItem.title = "LADDA NER"
-        
+
         downloadBtn.layer.cornerRadius = 20
         downloadBtn.clipsToBounds = true
     }
@@ -51,7 +51,7 @@ class DownloadVC: UIViewController {
             let newSongs = realm.objects(Song.self).count - numberOfSongs
             self.showMessage("Hämtade \(newSongs) nya sånger.", type: .Success , options: nil)
         } else {
-            self.showMessage("Alla sånger redan hämtade.", type: .Success , options: nil)
+            self.showMessage("Alla sånger är redan hämtade.", type: .Success , options: nil)
         }
     }
     
@@ -73,8 +73,6 @@ class DownloadVC: UIViewController {
                 for (key, value) in dict {
                     
                     if let title = value["title"] as? String, let created = value["created"] as? String, let lyrics = value["lyrics"] as? String, let categoryTitle = value["categoryTitle"] as? String {
-                        
-                        
                         
                         let song = Song()
                         song._title = title

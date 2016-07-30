@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import MGSwipeTableCell
 
-class SongCell: UITableViewCell {
+class SongCell: MGSwipeTableCell {
     
     @IBOutlet weak var songTitleLbl: UILabel!
     @IBOutlet weak var songMelodyLbl: UILabel!

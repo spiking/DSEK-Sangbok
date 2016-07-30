@@ -39,15 +39,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 DataService.ds.REF_USERS.child(uid).setValue(true)
     
             }
-            
-            // Database
-            
+        
             let downloader = Downloader()
             downloader.toplistObserver()
             
             if realm.isEmpty && isConnectedToNetwork() {
                 downloader.downloadSongsFromFirebase()
             }
+            
+            loginComplete = true
         }
         
 
