@@ -8,6 +8,7 @@
 
 import UIKit
 import Firebase
+import BRYXBanner
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -23,6 +24,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
             
+            if error != nil {
+                print(error)
+            }
+            
             let isAnonymous = user!.anonymous  // true
             let uid = user!.uid
             
@@ -34,17 +39,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 DataService.ds.REF_USERS.child(uid).setValue(true)
     
             }
+            
+            // Database
+            
+            let downloader = Downloader()
+            downloader.toplistObserver()
+            
+            if realm.isEmpty && isConnectedToNetwork() {
+                downloader.downloadSongsFromFirebase()
+            }
         }
         
-        // Database
-        
-        let downloader = Downloader()
-        downloader.toplistObserver()
-        
-        if realm.isEmpty {
-            downloader.downloadSongsFromFirebase()
-        }
-        
+
         checkiPhoneModel()
         
         // Layout

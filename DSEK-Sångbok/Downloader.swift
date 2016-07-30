@@ -36,10 +36,14 @@ class Downloader {
                             song._key = key
                             song._favorite = "FALSE"
                             
+                            let category = Category()
+                            category._name = categoryTitle
+                            
                             let realm = try! Realm()
                             try! realm.write() {
                                 // No duplicates, check primary key
                                 realm.add(song, update: true)
+                                realm.add(category, update: true)
                             }
                         }
                     }
@@ -60,18 +64,19 @@ class Downloader {
                 if let rating = snapshot.childSnapshotForPath("rating").value as? Double {
                     try! realm.write() {
                         song?._rating = rating
+                        NSNotificationCenter.defaultCenter().postNotificationName("reloadToplist", object: nil)
                         return
                     }
                 }
             }
-            
-            NSNotificationCenter.defaultCenter().postNotificationName("reloadToplist", object: nil)
         }
     }
     
     func loadToplistFromFirebase() {
         
-        DataService.ds.REF_SONGS.observeSingleEventOfType(.Value, withBlock: { (snapshot) in
+        // Optimization => Only fetch rated songs
+        
+        DataService.ds.REF_SONGS.queryOrderedByChild("rating").queryStartingAtValue(1).observeSingleEventOfType(.Value, withBlock: { (snapshot) in
             
             if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
                 for snap in snapshot {
@@ -80,6 +85,9 @@ class Downloader {
                     
                     if song != nil {
                         if let rating = snap.childSnapshotForPath("rating").value as? Double {
+                            
+                            print(rating)
+                            
                             try! realm.write() {
                                 song?._rating = rating
                             }

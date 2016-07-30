@@ -93,14 +93,14 @@ class DetailVC: UIViewController {
             image = UIImage(named: "Checkmark")!
             hud.labelText = "SPARAD"
         } else {
-            image = UIImage(named: "Delete")!
+            image = UIImage(named: "Cancel")!
             hud.labelText = "BORTTAGEN"
         }
         
         hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
         hud.customView = UIImageView(image: image)
-        hud.square = true
-        hud.minSize = CGSizeMake(125, 125)
+//        hud.square = true
+//        hud.minSize = CGSizeMake(125, 125)
         hud.hide(true, afterDelay: 1.0)
     }
     

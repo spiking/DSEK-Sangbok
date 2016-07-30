@@ -12,6 +12,9 @@ target 'DSEK-Sångbok' do
   pod 'Firebase/Auth'
   pod 'Alamofire', '~> 3.4'
   pod 'DZNEmptyDataSet'
+  pod 'BRYXBanner'
+  pod "GSMessages"
+  pod 'Toast-Swift', '~> 1.3.0'
   # Pods for DSEK-Sångbok
 
 end

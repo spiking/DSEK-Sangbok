@@ -45,20 +45,14 @@ class DownloadVC: UIViewController {
     
     func dismissDownloadIndicator() {
         
-        hud.mode = MBProgressHUDMode.CustomView
-        var image = UIImage()
+        hud.hide(true, afterDelay: 0)
         
         if numberOfSongs != realm.objects(Song.self).count {
             let newSongs = realm.objects(Song.self).count - numberOfSongs
-            hud.labelText = "\(newSongs) sånger hämtade"
-            image = UIImage(named: "Checkmark")!
+            self.showMessage("Hämtade \(newSongs) nya sånger.", type: .Success , options: nil)
         } else {
-            image = UIImage(named: "Checkmark")!
-            hud.labelText = "Uppdaterat"
+            self.showMessage("Alla sånger redan hämtade.", type: .Success , options: nil)
         }
-        
-        hud.customView = UIImageView(image: image)
-        hud.hide(true, afterDelay: 2)
     }
     
     func downloadNewSongs() {

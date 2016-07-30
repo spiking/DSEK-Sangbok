@@ -38,7 +38,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.estimatedRowHeight = 70
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
         
@@ -259,12 +258,12 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         return NSAttributedString(string: str, attributes: attrs)
     }
     
-//    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-//        var str = "För att "
-//
-//        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
-//        return NSAttributedString(string: str, attributes: attrs)
-//    }
+    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = "För att lägga till en favoritsång, ... "
+
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
         var imgName = "StarFilled"

@@ -11,7 +11,8 @@ import Realm
 import RealmSwift
 import MBProgressHUD
 import Firebase
-
+import BRYXBanner
+import GSMessages
 
 class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
@@ -25,6 +26,8 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     private var allSongs = realm.objects(Song.self)
     private var mode = SORT_MODE.TITEL
     private var hud = MBProgressHUD()
+    private var downloader = Downloader()
+    private var alert = false
     
     enum SORT_MODE: String {
         case TITEL = "TITEL"
@@ -34,7 +37,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
-    var parentNavigationController : UINavigationController?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,7 +47,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         tableView.delegate = self
         tableView.dataSource = self
         searchBar.delegate = self
-        tableView.estimatedRowHeight = 70
+
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
@@ -62,8 +65,79 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             showDownloadIndicator()
         }
         
+        observeSetupData()
+        
+        NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(AllSongsVC.observeSetupData), userInfo: nil, repeats: true)
+        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: "reload", object: nil)
         
+    }
+    
+    func tableView(tableView: UITableView, editActionsForRowAtIndexPath indexPath: NSIndexPath) -> [UITableViewRowAction]? {
+        let favoriteAction = UITableViewRowAction(style: .Normal, title: "Favorite") { (rowAction:UITableViewRowAction, indexPath:NSIndexPath) -> Void in
+   
+        }
+        
+        favoriteAction.backgroundColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+        
+        let song = allSongs[indexPath.row]
+        
+        print(song.title)
+        
+        return [favoriteAction]
+    }
+    
+    func observeSetupData() {
+        
+        // Show alert if no internet connection
+        if !isConnectedToNetwork() {
+            
+            if !alert {
+                self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+                alert = true
+                hud.hide(true, afterDelay: 0)
+            }
+            
+        } else {
+            
+            if alert {
+                self.showMessage("Ansluten", type: .Success , options: nil)
+            }
+            
+            if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) == nil {
+                authenticateUser()
+            }
+            
+            if realm.objects(Song.self).isEmpty {
+                showDownloadIndicator()
+                downloader.downloadSongsFromFirebase()
+            }
+            
+             alert = false
+        }
+
+    }
+    
+    func authenticateUser() {
+        
+        FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
+            
+            if error != nil {
+                print(error)
+            }
+            
+            let isAnonymous = user!.anonymous  // true
+            let uid = user!.uid
+            
+            if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) != nil {
+                print("Already signed up")
+            } else {
+                print("First login")
+                NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
+                DataService.ds.REF_USERS.child(uid).setValue(true)
+                
+            }
+        }
     }
     
     func showDownloadIndicator() {
@@ -72,12 +146,13 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     func dismissDownloadIndicator() {
-        hud.mode = MBProgressHUDMode.CustomView
-        let image = UIImage(named: "Checkmark")
-        hud.labelText = "\(realm.objects(Song.self).count)"
-        hud.customView = UIImageView(image: image)
-        hud.square = true
-        hud.hide(true, afterDelay: 2)
+        
+        hud.hide(true, afterDelay: 0)
+        
+        let count = realm.objects(Song.self).count
+
+        self.showMessage("\(count) sånger har hämtats.", type: .Success , options: nil)
+
     }
     
     func reloadTableData(notification: NSNotification) {
@@ -194,7 +269,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             self.realoadData()
         }
         
-        actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
+        actionSheet.addButtonWithTitle("Senast Tillagd", type: .Default) { (actionSheet) in
             self.mode = .SKAPAD
             self.realoadData()
         }
@@ -210,7 +285,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             self.allSongs = realm.objects(Song.self).sorted("_melodyTitle")
             self.tableView.reloadData()
         case .SKAPAD:
-            self.allSongs = realm.objects(Song.self).sorted("_created")
+            self.allSongs = realm.objects(Song.self).sorted("_created", ascending: false)
             self.tableView.reloadData()
         default:
             print("Default")

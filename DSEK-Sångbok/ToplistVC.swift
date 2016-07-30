@@ -9,6 +9,7 @@
 import UIKit
 import MBProgressHUD
 import Firebase
+import BRYXBanner
 
 class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     
@@ -19,6 +20,9 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     private var inSearchMode = false
     private var filteredSongs = [Song]()
     private var allSongs = realm.objects(Song.self).filter("_rating > 0")
+    private var refreshControl: UIRefreshControl!
+    private var spinner = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+    private var downloader = Downloader()
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     var hud = MBProgressHUD()
@@ -35,6 +39,15 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         
         searchBar.keyboardAppearance = .Dark
         
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(ToplistVC.refresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
+        tableView.addSubview(refreshControl)
+        
+        spinner.hidesWhenStopped = true
+        spinner.color = UIColor.grayColor()
+        spinner.frame = CGRectMake(0, 0, 320, 44);
+        tableView.tableFooterView = spinner;
+        
         tableView.registerNib(UINib(nibName: "ToplistCell", bundle: nil), forCellReuseIdentifier: "ToplistCell")
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
@@ -50,20 +63,26 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ToplistVC.reloadTableData(_:)), name: "reloadToplist", object: nil)
         
-        showDownloadIndicator()
-        let downloader = Downloader()
-        downloader.loadToplistFromFirebase()
+    }
+    
+    func refresh(sender:AnyObject) {
         
+        if isConnectedToNetwork() {
+            downloader.loadToplistFromFirebase()
+        } else {
+            self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+            refreshControl.endRefreshing()
+        }
     }
     
     func reloadTableData(notification: NSNotification) {
         
         print("UPDATE!")
         
-        dismissDownloadIndicator()
-        
         self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
         self.tableView.reloadData()
+        
+        refreshControl.endRefreshing()
     }
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {

@@ -12,3 +12,4 @@ import Realm
 
 var realm = try! Realm()
 var iPhoneType = ""
+var categories = [String]()
