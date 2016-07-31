@@ -9,8 +9,10 @@
 import UIKit
 import AHKActionSheet
 import DZNEmptyDataSet
+import MGSwipeTableCell
+import MBProgressHUD
 
-class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
+class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MGSwipeTableCellDelegate {
 
 
     @IBOutlet weak var searchBar: UISearchBar!
@@ -18,6 +20,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     var parentNavigationController : UINavigationController?
+    var hud = MBProgressHUD()
     
     private var inSearchMode = false
     private var filteredSongs = [Song]()
@@ -28,7 +31,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         case TITEL = "TITEL"
         case MELODI = "MELODI"
         case SKAPAD = "SKAPAD"
-        case BETYG = "BETYG"
     }
     
     override func viewDidLoad() {
@@ -59,9 +61,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        inSearchMode = false
-        print(self.mode)
-        
+        inSearchMode = false        
         saveSortMode()
     }
     
@@ -228,10 +228,61 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func songForIndexpath(indexPath: NSIndexPath) -> Song {
+        return favoriteSongs[indexPath.row]
+        
+    }
+    
+    func swipeTableCell(cell: MGSwipeTableCell!, swipeButtonsForDirection direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
+        
+        swipeSettings.transition = MGSwipeTransition.ClipCenter
+        swipeSettings.keepButtonsSwiped = false
+        expansionSettings.buttonIndex = 0
+        expansionSettings.threshold = 1.5
+        expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
+        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
+        expansionSettings.fillOnTrigger = true
+        expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+        
+        if direction == MGSwipeDirection.RightToLeft {
+            
+            let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
+                
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                
+                try! realm.write {
+                    
+                    if song.favorite == "TRUE" {
+                        song._favorite = "FALSE"
+                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
+                        showFavoriteAlert(false, view: self.view)
+                    } else {
+                        song._favorite = "TRUE"
+                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
+                        showFavoriteAlert(true, view: self.view)
+                    }
+                }
+                
+                return true
+                
+            })
+            
+            return [addButton]
+        }
+        
+        return nil
+    }
+    
+    func swipeTableCell(cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
+        return true
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    {
+        
         if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
             
-            let song: Song!
+            var song: Song
             
             if inSearchMode {
                 song = filteredSongs[indexPath.row]
@@ -241,16 +292,19 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             
             cell.configureCell(song)
             
+            cell.delegate = self
+            
             let backgroundColorView = UIView()
             backgroundColorView.backgroundColor = UIColor.blackColor()
+            cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
             cell.selectedBackgroundView = backgroundColorView
             
             return cell
-            
         } else {
             return SongCell()
         }
     }
+
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = "Inga favoritsånger"
@@ -259,7 +313,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = "För att lägga till en favoritsång, ... "
+        var str = "För att lägga till en favoritsång, swipa sången till vänster. "
 
         let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
         return NSAttributedString(string: str, attributes: attrs)

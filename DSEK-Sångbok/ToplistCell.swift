@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import MGSwipeTableCell
 
-class ToplistCell: UITableViewCell {
+class ToplistCell: MGSwipeTableCell {
 
     @IBOutlet weak var numberLbl: UILabel!
     @IBOutlet weak var songLbl: UILabel!
@@ -19,7 +20,14 @@ class ToplistCell: UITableViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // Initialization code
+        self.userInteractionEnabled = true
+    }
+    
+    func dateCreated(timestamp: String) -> String {
+        let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "YYYY"
+        return formatter.stringFromDate(date)
     }
     
     func configureCell(song: Song, number: Int) {
@@ -27,14 +35,8 @@ class ToplistCell: UITableViewCell {
         self._song = song
         self.songLbl.text = song.title
         self.numberLbl.text = "\(number + 1)."
-        
-        let timestamp = song.created
-        let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "YYYY"
-        
-        self.yearLbl.text = "(\(formatter.stringFromDate(date)))"
-        
+        self.yearLbl.text = dateCreated(song.created)
+
         if song.rating == 0.0 {
             self.ratingLbl.text = "-"
         } else {

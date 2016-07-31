@@ -17,8 +17,6 @@ import MGSwipeTableCell
 
 class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MGSwipeTableCellDelegate {
     
-    
-    
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
@@ -27,7 +25,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     private var allSongs = realm.objects(Song.self)
     private var mode = SORT_MODE.TITEL
     private var hud = MBProgressHUD()
-    private var downloader = Downloader()
     private var alert = false
     private var songCount = realm.objects(Song.self).count
     
@@ -35,7 +32,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         case TITEL = "TITEL"
         case MELODI = "MELODI"
         case SKAPAD = "SKAPAD"
-        case BETYG = "BETYG"
     }
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
@@ -63,55 +59,33 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         loadSortMode()
         
-        if realm.isEmpty {
-            showDownloadIndicator()
-        }
-        
-        observeSetupData()
-        
-        NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(AllSongsVC.observeSetupData), userInfo: nil, repeats: true)
+        NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(AllSongsVC.observeNetworkConnection), userInfo: nil, repeats: true)
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: "reload", object: nil)
-    }
-    
-    func observeSetupData() {
         
-        // Show alert if no internet connection
-        if !isConnectedToNetwork() {
-            
-            if !alert {
-                self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
-                alert = true
-                hud.hide(true, afterDelay: 0)
-            }
-            
-        } else {
-            
-            if alert {
-                self.showMessage("Ansluten", type: .Success , options: nil)
-            }
-            
-            if loginComplete {
-                
-                if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) == nil {
-                    authenticateUser()
-                }
-                
-                
-                if realm.objects(Song.self).isEmpty {
-                    self.showDownloadIndicator()
-                    self.downloader.downloadSongsFromFirebase()
-                }
-                
-            }
-            
-            alert = false
+        if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) == nil {
+            authenticateUser()
         }
         
+        print("WAIT")
+        
+        delay(1) {
+            
+            print("GO!")
+            
+            Downloader.downloader.toplistObserver()
+            Downloader.downloader.observeNumberOfAvailableSong()
+            
+            if realm.isEmpty && isConnectedToNetwork() {
+                self.showDownloadIndicator()
+                Downloader.downloader.downloadSongsFromFirebase()
+            } else {
+                print("SETUP READY!")
+            }
+        }
     }
     
     func authenticateUser() {
-        
         FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
             
             if error != nil {
@@ -121,13 +95,47 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             let isAnonymous = user!.anonymous  // true
             let uid = user!.uid
             
-            if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) != nil {
-                print("Already signed up")
-            } else {
-                print("First login")
-                NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
-                DataService.ds.REF_USERS.child(uid).setValue(true)
-                
+            print("First login")
+            
+            NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
+            let data = ["ACTIVE" : true]
+            DataService.ds.REF_USERS.child(uid).updateChildValues(data)
+            
+            self.loadFavorites()
+        }
+    }
+    
+    func loadFavorites() {
+        DataService.ds.REF_USERS_CURRENT.child("favorites").observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                for snap in snapshot {
+                    
+                    let song = realm.objectForPrimaryKey(Song.self, key: snap.key)
+                    
+                    if song != nil {
+                        
+                        try! realm.write() {
+                            song?._favorite = "TRUE"
+                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func observeNetworkConnection() {
+        if !isConnectedToNetwork() {
+            if !alert {
+                self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+                alert = true
+                hud.hide(true, afterDelay: 0)
+            }
+        } else {
+            if alert {
+                self.showMessage("Ansluten", type: .Success , options: nil)
+                alert = false
             }
         }
     }
@@ -174,22 +182,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         }
         
         self.realoadData()
-    }
-    
-    func setupLoadingIndicator() {
-        
-        //        NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: #selector(AllSongsVC.doSomeWorkWithProgress(hud)), userInfo: nil, repeats: true)
-        
-        //        hud.hide(true)
-        //
-        //        hud.mode = MBProgressHUDMode.CustomView
-        //        let image = UIImage(named: "Checkmark")
-        //        hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        //        hud.labelText = "FAVORIT"
-        //        hud.customView = UIImageView(image: image)
-        //        hud.square = true
-        //        hud.hide(true, afterDelay: 1.0)
-        
     }
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
@@ -348,7 +340,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     func songForIndexpath(indexPath: NSIndexPath) -> Song {
-        
         return allSongs[indexPath.row]
         
     }
@@ -375,11 +366,11 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
                     if song.favorite == "TRUE" {
                         song._favorite = "FALSE"
                         DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
-                        self.showFavoriteAlert(false)
+                        showFavoriteAlert(false, view: self.view)
                     } else {
                         song._favorite = "TRUE"
                         DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
-                        self.showFavoriteAlert(true)
+                        showFavoriteAlert(true, view: self.view)
                     }
                 }
                 
@@ -391,25 +382,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         }
         
         return nil
-    }
-    
-    func showFavoriteAlert(favorite: Bool) {
-        hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.mode = MBProgressHUDMode.CustomView
-        
-        var image: UIImage
-        
-        if favorite {
-            image = UIImage(named: "Checkmark")!
-            hud.labelText = "SPARAD"
-        } else {
-            image = UIImage(named: "DeleteNew")!
-            hud.labelText = "BORTTAGEN"
-        }
-        
-        hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        hud.customView = UIImageView(image: image)
-        hud.hide(true, afterDelay: 1.0)
     }
     
     func swipeTableCell(cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {

@@ -11,6 +11,7 @@
 		6F6060911D44E393005DA452 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6F6060901D44E393005DA452 /* GoogleService-Info.plist */; };
 		6F6060931D44E425005DA452 /* DataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6060921D44E425005DA452 /* DataService.swift */; };
 		6F6060961D454B82005DA452 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F6060951D454B82005DA452 /* Constants.swift */; };
+		6F64D2081D4E5201002628A0 /* NetworkReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F64D2071D4E5201002628A0 /* NetworkReachability.swift */; };
 		6FD200211D415F0A00A36E41 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200201D415F0A00A36E41 /* AppDelegate.swift */; };
 		6FD200261D415F0A00A36E41 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200241D415F0A00A36E41 /* Main.storyboard */; };
 		6FD200281D415F0A00A36E41 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200271D415F0A00A36E41 /* Assets.xcassets */; };
@@ -25,7 +26,7 @@
 		6FD200491D415FEF00A36E41 /* ToplistVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200431D415FEF00A36E41 /* ToplistVC.swift */; };
 		6FD2004D1D41600100A36E41 /* SongCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2004B1D41600100A36E41 /* SongCell.swift */; };
 		6FD2004E1D41600100A36E41 /* SongCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FD2004C1D41600100A36E41 /* SongCell.xib */; };
-		6FD200541D41670F00A36E41 /* GlobalData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200531D41670F00A36E41 /* GlobalData.swift */; };
+		6FD200541D41670F00A36E41 /* GlobalProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200531D41670F00A36E41 /* GlobalProperties.swift */; };
 		6FD200571D416FB800A36E41 /* DetailVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200551D416FB800A36E41 /* DetailVC.swift */; };
 		6FD2005A1D4178D600A36E41 /* DateHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200591D4178D600A36E41 /* DateHandler.swift */; };
 		6FD2005C1D41790800A36E41 /* GlobalFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2005B1D41790800A36E41 /* GlobalFunctions.swift */; };
@@ -38,7 +39,6 @@
 		6FD2B51A1D4CA14900FE2D65 /* CategoryCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6FD2B5181D4CA14900FE2D65 /* CategoryCell.xib */; };
 		6FD2B51C1D4CA36500FE2D65 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2B51B1D4CA36500FE2D65 /* Category.swift */; };
 		6FD2B51E1D4CA57B00FE2D65 /* CategorySongsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2B51D1D4CA57B00FE2D65 /* CategorySongsVC.swift */; };
-		6FD2B5201D4CB85900FE2D65 /* NetworkReachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2B51F1D4CB85900FE2D65 /* NetworkReachability.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -63,6 +63,7 @@
 		6F6060901D44E393005DA452 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6F6060921D44E425005DA452 /* DataService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataService.swift; sourceTree = "<group>"; };
 		6F6060951D454B82005DA452 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		6F64D2071D4E5201002628A0 /* NetworkReachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkReachability.swift; sourceTree = "<group>"; };
 		6FD2001D1D415F0900A36E41 /* DSEK-Sångbok.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DSEK-Sångbok.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6FD200201D415F0A00A36E41 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6FD200251D415F0A00A36E41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -77,7 +78,7 @@
 		6FD200431D415FEF00A36E41 /* ToplistVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToplistVC.swift; sourceTree = "<group>"; };
 		6FD2004B1D41600100A36E41 /* SongCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongCell.swift; sourceTree = "<group>"; };
 		6FD2004C1D41600100A36E41 /* SongCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SongCell.xib; sourceTree = "<group>"; };
-		6FD200531D41670F00A36E41 /* GlobalData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalData.swift; sourceTree = "<group>"; };
+		6FD200531D41670F00A36E41 /* GlobalProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalProperties.swift; sourceTree = "<group>"; };
 		6FD200551D416FB800A36E41 /* DetailVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailVC.swift; sourceTree = "<group>"; };
 		6FD200591D4178D600A36E41 /* DateHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DateHandler.swift; sourceTree = "<group>"; };
 		6FD2005B1D41790800A36E41 /* GlobalFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalFunctions.swift; sourceTree = "<group>"; };
@@ -90,7 +91,6 @@
 		6FD2B5181D4CA14900FE2D65 /* CategoryCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CategoryCell.xib; sourceTree = "<group>"; };
 		6FD2B51B1D4CA36500FE2D65 /* Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		6FD2B51D1D4CA57B00FE2D65 /* CategorySongsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CategorySongsVC.swift; sourceTree = "<group>"; };
-		6FD2B51F1D4CB85900FE2D65 /* NetworkReachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkReachability.swift; sourceTree = "<group>"; };
 		DA61E0B3B0125DFF5C51604F /* Pods-DSEK-Sångbok.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DSEK-Sångbok.debug.xcconfig"; path = "Pods/Target Support Files/Pods-DSEK-Sångbok/Pods-DSEK-Sångbok.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -120,8 +120,12 @@
 		6F6060941D454B71005DA452 /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				6FD200531D41670F00A36E41 /* GlobalProperties.swift */,
+				6FD2005B1D41790800A36E41 /* GlobalFunctions.swift */,
+				6FD2B5111D4B3B0A00FE2D65 /* Downloader.swift */,
+				6FD200591D4178D600A36E41 /* DateHandler.swift */,
 				6F6060951D454B82005DA452 /* Constants.swift */,
-				6FD2B51F1D4CB85900FE2D65 /* NetworkReachability.swift */,
+				6F64D2071D4E5201002628A0 /* NetworkReachability.swift */,
 			);
 			name = Utilities;
 			sourceTree = "<group>";
@@ -150,7 +154,6 @@
 			isa = PBXGroup;
 			children = (
 				6F6060941D454B71005DA452 /* Utilities */,
-				6FD200521D4166FA00A36E41 /* Global */,
 				6FD200511D4163EA00A36E41 /* Framworks */,
 				6FD2003A1D415FCA00A36E41 /* Model */,
 				6FD2003C1D415FDB00A36E41 /* Cells */,
@@ -208,17 +211,6 @@
 				6FD200331D415F6000A36E41 /* RealmSwift.framework */,
 			);
 			name = Framworks;
-			sourceTree = "<group>";
-		};
-		6FD200521D4166FA00A36E41 /* Global */ = {
-			isa = PBXGroup;
-			children = (
-				6FD200531D41670F00A36E41 /* GlobalData.swift */,
-				6FD200591D4178D600A36E41 /* DateHandler.swift */,
-				6FD2005B1D41790800A36E41 /* GlobalFunctions.swift */,
-				6FD2B5111D4B3B0A00FE2D65 /* Downloader.swift */,
-			);
-			name = Global;
 			sourceTree = "<group>";
 		};
 		B12C0FD8F1624A9292932B8A /* Frameworks */ = {
@@ -387,9 +379,9 @@
 				6FD2B50D1D4A91DE00FE2D65 /* ToplistCell.swift in Sources */,
 				6FD200571D416FB800A36E41 /* DetailVC.swift in Sources */,
 				6FD200211D415F0A00A36E41 /* AppDelegate.swift in Sources */,
-				6FD200541D41670F00A36E41 /* GlobalData.swift in Sources */,
+				6FD200541D41670F00A36E41 /* GlobalProperties.swift in Sources */,
 				6FD200451D415FEF00A36E41 /* AllSongsVC.swift in Sources */,
-				6FD2B5201D4CB85900FE2D65 /* NetworkReachability.swift in Sources */,
+				6F64D2081D4E5201002628A0 /* NetworkReachability.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -14,8 +14,8 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     @IBOutlet weak var searchBar: UISearchBar!
     
     private var categories = realm.objects(Category.self).sorted("_name")
-    var filteredCategories = [Category]()
-    var inSearchMode = false
+    private var filteredCategories = [Category]()
+    private var inSearchMode = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,17 +26,10 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         tableView.registerNib(UINib(nibName: "CategoryCell", bundle: nil), forCellReuseIdentifier: "CategoryCell")
         
         searchBar.delegate = self
-        
-        navigationItem.title = "KATEGORIER"
-        
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
-
-        
         searchBar.keyboardAppearance = .Dark
         
-        print(categories.count)
-        
-        // Do any additional setup after loading the view.
+        navigationItem.title = "KATEGORIER"
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
     }
     
     override func viewWillAppear(animated: Bool) {

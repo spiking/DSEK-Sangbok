@@ -16,9 +16,10 @@ import Firebase
 class DownloadVC: UIViewController {
     
     @IBOutlet weak var downloadBtn: UIButton!
+    @IBOutlet weak var songCountLbl: UILabel!
     private var downloadedSongs = [Song]()
+    private var songCountBefore = 0
     private var hud = MBProgressHUD()
-    private var numberOfSongs = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,15 +28,29 @@ class DownloadVC: UIViewController {
 
         downloadBtn.layer.cornerRadius = 20
         downloadBtn.clipsToBounds = true
+        
+        let availableSongs = Downloader.downloader.availableSongs
+        
+        if availableSongs >= 0 {
+            songCountLbl.text = "\(Downloader.downloader.availableSongs)"
+        } else {
+            songCountLbl.text = "0"
+        }
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(DownloadVC.dismissDownloadIndicator(_:)), name: "dismissDownloadIndicator", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(DownloadVC.updateSongCount(_:)), name: "updateSongCount", object: nil)
     }
     
     @IBAction func downloadBtnTapped(sender: AnyObject) {
         
-        numberOfSongs = realm.objects(Song.self).count
+        if !isConnectedToNetwork() {
+            self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+            return
+        }
         
-        print("Download new songs!")
-        print("Count before = \(numberOfSongs)")
-        downloadNewSongs()
+        showDownloadIndicator()
+        songCountBefore = realm.objects(Song.self).count
+        Downloader.downloader.downloadNewSongs()
     }
     
     func showDownloadIndicator() {
@@ -43,89 +58,23 @@ class DownloadVC: UIViewController {
         hud.square = true
     }
     
-    func dismissDownloadIndicator() {
+    func updateSongCount(notification: NSNotification) {
+        print("UPDATE \(Downloader.downloader.availableSongs)")
+        let availableSongs = Downloader.downloader.availableSongs
+        if availableSongs >= 0 {
+            songCountLbl.text = "\(Downloader.downloader.availableSongs)"
+        }
+    }
+    
+    func dismissDownloadIndicator(notification: NSNotification) {
         
         hud.hide(true, afterDelay: 0)
         
-        if numberOfSongs != realm.objects(Song.self).count {
-            let newSongs = realm.objects(Song.self).count - numberOfSongs
+        if songCountBefore != realm.objects(Song.self).count {
+            let newSongs = realm.objects(Song.self).count - songCountBefore
             self.showMessage("Hämtade \(newSongs) nya sånger.", type: .Success , options: nil)
         } else {
             self.showMessage("Alla sånger är redan hämtade.", type: .Success , options: nil)
-        }
-    }
-    
-    func downloadNewSongs() {
-        
-        showDownloadIndicator()
-        
-        let urlStr = "http://www.dsek.se/arkiv/sanger/api.php?showAll"
-        
-        let url = NSURL(string: urlStr)!
-        
-        var newSongs = [Song]()
-        
-        Alamofire.request(.GET, url).responseJSON { response in
-            let result = response.result
-            
-            if let dict = result.value as? Dictionary<String, AnyObject> {
-                
-                for (key, value) in dict {
-                    
-                    if let title = value["title"] as? String, let created = value["created"] as? String, let lyrics = value["lyrics"] as? String, let categoryTitle = value["categoryTitle"] as? String {
-                        
-                        let song = Song()
-                        song._title = title
-                        song._created = created
-                        song._lyrics = lyrics
-                        song._categoryTitle = categoryTitle
-                        song._key = key
-                        song._rating = 0
-                        song._favorite = "FALSE"
-                        
-                        if let melodyTitle = value["melodyTitle"] as? String {
-                             song._melodyTitle = melodyTitle
-                        } else {
-                            song._melodyTitle = "Okänd"
-                        }
-                        
-                        let realm = try! Realm()
-
-                        let newSong = realm.objectForPrimaryKey(Song.self, key: key)
-                        
-                        if newSong != nil {
-                            print("EXIST!")
-                        } else {
-                            print("DOES NOT EXIST!")
-                            newSongs.append(song)
-                            self.saveNewSongToFirebase(key, song: value as! Dictionary<String, AnyObject>)
-                            try! realm.write() {
-                                realm.add(song, update: true)
-                            }
-                        }
-                        
-                    }
-                }
-            }
-            
-            self.dismissDownloadIndicator()
-            
-            NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
-        }
-    }
-    
-    func saveNewSongToFirebase(key: String, song: Dictionary<String, AnyObject>) {
-        
-        DataService.ds.REF_SONGS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
-            
-            if !snapshot.hasChild(key) {
-                DataService.ds.REF_SONGS.child(key).setValue(song)
-                DataService.ds.REF_SONGS.child(key).child("rating").setValue(0.0)
-                DataService.ds.REF_SONGS.child(key).child("nbr_of_votes").setValue(0)
-                DataService.ds.REF_SONGS.child(key).child("total_ratings").setValue(0)
-            } else {
-                print("Song already in firebase!")
-            }
         }
     }
 }

@@ -8,8 +8,9 @@
 
 import UIKit
 import AHKActionSheet
+import MGSwipeTableCell
 
-class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {
+class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MGSwipeTableCellDelegate {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -63,30 +64,6 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
             return filteredSongs.count
         } else {
             return categorySongs.count
-        }
-    }
-    
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
-            
-            var song = categorySongs[indexPath.row]
-            
-            if inSearchMode {
-                song = filteredSongs[indexPath.row]
-            } else {
-                song = categorySongs[indexPath.row]
-            }
-            
-            cell.configureCell(song)
-            
-            let backgroundColorView = UIView()
-            backgroundColorView.backgroundColor = UIColor.blackColor()
-            cell.selectedBackgroundView = backgroundColorView
-            
-            return cell
-            
-        } else {
-            return SongCell()
         }
     }
     
@@ -211,5 +188,81 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         }
     }
     
+    func songForIndexpath(indexPath: NSIndexPath) -> Song {
+        return categorySongs[indexPath.row]
+        
+    }
+    
+    func swipeTableCell(cell: MGSwipeTableCell!, swipeButtonsForDirection direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
+        
+        swipeSettings.transition = MGSwipeTransition.ClipCenter
+        swipeSettings.keepButtonsSwiped = false
+        expansionSettings.buttonIndex = 0
+        expansionSettings.threshold = 1.5
+        expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
+        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
+        expansionSettings.fillOnTrigger = true
+        expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+        
+        if direction == MGSwipeDirection.RightToLeft {
+            
+            let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
+                
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                
+                try! realm.write {
+                    
+                    if song.favorite == "TRUE" {
+                        song._favorite = "FALSE"
+                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
+                        showFavoriteAlert(false, view: self.view)
+                    } else {
+                        song._favorite = "TRUE"
+                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
+                        showFavoriteAlert(true, view: self.view)
+                    }
+                }
+                
+                return true
+                
+            })
+            
+            return [addButton]
+        }
+        
+        return nil
+    }
+    
+    func swipeTableCell(cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
+        return true
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    {
+        
+        if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
+            
+            var song: Song
+            
+            if inSearchMode {
+                song = filteredSongs[indexPath.row]
+            } else {
+                song = categorySongs[indexPath.row]
+            }
+            
+            cell.configureCell(song)
+            
+            cell.delegate = self
+            
+            let backgroundColorView = UIView()
+            backgroundColorView.backgroundColor = UIColor.blackColor()
+            cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
+            cell.selectedBackgroundView = backgroundColorView
+            
+            return cell
+        } else {
+            return SongCell()
+        }
+    }
     
 }

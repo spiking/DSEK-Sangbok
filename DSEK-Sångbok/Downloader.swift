@@ -10,10 +10,27 @@ import Foundation
 import Firebase
 import Realm
 import RealmSwift
+import Alamofire
 
 class Downloader {
     
+    static let downloader =  Downloader()
+    
+    private var _availableSongs = realm.objects(Song.self).count
+    
+    var availableSongs: Int {
+        get {
+            
+             return _availableSongs - realm.objects(Song.self).count
+        }
+        set {
+            _availableSongs = newValue
+        }
+    }
+    
     func downloadSongsFromFirebase() {
+        
+        var count = 0
         
         DataService.ds.REF_SONGS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
@@ -24,6 +41,15 @@ class Downloader {
                         let key = snap.key
                         
                         if let title = songData["title"] as? String, let created = songData["created"] as? String, let lyrics = songData["lyrics"] as? String, let categoryTitle = songData["categoryTitle"] as? String, let rating = songData["rating"] as? Double {
+                            
+                            count += 1
+                            
+                            if count == 927 {
+                                self.observeNumberOfAvailableSong()
+                                NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
+                                NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
+                                return
+                            }
                             
                             let song = Song()
                             
@@ -53,9 +79,12 @@ class Downloader {
                         }
                     }
                 }
-                
-                 NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
             }
+            
+            self.observeNumberOfAvailableSong()
+            
+            NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
         }
     }
     
@@ -101,8 +130,115 @@ class Downloader {
                 }
             }
             
+            
             NSNotificationCenter.defaultCenter().postNotificationName("reloadToplist", object: nil)
         })
+    }
+    
+    func observeNumberOfAvailableSong() {
+        
+        let urlStr = "http://www.dsek.se/arkiv/sanger/api.php?showAll"
+        
+        let url = NSURL(string: urlStr)!
+        
+        _availableSongs = 0
+        
+        Alamofire.request(.GET, url).responseJSON { response in
+            let result = response.result
+            
+            if let dict = result.value as? Dictionary<String, AnyObject> {
+                
+                for (key, value) in dict {
+                    
+                    if let title = value["title"] as? String, let created = value["created"] as? String, let lyrics = value["lyrics"] as? String, let categoryTitle = value["categoryTitle"] as? String {
+                    
+                        self._availableSongs += 1
+                        
+                    }
+                }
+            }
+            
+            print("OBSERVE = \(self._availableSongs)")
+            NSNotificationCenter.defaultCenter().postNotificationName("updateAvailableSongCount", object: nil)
+        }
+    }
+    
+    
+    func downloadNewSongs() {
+        
+        let urlStr = "http://www.dsek.se/arkiv/sanger/api.php?showAll"
+        
+        let url = NSURL(string: urlStr)!
+        
+        var newSongs = [Song]()
+        
+        _availableSongs = 0
+        
+        Alamofire.request(.GET, url).responseJSON { response in
+            let result = response.result
+            
+            if let dict = result.value as? Dictionary<String, AnyObject> {
+                
+                for (key, value) in dict {
+                    
+                    if let title = value["title"] as? String, let created = value["created"] as? String, let lyrics = value["lyrics"] as? String, let categoryTitle = value["categoryTitle"] as? String {
+                        
+                        let song = Song()
+                        song._title = title
+                        song._created = created
+                        song._lyrics = lyrics
+                        song._categoryTitle = categoryTitle
+                        song._key = key
+                        song._rating = 0
+                        song._favorite = "FALSE"
+                        
+                        if let melodyTitle = value["melodyTitle"] as? String {
+                            song._melodyTitle = melodyTitle
+                        } else {
+                            song._melodyTitle = "Okänd"
+                        }
+                        
+                        self._availableSongs += 1
+                        
+                        let realm = try! Realm()
+                        
+                        let newSong = realm.objectForPrimaryKey(Song.self, key: key)
+                        
+                        if newSong != nil {
+                            print("EXIST!")
+                        } else {
+                            print("DOES NOT EXIST!")
+                            newSongs.append(song)
+                            self.saveNewSongToFirebase(key, song: value as! Dictionary<String, AnyObject>)
+                            try! realm.write() {
+                                realm.add(song, update: true)
+                            }
+                        }
+                    }
+                }
+            }
+            
+            print("DOWNLOADED NEW = \(self._availableSongs)")
+            
+            NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("dismissDownloadIndicator", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
+        }
+    }
+    
+    func saveNewSongToFirebase(key: String, song: Dictionary<String, AnyObject>) {
+        
+        DataService.ds.REF_SONGS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
+            
+            if !snapshot.hasChild(key) {
+                DataService.ds.REF_SONGS.child(key).setValue(song)
+                DataService.ds.REF_SONGS.child(key).child("rating").setValue(0.0)
+                DataService.ds.REF_SONGS.child(key).child("nbr_of_votes").setValue(0)
+                DataService.ds.REF_SONGS.child(key).child("total_ratings").setValue(0)
+            } else {
+                print("Song already in firebase!")
+            }
+        }
     }
 }
 

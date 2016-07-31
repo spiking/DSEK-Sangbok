@@ -14,4 +14,4 @@ import MBProgressHUD
 var realm = try! Realm()
 var iPhoneType = ""
 var hud = MBProgressHUD()
-var loginComplete = false
+var isDownloadingSetupData = true

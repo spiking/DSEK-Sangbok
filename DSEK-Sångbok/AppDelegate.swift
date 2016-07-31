@@ -14,43 +14,11 @@ import BRYXBanner
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
-
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        
-        // Auth
         
         FIRApp.configure()
         
-        FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
-            
-            if error != nil {
-                print(error)
-            }
-            
-            let isAnonymous = user!.anonymous  // true
-            let uid = user!.uid
-            
-            if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) != nil {
-                 print("Already signed up")
-            } else {
-                print("First login")
-                NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
-                DataService.ds.REF_USERS.child(uid).setValue(true)
-    
-            }
-        
-            let downloader = Downloader()
-            downloader.toplistObserver()
-            
-            if realm.isEmpty && isConnectedToNetwork() {
-                downloader.downloadSongsFromFirebase()
-            }
-            
-            loginComplete = true
-        }
-        
-
         checkiPhoneModel()
         
         // Layout

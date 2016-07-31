@@ -27,13 +27,7 @@ class DetailVC: UIViewController {
         title = song.title
         titleLbl.text = song.title
         melodyTitleLbl.text = song.melodyTitle
-        
-        let timestamp = song.created
-        let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
-        let formatter = NSDateFormatter()
-        formatter.dateFormat = "MMM dd, yyyy"
-        
-        createdLbl.text = "\(formatter.stringFromDate(date))"
+        createdLbl.text = dateCreatd(song.created)
         
         lyricsTextView.text = song.lyrics
         lyricsTextView.font = UIFont(name: "Avenir-Book", size: 15)
@@ -43,6 +37,13 @@ class DetailVC: UIViewController {
         setupMenuButton()
         setupMenu()
         
+    }
+    
+    func dateCreatd(timestamp: String) -> String {
+        let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "MMM dd, yyyy"
+        return formatter.stringFromDate(date)
     }
     
     func setRating() {
@@ -82,26 +83,6 @@ class DetailVC: UIViewController {
     func showMenu() {
         actionSheet.show()
     }
-    
-    func showFavoriteAlert(favorite: Bool) {
-        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.mode = MBProgressHUDMode.CustomView
-        
-        var image: UIImage
-        
-        if favorite {
-            image = UIImage(named: "Checkmark")!
-            hud.labelText = "SPARAD"
-        } else {
-            image = UIImage(named: "DeleteNew")!
-            hud.labelText = "BORTTAGEN"
-        }
-        
-        hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        hud.customView = UIImageView(image: image)
-        hud.hide(true, afterDelay: 1.0)
-    }
-    
     
     func showGradedAlert() {
         let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
@@ -223,11 +204,11 @@ class DetailVC: UIViewController {
                 if self.song._favorite == "TRUE" {
                     self.song._favorite = "FALSE"
                     DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).removeValue()
-                    self.showFavoriteAlert(false)
+                    showFavoriteAlert(false, view: self.view)
                 } else {
                     self.song._favorite = "TRUE"
                     DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).setValue(true)
-                    self.showFavoriteAlert(true)
+                    showFavoriteAlert(true, view: self.view)
                 }
             }
             

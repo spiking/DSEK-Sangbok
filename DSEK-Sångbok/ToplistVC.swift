@@ -10,8 +10,9 @@ import UIKit
 import MBProgressHUD
 import Firebase
 import BRYXBanner
+import MGSwipeTableCell
 
-class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MGSwipeTableCellDelegate {
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -19,10 +20,9 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     
     private var inSearchMode = false
     private var filteredSongs = [Song]()
-    private var allSongs = realm.objects(Song.self).filter("_rating > 0")
+    private var toplistSongs = realm.objects(Song.self).filter("_rating > 0")
     private var refreshControl: UIRefreshControl!
     private var spinner = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-    private var downloader = Downloader()
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     var hud = MBProgressHUD()
@@ -58,7 +58,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         
         setupMenu()
         
-        self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
+        self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
         self.tableView.reloadData()
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ToplistVC.reloadTableData(_:)), name: "reloadToplist", object: nil)
@@ -68,7 +68,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
     func refresh(sender:AnyObject) {
         
         if isConnectedToNetwork() {
-            downloader.loadToplistFromFirebase()
+            Downloader.downloader.loadToplistFromFirebase()
         } else {
             self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
             refreshControl.endRefreshing()
@@ -79,7 +79,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         
         print("UPDATE!")
         
-        self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
+        self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
         self.tableView.reloadData()
         
         refreshControl.endRefreshing()
@@ -155,17 +155,17 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
-            self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_title")
+            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_title")
             self.tableView.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
-            self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_melodyTitle")
+            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_melodyTitle")
             self.tableView.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
-            self.allSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_created")
+            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_created")
             self.tableView.reloadData()
         }
         
@@ -191,7 +191,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
-            filteredSongs = allSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
+            filteredSongs = toplistSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
             
             tableView.reloadData()
         }
@@ -205,7 +205,7 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         if inSearchMode {
             song = filteredSongs[indexPath.row]
         } else {
-            song = allSongs[indexPath.row]
+            song = toplistSongs[indexPath.row]
         }
         
         self.performSegueWithIdentifier("detailVC", sender: song)
@@ -220,37 +220,87 @@ class ToplistVC: UIViewController,UITableViewDelegate, UITableViewDataSource, UI
         if inSearchMode {
             return filteredSongs.count
         } else {
-            return allSongs.count
+            return toplistSongs.count
         }
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func songForIndexpath(indexPath: NSIndexPath) -> Song {
+        return toplistSongs[indexPath.row]
+        
+    }
+    
+    func swipeTableCell(cell: MGSwipeTableCell!, swipeButtonsForDirection direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
+        
+        swipeSettings.transition = MGSwipeTransition.ClipCenter
+        swipeSettings.keepButtonsSwiped = false
+        expansionSettings.buttonIndex = 0
+        expansionSettings.threshold = 1.5
+        expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
+        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
+        expansionSettings.fillOnTrigger = true
+        expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+        
+        if direction == MGSwipeDirection.RightToLeft {
+            
+            let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
+                
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                
+                try! realm.write {
+                    
+                    if song.favorite == "TRUE" {
+                        song._favorite = "FALSE"
+                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
+                        showFavoriteAlert(false, view: self.view)
+                    } else {
+                        song._favorite = "TRUE"
+                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
+                        showFavoriteAlert(true, view: self.view)
+                    }
+                    
+                    self.tableView.reloadData()
+                }
+                
+                return true
+                
+            })
+            
+            return [addButton]
+        }
+        
+        return nil
+    }
+    
+    func swipeTableCell(cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
+        return true
+    }
+    
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
+    {
+        
         if let cell = tableView.dequeueReusableCellWithIdentifier("ToplistCell") as? ToplistCell {
             
-            let song: Song!
+            var song: Song
             
             if inSearchMode {
                 song = filteredSongs[indexPath.row]
             } else {
-                song = allSongs[indexPath.row]
+                song = toplistSongs[indexPath.row]
             }
             
+            cell.configureCell(song, number: indexPath.row)
             
-            let number = indexPath.row
-            
-            cell.configureCell(song, number: number)
+            cell.delegate = self
             
             let backgroundColorView = UIView()
             backgroundColorView.backgroundColor = UIColor.blackColor()
+            cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
             cell.selectedBackgroundView = backgroundColorView
             
             return cell
-            
         } else {
-            
-            return ToplistCell()
+            return SongCell()
         }
-        
     }
     
 }

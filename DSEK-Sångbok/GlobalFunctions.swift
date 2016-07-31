@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import MBProgressHUD
 
 func dateSincePosted(timestamp: String) -> String {
     let dateCreated = NSDate(timeIntervalSince1970: Double(timestamp)!)
@@ -53,4 +54,23 @@ func delay(delay:Double, closure:()->()) {
             Int64(delay * Double(NSEC_PER_SEC))
         ),
         dispatch_get_main_queue(), closure)
+}
+
+func showFavoriteAlert(favorite: Bool, view: UIView) {
+    hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
+    hud.mode = MBProgressHUDMode.CustomView
+    
+    var image: UIImage
+    
+    if favorite {
+        image = UIImage(named: "Checkmark")!
+        hud.labelText = "SPARAD"
+    } else {
+        image = UIImage(named: "DeleteNew")!
+        hud.labelText = "BORTTAGEN"
+    }
+    
+    hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
+    hud.customView = UIImageView(image: image)
+    hud.hide(true, afterDelay: 1.0)
 }
