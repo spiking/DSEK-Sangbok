@@ -8,6 +8,18 @@
 
 import Foundation
 import MBProgressHUD
+import Firebase
+
+func isUserAuthenticated() {
+    DataService.ds.REF_USERS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
+        
+        if snapshot.hasChild(getUserID()) {
+            print("Authenticated!")
+        } else {
+            print("Not Authenticated!")
+        }
+    }
+}
 
 func dateSincePosted(timestamp: String) -> String {
     let dateCreated = NSDate(timeIntervalSince1970: Double(timestamp)!)

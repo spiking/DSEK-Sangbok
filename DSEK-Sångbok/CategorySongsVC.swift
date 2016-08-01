@@ -9,8 +9,9 @@
 import UIKit
 import AHKActionSheet
 import MGSwipeTableCell
+import DZNEmptyDataSet
 
-class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MGSwipeTableCellDelegate {
+class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MGSwipeTableCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -33,6 +34,9 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
 
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.emptyDataSetDelegate = self
+        tableView.emptyDataSetSource = self
+        tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 70
         
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
@@ -174,12 +178,12 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
             song = categorySongs[indexPath.row]
         }
         
-        self.performSegueWithIdentifier("detailVC", sender: song)
+        self.performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
         
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "detailVC" {
+        if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
                 if let song = sender as? Song {
                     detailVC.song = song
@@ -263,6 +267,38 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         } else {
             return SongCell()
         }
+    }
+    
+    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = "Inga sånger"
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = ""
+        
+        if filteredSongs.count == 0 {
+            str = "Det finns inga sånger som matchar den angivna sökningen."
+        } else {
+            str = "Det finns i nuläget inga sånger som matchar den valda kategorin."
+        }
+        
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
+        var imgName = "EmptyDataSearch"
+        return UIImage(named: imgName)
+    }
+    
+    func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        return -70
+    }
+    
+    func emptyDataSetDidTapView(scrollView: UIScrollView!) {
+        dismisskeyboard()
     }
     
 }

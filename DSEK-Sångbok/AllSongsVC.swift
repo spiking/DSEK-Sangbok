@@ -11,11 +11,11 @@ import Realm
 import RealmSwift
 import MBProgressHUD
 import Firebase
-import BRYXBanner
 import GSMessages
 import MGSwipeTableCell
+import DZNEmptyDataSet
 
-class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MGSwipeTableCellDelegate {
+class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MGSwipeTableCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -27,6 +27,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     private var hud = MBProgressHUD()
     private var alert = false
     private var songCount = realm.objects(Song.self).count
+    private var isDownloading = false
     
     enum SORT_MODE: String {
         case TITEL = "TITEL"
@@ -36,7 +37,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -44,12 +44,15 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         tableView.delegate = self
         tableView.dataSource = self
-        searchBar.delegate = self
+        tableView.tableFooterView = UIView()
+        tableView.emptyDataSetSource = self
+        tableView.emptyDataSetDelegate = self
         
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
+        searchBar.delegate = self
         searchBar.keyboardAppearance = .Dark
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
@@ -63,64 +66,66 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: "reload", object: nil)
         
-        if NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) == nil {
-            authenticateUser()
-        }
-        
-        print("WAIT")
+        authenticateUser()
         
         delay(1) {
-            
-            print("GO!")
+            self.setupData()
+        }
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        inSearchMode = false
+        
+        saveSortMode()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        loadSortMode()
+    }
+    
+    func setupData() {
+        
+        if isConnectedToNetwork() {
             
             Downloader.downloader.toplistObserver()
             Downloader.downloader.observeNumberOfAvailableSong()
             
-            if realm.isEmpty && isConnectedToNetwork() {
+            if realm.objects(Song.self).isEmpty {
                 self.showDownloadIndicator()
                 Downloader.downloader.downloadSongsFromFirebase()
-            } else {
-                print("SETUP READY!")
+                self.isDownloading = true
             }
+            
         }
     }
     
     func authenticateUser() {
+        
         FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
             
             if error != nil {
                 print(error)
             }
             
-            let isAnonymous = user!.anonymous  // true
+            let isAnonymous = user!.anonymous
             let uid = user!.uid
             
-            print("First login")
+            print(uid)
             
             NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
-            let data = ["ACTIVE" : true]
-            DataService.ds.REF_USERS.child(uid).updateChildValues(data)
             
-            self.loadFavorites()
-        }
-    }
-    
-    func loadFavorites() {
-        DataService.ds.REF_USERS_CURRENT.child("favorites").observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
-            
-            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
-                for snap in snapshot {
-                    
-                    let song = realm.objectForPrimaryKey(Song.self, key: snap.key)
-                    
-                    if song != nil {
-                        
-                        try! realm.write() {
-                            song?._favorite = "TRUE"
-                            
-                        }
-                    }
+            DataService.ds.REF_USERS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
+                
+                if !snapshot.hasChild(getUserID()) {
+                    print("USER NOT IN FIREBASE")
+                    let data = ["ACTIVE" : true]
+                    DataService.ds.REF_USERS.child(getUserID()).updateChildValues(data)
+                } else {
+                    print("USER ALREADY IN FIREBASE")
                 }
+                
             }
         }
     }
@@ -201,19 +206,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         hud.customView = UIImageView(image: image)
         hud.square = true
         hud.hide(true, afterDelay: 1.0)
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        inSearchMode = false
-        print(self.mode)
-        
-        saveSortMode()
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        loadSortMode()
     }
     
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
@@ -312,12 +304,12 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             song = allSongs[indexPath.row]
         }
         
-        self.performSegueWithIdentifier("detailVC", sender: song)
+        self.performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
         
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "detailVC" {
+        if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
                 if let song = sender as? Song {
                     detailVC.song = song
@@ -341,7 +333,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func songForIndexpath(indexPath: NSIndexPath) -> Song {
         return allSongs[indexPath.row]
-        
     }
     
     func swipeTableCell(cell: MGSwipeTableCell!, swipeButtonsForDirection direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
@@ -388,8 +379,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         return true
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell
-    {
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
             
@@ -414,5 +404,68 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         } else {
             return SongCell()
         }
+    }
+    
+    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = "Inga sånger"
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
+        
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = ""
+        
+        if filteredSongs.count == 0 && !realm.objects(Song.self).isEmpty {
+            str = "Det finns inga sånger som matchar den angivna sökningen."
+        } else {
+            str = "Om sångerna inte hämtas automatiskt, klicka på ikonen nedanför."
+        }
+        
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
+        
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
+        
+        if !realm.objects(Song.self).isEmpty {
+            return UIImage(named: "EmptyDataSearch")
+        }
+        
+        return UIImage(named: "")
+    }
+    
+    func buttonImageForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> UIImage! {
+        
+        if realm.objects(Song.self).isEmpty {
+            return UIImage(named: "Download")
+        }
+        
+        return UIImage(named: "")
+        
+    }
+    
+    func emptyDataSetDidTapButton(scrollView: UIScrollView!) {
+        
+        if !isDownloading {
+            if isConnectedToNetwork() {
+                authenticateUser()
+                setupData()
+            } else {
+                self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+            }
+            
+        } else {
+            print("ALREADY DOWNLOADING")
+        }
+    }
+    
+    func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        return -70
+    }
+    
+    func emptyDataSetDidTapView(scrollView: UIScrollView!) {
+        dismisskeyboard()
     }
 }

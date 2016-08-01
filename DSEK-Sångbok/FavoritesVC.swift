@@ -42,6 +42,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         tableView.dataSource = self
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
+        tableView.tableFooterView = UIView()
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
@@ -68,10 +69,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         loadSortMode()
-        
-        if favoriteSongs.count == 0 {
-            self.tableView.tableFooterView = UIView()
-        }
     }
     
     func saveSortMode() {
@@ -151,7 +148,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "detailVC" {
+        if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
                 if let song = sender as? Song {
                     detailVC.song = song
@@ -212,7 +209,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             song = favoriteSongs[indexPath.row]
         }
         
-        self.performSegueWithIdentifier("detailVC", sender: song)
+        self.performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -256,10 +253,12 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
                         song._favorite = "FALSE"
                         DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
                         showFavoriteAlert(false, view: self.view)
+                        self.realoadData()
                     } else {
                         song._favorite = "TRUE"
                         DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
                         showFavoriteAlert(true, view: self.view)
+                        self.realoadData()
                     }
                 }
                 
@@ -313,15 +312,36 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = "För att lägga till en favoritsång, swipa sången till vänster. "
-
+        var str = ""
+        
+        if filteredSongs.count == 0 {
+            str = "Det finns inga sånger som matchar den angivna sökningen."
+        } else {
+            str = "För att lägga till en favoritsång, swipa sången till vänster."
+        }
+        
         let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
         return NSAttributedString(string: str, attributes: attrs)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        var imgName = "StarFilled"
+        var imgName = ""
+        
+        if filteredSongs.count == 0 && favoriteSongs.count != 0 {
+            imgName = "EmptyDataSearch"
+        } else {
+            imgName = "EmptyDataStar"
+        }
+        
         return UIImage(named: imgName)
+    }
+    
+    func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        return -70
+    }
+    
+    func emptyDataSetDidTapView(scrollView: UIScrollView!) {
+        dismisskeyboard()
     }
     
 }

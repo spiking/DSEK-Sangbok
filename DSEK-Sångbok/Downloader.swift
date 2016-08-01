@@ -20,7 +20,6 @@ class Downloader {
     
     var availableSongs: Int {
         get {
-            
              return _availableSongs - realm.objects(Song.self).count
         }
         set {
@@ -45,7 +44,7 @@ class Downloader {
                             count += 1
                             
                             if count == 927 {
-                                self.observeNumberOfAvailableSong()
+                                self.loadFavorites()
                                 NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
                                 NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
                                 return
@@ -81,10 +80,31 @@ class Downloader {
                 }
             }
             
+            self.loadFavorites()
             self.observeNumberOfAvailableSong()
             
             NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
             NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
+        }
+    }
+    
+    func loadFavorites() {
+        DataService.ds.REF_USERS_CURRENT.child("favorites").observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
+            
+            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+                for snap in snapshot {
+                    
+                    let song = realm.objectForPrimaryKey(Song.self, key: snap.key)
+                    
+                    if song != nil {
+                        
+                        try! realm.write() {
+                            song?._favorite = "TRUE"
+                            
+                        }
+                    }
+                }
+            }
         }
     }
     
@@ -159,7 +179,7 @@ class Downloader {
             }
             
             print("OBSERVE = \(self._availableSongs)")
-            NSNotificationCenter.defaultCenter().postNotificationName("updateAvailableSongCount", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
         }
     }
     
@@ -169,8 +189,6 @@ class Downloader {
         let urlStr = "http://www.dsek.se/arkiv/sanger/api.php?showAll"
         
         let url = NSURL(string: urlStr)!
-        
-        var newSongs = [Song]()
         
         _availableSongs = 0
         
@@ -198,9 +216,9 @@ class Downloader {
                             song._melodyTitle = "Okänd"
                         }
                         
-                        self._availableSongs += 1
-                        
                         let realm = try! Realm()
+                        
+                        // New song
                         
                         let newSong = realm.objectForPrimaryKey(Song.self, key: key)
                         
@@ -208,12 +226,29 @@ class Downloader {
                             print("EXIST!")
                         } else {
                             print("DOES NOT EXIST!")
-                            newSongs.append(song)
                             self.saveNewSongToFirebase(key, song: value as! Dictionary<String, AnyObject>)
                             try! realm.write() {
                                 realm.add(song, update: true)
                             }
                         }
+                        
+                        // New category
+                        
+                        let category = Category()
+                        category._name = categoryTitle
+                        
+                        let newCategory = realm.objectForPrimaryKey(Category.self, key: categoryTitle)
+                        
+                        if newCategory != nil {
+                            print("Category exists!")
+                        } else {
+                            print("New category!")
+                            try! realm.write() {
+                                realm.add(category, update: true)
+                            }
+                        }
+                        
+                        self._availableSongs += 1
                     }
                 }
             }
@@ -231,6 +266,7 @@ class Downloader {
         DataService.ds.REF_SONGS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
             if !snapshot.hasChild(key) {
+                print("Add new song to firebase!")
                 DataService.ds.REF_SONGS.child(key).setValue(song)
                 DataService.ds.REF_SONGS.child(key).child("rating").setValue(0.0)
                 DataService.ds.REF_SONGS.child(key).child("nbr_of_votes").setValue(0)

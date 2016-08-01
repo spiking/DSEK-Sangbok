@@ -7,8 +7,9 @@
 //
 
 import UIKit
+import DZNEmptyDataSet
 
-class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -22,7 +23,10 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.emptyDataSetSource = self
+        tableView.emptyDataSetDelegate = self
         tableView.estimatedRowHeight = 70
+        tableView.tableFooterView = UIView()
         tableView.registerNib(UINib(nibName: "CategoryCell", bundle: nil), forCellReuseIdentifier: "CategoryCell")
         
         searchBar.delegate = self
@@ -107,6 +111,8 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         tableView.reloadData()
     }
+    
+    
 
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -127,5 +133,37 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         } else {
             return CategoryCell()
         }
+    }
+    
+    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = "Inga kategorier"
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+        var str = ""
+        
+        if filteredCategories.count == 0 {
+            str = "Det finns inga kategorier som matchar den angivna sökningen."
+        } else {
+            str = "Det finns i nuläget inga kategorier."
+        }
+        
+        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
+        return NSAttributedString(string: str, attributes: attrs)
+    }
+    
+    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
+        var imgName = "EmptyDataStar"
+        return UIImage(named: imgName)
+    }
+    
+    func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        return -70
+    }
+    
+    func emptyDataSetDidTapView(scrollView: UIScrollView!) {
+        dismisskeyboard()
     }
 }

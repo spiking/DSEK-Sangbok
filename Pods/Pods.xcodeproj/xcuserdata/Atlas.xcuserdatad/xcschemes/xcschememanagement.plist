@@ -14,16 +14,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>BRYXBanner-BRYXBanner.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>BRYXBanner.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>DZNEmptyDataSet.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -44,11 +34,6 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>PageMenu.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>Pods-DSEK-Sångbok.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -58,11 +43,6 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>16FB872D0D2D4BA0F378AB34D47CF95F</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>21C461B0CAD90DE64B07A5D212C5F829</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -77,12 +57,12 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>75AEEEFD7E431013E8E60009251D5797</key>
+		<key>79C040AFDDCE1BCBF6D8B5EB0B85887F</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>79C040AFDDCE1BCBF6D8B5EB0B85887F</key>
+		<key>95C36ABA5C02270B96790F048C2BABCE</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -92,17 +72,7 @@
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E45C60E65DC7B25E659C0A735F907FC7</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
 		<key>E61CE3B6DFA1FE6B3E296965C76C0E10</key>
-		<dict>
-			<key>primary</key>
-			<true/>
-		</dict>
-		<key>F61EF50AB0AEFFEB9BBCC884E5B1FBC6</key>
 		<dict>
 			<key>primary</key>
 			<true/>
