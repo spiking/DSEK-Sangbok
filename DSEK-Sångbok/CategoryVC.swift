@@ -8,14 +8,15 @@
 
 import UIKit
 import DZNEmptyDataSet
+import CoreData
 
 class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     
-    private var categories = realm.objects(Category.self).sorted("_name")
-    private var filteredCategories = [Category]()
+    private var categories = allCategories
+    private var filteredCategories = [String]()
     private var inSearchMode = false
 
     override func viewDidLoad() {
@@ -34,6 +35,9 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         navigationItem.title = "KATEGORIER"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
+        
+        categories = allCategories
+    
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -45,7 +49,7 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         super.viewWillDisappear(animated)
         inSearchMode = false
     }
-
+    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
@@ -67,7 +71,7 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         dismisskeyboard()
         
-        let category: Category!
+        let category: String!
         
         if inSearchMode {
             category = filteredCategories[indexPath.row]
@@ -75,10 +79,7 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             category = categories[indexPath.row]
         }
         
-        print(category.name)
-        
-        self.performSegueWithIdentifier("categorySongsVC", sender: category.name)
-        
+        self.performSegueWithIdentifier("categorySongsVC", sender: category)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -106,24 +107,27 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
-            filteredCategories = categories.filter({ $0.name.lowercaseString.rangeOfString(lower) != nil })
+            filteredCategories = categories.filter({ $0.lowercaseString.rangeOfString(lower) != nil })
         }
         
         tableView.reloadData()
     }
     
-    
-
-    
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCellWithIdentifier("CategoryCell") as? CategoryCell {
             
-            let category = categories[indexPath.row]
+            var category: String
             
-            print(category.name)
+            if inSearchMode {
+                category = filteredCategories[indexPath.row]
+            } else {
+                category = categories[indexPath.row]
+            }
             
-            cell.configureCell(category.name)
+            print(category)
+            
+            cell.configureCell(category)
             
             let backgroundColorView = UIView()
             backgroundColorView.backgroundColor = UIColor.blackColor()

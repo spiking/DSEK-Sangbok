@@ -25,70 +25,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
-            landmarkName = "addRatingToFirebase(_:)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSEK_Sa_ngbok.DetailVC.(addRatingToFirebase (Swift.Int) -&gt; ()).(closure #1)"
-                  moduleName = "DSEK-Sa&#x30a;ngbok"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
-                  timestampString = "491486511.037513"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "138"
-                  endingLineNumber = "138"
-                  offsetFromSymbolStart = "468">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSEK_Sa_ngbok.DetailVC.(addRatingToFirebase (Swift.Int) -&gt; ()).(closure #1)"
-                  moduleName = "DSEK-Sa&#x30a;ngbok"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
-                  timestampString = "491486511.037655"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "138"
-                  endingLineNumber = "138"
-                  offsetFromSymbolStart = "1028">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "113"
-            endingLineNumber = "113"
-            landmarkName = "addRatingToFirebase(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/ViewController.swift"
             timestampString = "491508619.28968"
             startingColumnNumber = "9223372036854775807"
@@ -106,7 +42,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/FavoritesVC.swift"
-            timestampString = "491672904.477203"
+            timestampString = "491938304.14227"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "41"
@@ -127,54 +63,6 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "100"
             endingLineNumber = "100"
-            landmarkName = "addRatingToFirebase(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
-            landmarkName = "addRatingToFirebase(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
-            landmarkName = "addRatingToFirebase(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "109"
-            endingLineNumber = "109"
             landmarkName = "addRatingToFirebase(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -233,140 +121,12 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "55"
-            endingLineNumber = "55"
-            landmarkName = "setRating()"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSEK_Sa_ngbok.DetailVC.(setRating () -&gt; ()).(closure #1)"
-                  moduleName = "DSEK-Sa&#x30a;ngbok"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
-                  timestampString = "491488951.809291"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "54"
-                  endingLineNumber = "54"
-                  offsetFromSymbolStart = "36">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSEK_Sa_ngbok.DetailVC.(setRating () -&gt; ()).(closure #1)"
-                  moduleName = "DSEK-Sa&#x30a;ngbok"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
-                  timestampString = "491488951.809435"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "54"
-                  endingLineNumber = "54"
-                  offsetFromSymbolStart = "420">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
-            landmarkName = "setRating()"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSEK_Sa_ngbok.DetailVC.(setRating () -&gt; ()).(closure #1)"
-                  moduleName = "DSEK-Sa&#x30a;ngbok"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
-                  timestampString = "491488951.811081"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56"
-                  offsetFromSymbolStart = "432">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DSEK_Sa_ngbok.DetailVC.(setRating () -&gt; ()).(closure #1)"
-                  moduleName = "DSEK-Sa&#x30a;ngbok"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
-                  timestampString = "491488951.811217"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "56"
-                  endingLineNumber = "56"
-                  offsetFromSymbolStart = "792">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
-            timestampString = "491672786.518132"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
-            landmarkName = "setRating()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/CategorySongsVC.swift"
-            timestampString = "491747238.7151"
+            timestampString = "491933603.068275"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "154"
-            endingLineNumber = "154"
-            landmarkName = "searchBar(_:textDidChange:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DSEK-Sa&#x30a;ngbok/CategoryVC.swift"
-            timestampString = "491747238.7151"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "103"
-            endingLineNumber = "103"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
             landmarkName = "searchBar(_:textDidChange:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -378,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
-            timestampString = "491762933.11017"
+            timestampString = "491938304.14227"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "163"
-            endingLineNumber = "163"
+            startingLineNumber = "286"
+            endingLineNumber = "286"
             landmarkName = "observeNumberOfAvailableSong()"
             landmarkType = "5">
          </BreakpointContent>
@@ -394,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
-            timestampString = "491762933.11017"
+            timestampString = "491938304.14227"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "179"
-            endingLineNumber = "179"
+            startingLineNumber = "302"
+            endingLineNumber = "302"
             landmarkName = "observeNumberOfAvailableSong()"
             landmarkType = "5">
          </BreakpointContent>
@@ -406,15 +166,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
-            timestampString = "491762933.11017"
+            timestampString = "491938304.14227"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "182"
-            endingLineNumber = "182"
+            startingLineNumber = "305"
+            endingLineNumber = "305"
             landmarkName = "observeNumberOfAvailableSong()"
             landmarkType = "5">
          </BreakpointContent>
@@ -422,15 +182,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
-            timestampString = "491762933.11017"
+            timestampString = "491938304.14227"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "181"
-            endingLineNumber = "181"
+            startingLineNumber = "304"
+            endingLineNumber = "304"
             landmarkName = "observeNumberOfAvailableSong()"
             landmarkType = "5">
          </BreakpointContent>
@@ -442,12 +202,460 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "DSEK-Sa&#x30a;ngbok/DownloadVC.swift"
-            timestampString = "491742203.59013"
+            timestampString = "491938304.14227"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
             landmarkName = "updateSongCount(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
+            landmarkName = "observeNumberOfAvailableSong()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "231"
+            endingLineNumber = "231"
+            landmarkName = "loadToplistFromFirebase()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "287"
+            endingLineNumber = "287"
+            landmarkName = "observeNumberOfAvailableSong()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
+            landmarkName = "downloadSongsFromFirebase()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "339"
+            endingLineNumber = "339"
+            landmarkName = "downloadNewSongs()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "22"
+            endingLineNumber = "22"
+            landmarkName = "Downloader"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/DownloadVC.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/FavoritesVC.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
+            landmarkName = "loadSortMode()"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "DSEK_Sa_ngbok.FavoritesVC.loadSortMode () -&gt; ()"
+                  moduleName = "DSEK-Sa&#x30a;ngbok"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/FavoritesVC.swift"
+                  timestampString = "491938682.044263"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "103"
+                  endingLineNumber = "103"
+                  offsetFromSymbolStart = "20">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "DSEK_Sa_ngbok.FavoritesVC.loadSortMode () -&gt; ()"
+                  moduleName = "DSEK-Sa&#x30a;ngbok"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/FavoritesVC.swift"
+                  timestampString = "491938682.044384"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "103"
+                  endingLineNumber = "103"
+                  offsetFromSymbolStart = "528">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/FavoritesVC.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "98"
+            endingLineNumber = "98"
+            landmarkName = "saveSortMode()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "202"
+            endingLineNumber = "202"
+            landmarkName = "toplistObserver()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/ToplistVC.swift"
+            timestampString = "491934433.03145"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
+            landmarkName = "setupResult()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/ToplistVC.swift"
+            timestampString = "491934435.596426"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "105"
+            endingLineNumber = "105"
+            landmarkName = "reloadTableData(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "248"
+            endingLineNumber = "248"
+            landmarkName = "loadToplistFromFirebase()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
+            timestampString = "491935372.776557"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
+            landmarkName = "addRatingToFirebase(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
+            timestampString = "491935595.683677"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "131"
+            endingLineNumber = "131"
+            landmarkName = "addRatingToFirebase(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
+            timestampString = "491935599.115196"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "136"
+            endingLineNumber = "136"
+            landmarkName = "addRatingToFirebase(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
+            timestampString = "491935728.197315"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
+            landmarkName = "addRatingToFirebase(_:)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "DSEK_Sa_ngbok.DetailVC.(addRatingToFirebase (Swift.Int) -&gt; ()).(closure #1)"
+                  moduleName = "DSEK-Sa&#x30a;ngbok"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
+                  timestampString = "491938682.051378"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "117"
+                  endingLineNumber = "117"
+                  offsetFromSymbolStart = "468">
+               </Location>
+               <Location
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "DSEK_Sa_ngbok.DetailVC.(addRatingToFirebase (Swift.Int) -&gt; ()).(closure #1)"
+                  moduleName = "DSEK-Sa&#x30a;ngbok"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/Atlas/Documents/UdemyXcodeProjects/DSEK-Sa%CC%8Angbok/DSEK-Sa%CC%8Angbok/DetailVC.swift"
+                  timestampString = "491938682.051497"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "117"
+                  endingLineNumber = "117"
+                  offsetFromSymbolStart = "1028">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/DetailVC.swift"
+            timestampString = "491935801.648623"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "113"
+            endingLineNumber = "113"
+            landmarkName = "addRatingToFirebase(_:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/Downloader.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
+            landmarkName = "loadFavorites()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/CategoryVC.swift"
+            timestampString = "491937484.653833"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "72"
+            endingLineNumber = "72"
+            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/CategoryVC.swift"
+            timestampString = "491937500.685003"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
+            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/FavoritesVC.swift"
+            timestampString = "491938304.14227"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "setupResult()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/FavoritesVC.swift"
+            timestampString = "491938607.100337"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "279"
+            endingLineNumber = "279"
+            landmarkName = "swipeTableCell(_:swipeButtonsForDirection:swipeSettings:expansionSettings:)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DSEK-Sa&#x30a;ngbok/FavoritesVC.swift"
+            timestampString = "491938608.337743"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "299"
+            endingLineNumber = "299"
+            landmarkName = "swipeTableCell(_:swipeButtonsForDirection:swipeSettings:expansionSettings:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

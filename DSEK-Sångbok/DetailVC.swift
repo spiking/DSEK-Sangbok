@@ -12,7 +12,7 @@ import Firebase
 
 class DetailVC: UIViewController {
     
-    var song: Song!
+    var song: SongModel!
     var actionSheet = AHKActionSheet(title: "BETYGSÄTT SONG")
     
     @IBOutlet weak var titleLbl: UILabel!
@@ -27,7 +27,7 @@ class DetailVC: UIViewController {
         title = song.title
         titleLbl.text = song.title
         melodyTitleLbl.text = song.melodyTitle
-        createdLbl.text = dateCreatd(song.created)
+        createdLbl.text = dateCreatd(song.created!)
         
         lyricsTextView.text = song.lyrics
         lyricsTextView.font = UIFont(name: "Avenir-Book", size: 15)
@@ -50,7 +50,7 @@ class DetailVC: UIViewController {
         
         var rating: Double = 0
         
-        DataService.ds.REF_SONGS.child(self.song.key).observeEventType(.Value) { (snapshot: FIRDataSnapshot) in
+        DataService.ds.REF_SONGS.child(self.song.key!).observeEventType(.Value) { (snapshot: FIRDataSnapshot) in
             
             if let nbrOfVotes = snapshot.childSnapshotForPath("nbr_of_votes").value as? Int {
                 
@@ -60,7 +60,7 @@ class DetailVC: UIViewController {
                         
                         rating = Double(totalRatings) / Double(nbrOfVotes)
                         
-                        DataService.ds.REF_SONGS.child(self.song.key).child("rating").setValue(rating)
+                        DataService.ds.REF_SONGS.child(self.song.key!).child("rating").setValue(rating)
                         
                         self.ratingLbl.text = "\(rating)"
                     } else {
@@ -99,14 +99,14 @@ class DetailVC: UIViewController {
         
         let user_votes_ref = DataService.ds.REF_USERS_CURRENT.child("votes")
         
-        user_votes_ref.child(self.song.key).setValue(rating)
+        user_votes_ref.child(self.song.key!).setValue(rating)
         
 //        DataService.ds.REF_USERS_CURRENT.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
 //            
 //            
 //        }
         
-        let song_ref = DataService.ds.REF_SONGS.child(self.song.key)
+        let song_ref = DataService.ds.REF_SONGS.child(self.song.key!)
 
         song_ref.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
@@ -119,8 +119,10 @@ class DetailVC: UIViewController {
                     let difference = rating - oldRating
                     
                     if var totalRatings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
-                        totalRatings += difference
-                        song_ref.child("total_ratings").setValue(totalRatings)
+                        if totalRatings + difference >= 0 {
+                            totalRatings += difference
+                            song_ref.child("total_ratings").setValue(totalRatings)
+                        }
                     }
                 }
                 
@@ -199,18 +201,18 @@ class DetailVC: UIViewController {
         
         actionSheet.addButtonWithTitle("Favorit", image: UIImage(named: "Checkmark"), type: .Default) { (actionSheet) in
             
-            try! realm.write {
-                
-                if self.song._favorite == "TRUE" {
-                    self.song._favorite = "FALSE"
-                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).removeValue()
-                    showFavoriteAlert(false, view: self.view)
-                } else {
-                    self.song._favorite = "TRUE"
-                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).setValue(true)
-                    showFavoriteAlert(true, view: self.view)
-                }
-            }
+//            try! realm.write {
+//                
+//                if self.song._favorite == "TRUE" {
+//                    self.song._favorite = "FALSE"
+//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).removeValue()
+//                    showFavoriteAlert(false, view: self.view)
+//                } else {
+//                    self.song._favorite = "TRUE"
+//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).setValue(true)
+//                    showFavoriteAlert(true, view: self.view)
+//                }
+//            }
             
             
         }

@@ -11,6 +11,7 @@ import MBProgressHUD
 import Firebase
 import MGSwipeTableCell
 import DZNEmptyDataSet
+import CoreData
 
 class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MGSwipeTableCellDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
@@ -19,8 +20,8 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     var parentNavigationController : UINavigationController?
     
     private var inSearchMode = false
-    private var filteredSongs = [Song]()
-    private var toplistSongs = realm.objects(Song.self).filter("_rating > 0")
+    private var filteredSongs = [SongModel]()
+    private var toplistSongs = allSongs
     private var refreshControl: UIRefreshControl!
     private var spinner = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
     
@@ -61,11 +62,32 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         
         setupMenu()
         
-        self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
-        self.tableView.reloadData()
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ToplistVC.reloadTableData(_:)), name: "reloadToplist", object: nil)
         
+        setupResult()
+        
+    }
+    
+    func setupResult() {
+        
+        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = app.managedObjectContext
+        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        
+        let rating = 0.0
+        let predicate = NSPredicate(format: "rating != \(rating)", rating)
+        fetchRequest.predicate = predicate
+        
+        do {
+            let results = try context.executeFetchRequest(fetchRequest)
+            toplistSongs = results as! [SongModel]
+            toplistSongs = self.toplistSongs.sort({Double($0.rating!) > Double($1.rating!)})
+        
+            self.tableView.reloadData()
+            
+        } catch let err as NSError {
+            print(err.debugDescription)
+        }
     }
     
     func refresh(sender:AnyObject) {
@@ -82,8 +104,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         
         print("UPDATE!")
         
-        self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_rating", ascending:  false)
-        self.tableView.reloadData()
+        setupResult() 
         
         refreshControl.endRefreshing()
     }
@@ -128,7 +149,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
-                if let song = sender as? Song {
+                if let song = sender as? SongModel {
                     detailVC.song = song
                 }
             }
@@ -159,17 +180,17 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
-            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_title")
+//            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_title")
             self.tableView.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
-            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_melodyTitle")
+//            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_melodyTitle")
             self.tableView.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
-            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_created")
+//            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_created")
             self.tableView.reloadData()
         }
         
@@ -195,8 +216,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
-            filteredSongs = toplistSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
-            
+            filteredSongs = toplistSongs.filter({ $0.title!.lowercaseString.rangeOfString(lower) != nil })
             tableView.reloadData()
         }
     }
@@ -204,7 +224,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let song: Song!
+        let song: SongModel!
         
         if inSearchMode {
             song = filteredSongs[indexPath.row]
@@ -228,7 +248,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         }
     }
     
-    func songForIndexpath(indexPath: NSIndexPath) -> Song {
+    func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
         return toplistSongs[indexPath.row]
         
     }
@@ -250,20 +270,20 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 
                 let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
-                try! realm.write {
-                    
-                    if song.favorite == "TRUE" {
-                        song._favorite = "FALSE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
-                        showFavoriteAlert(false, view: self.view)
-                    } else {
-                        song._favorite = "TRUE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
-                        showFavoriteAlert(true, view: self.view)
-                    }
-                    
-                    self.tableView.reloadData()
-                }
+//                try! realm.write {
+//                    
+//                    if song.favorite == "TRUE" {
+//                        song._favorite = "FALSE"
+//                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
+//                        showFavoriteAlert(false, view: self.view)
+//                    } else {
+//                        song._favorite = "TRUE"
+//                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
+//                        showFavoriteAlert(true, view: self.view)
+//                    }
+//                    
+//                    self.tableView.reloadData()
+//                }
                 
                 return true
                 
@@ -284,7 +304,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         
         if let cell = tableView.dequeueReusableCellWithIdentifier("ToplistCell") as? ToplistCell {
             
-            var song: Song
+            var song: SongModel
             
             if inSearchMode {
                 song = filteredSongs[indexPath.row]

@@ -16,7 +16,7 @@ class ToplistCell: MGSwipeTableCell {
     @IBOutlet weak var yearLbl: UILabel!
     @IBOutlet weak var ratingLbl: UILabel!
     
-    private var _song: Song!
+    private var _song: SongModel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -30,17 +30,19 @@ class ToplistCell: MGSwipeTableCell {
         return formatter.stringFromDate(date)
     }
     
-    func configureCell(song: Song, number: Int) {
+    func configureCell(song: SongModel, number: Int) {
         
         self._song = song
         self.songLbl.text = song.title
         self.numberLbl.text = "\(number + 1)."
-        self.yearLbl.text = dateCreated(song.created)
+        self.yearLbl.text = dateCreated(song.created!)
 
         if song.rating == 0.0 {
             self.ratingLbl.text = "-"
         } else {
-            self.ratingLbl.text = "\(song.rating)"
+            if let rating = song.rating as? Double {
+                self.ratingLbl.text = "\(rating)"
+            }
         }
         
     }

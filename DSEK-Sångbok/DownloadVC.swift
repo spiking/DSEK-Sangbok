@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import Realm
-import RealmSwift
 import MBProgressHUD
 import Alamofire
 import Firebase
@@ -17,7 +15,6 @@ class DownloadVC: UIViewController {
     
     @IBOutlet weak var downloadBtn: UIButton!
     @IBOutlet weak var songCountLbl: UILabel!
-    private var downloadedSongs = [Song]()
     private var songCountBefore = 0
     private var hud = MBProgressHUD()
     
@@ -49,7 +46,7 @@ class DownloadVC: UIViewController {
         }
         
         showDownloadIndicator()
-        songCountBefore = realm.objects(Song.self).count
+        songCountBefore = allSongs.count
         Downloader.downloader.downloadNewSongs()
     }
     
@@ -70,11 +67,11 @@ class DownloadVC: UIViewController {
         
         hud.hide(true, afterDelay: 0)
         
-        if songCountBefore != realm.objects(Song.self).count {
-            let newSongs = realm.objects(Song.self).count - songCountBefore
+        if songCountBefore != allSongs.count {
+            let newSongs = allSongs.count - songCountBefore
             self.showMessage("Hämtade \(newSongs) nya sånger.", type: .Success , options: nil)
         } else {
-            self.showMessage("Alla sånger är redan hämtade.", type: .Success , options: nil)
+            self.showMessage("Alla sånger har redan hämtats.", type: .Success , options: nil)
         }
     }
 }

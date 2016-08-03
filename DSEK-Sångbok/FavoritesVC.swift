@@ -11,9 +11,9 @@ import AHKActionSheet
 import DZNEmptyDataSet
 import MGSwipeTableCell
 import MBProgressHUD
+import CoreData
 
 class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate, MGSwipeTableCellDelegate {
-
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
@@ -23,8 +23,8 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     var hud = MBProgressHUD()
     
     private var inSearchMode = false
-    private var filteredSongs = [Song]()
-    private var favoriteSongs = realm.objects(Song.self).filter("_favorite = 'TRUE'")
+    private var filteredSongs = [SongModel]()
+    private var favoriteSongs = allSongs
     private var mode = SORT_MODE.TITEL
     
     enum SORT_MODE: String {
@@ -58,6 +58,8 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         setupMenu()
         
         loadSortMode()
+        
+        setupResult()
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -69,7 +71,28 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         loadSortMode()
+        setupResult()
     }
+    
+    func setupResult() {
+        
+        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = app.managedObjectContext
+        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        
+        let favorite = true
+        let predicate = NSPredicate(format: "favorite = %@", favorite)
+        fetchRequest.predicate = predicate
+        
+        do {
+            let results = try context.executeFetchRequest(fetchRequest)
+            favoriteSongs = results as! [SongModel]
+            loadSortMode()
+        } catch let err as NSError {
+            print(err.debugDescription)
+        }
+    }
+    
     
     func saveSortMode() {
         NSUserDefaults.standardUserDefaults().setValue("\(self.mode)", forKey: "SORT_MODE_FAV")
@@ -91,9 +114,8 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             }
         }
         
-        self.realoadData()
+        self.reloadData()
     }
-    
     
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
         dismisskeyboard()
@@ -105,7 +127,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         
         inSearchMode = false
         self.searchBar.text = ""
-        self.realoadData()
+        self.reloadData()
     }
     
     func setupMenu() {
@@ -133,41 +155,48 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
             self.mode = .TITEL
-            self.realoadData()
+            self.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
             self.mode = .MELODI
-            self.realoadData()
+            self.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
             self.mode = .SKAPAD
-            self.realoadData()
+            self.reloadData()
         }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
-                if let song = sender as? Song {
+                if let song = sender as? SongModel {
                     detailVC.song = song
                 }
             }
         }
     }
     
-    func realoadData() {
+    func reloadData() {
+        
+        let swedish = NSLocale(localeIdentifier: "sv")
         
         switch self.mode {
         case .TITEL:
-            self.favoriteSongs = self.favoriteSongs.sorted("_title")
+            favoriteSongs = favoriteSongs.sort {
+                $0.title!.compare($1.title!, locale: swedish) == .OrderedAscending
+            }
+            
             self.tableView.reloadData()
         case .MELODI:
-            self.favoriteSongs = self.favoriteSongs.sorted("_melodyTitle")
+            favoriteSongs = favoriteSongs.sort {
+                $0.melodyTitle!.compare($1.melodyTitle!, locale: swedish) == .OrderedAscending
+            }
             self.tableView.reloadData()
         case .SKAPAD:
-            self.favoriteSongs = self.favoriteSongs.sorted("_created")
+            favoriteSongs = favoriteSongs.sort({$0.created < $1.created})
             self.tableView.reloadData()
         default:
             print("Default")
@@ -192,7 +221,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
-            filteredSongs = favoriteSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
+            filteredSongs = favoriteSongs.filter({ $0.title!.lowercaseString.rangeOfString(lower) != nil })
             
             tableView.reloadData()
         }
@@ -201,7 +230,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        let song: Song!
+        let song: SongModel!
         
         if inSearchMode {
             song = filteredSongs[indexPath.row]
@@ -225,7 +254,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         }
     }
     
-    func songForIndexpath(indexPath: NSIndexPath) -> Song {
+    func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
         return favoriteSongs[indexPath.row]
         
     }
@@ -245,22 +274,29 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
-                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                var song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
-                try! realm.write {
-                    
-                    if song.favorite == "TRUE" {
-                        song._favorite = "FALSE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
-                        showFavoriteAlert(false, view: self.view)
-                        self.realoadData()
-                    } else {
-                        song._favorite = "TRUE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
-                        showFavoriteAlert(true, view: self.view)
-                        self.realoadData()
-                    }
+                if song.favorite == true {
+                    print("Already favorite")
+                    showFavoriteAlert(false, view: self.view)
+                    song.setValue(false, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+                } else {
+                    print("Add to favorite")
+                    showFavoriteAlert(true, view: self.view)
+                    song.setValue(true, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
                 }
+                
+                do {
+                    try song.managedObjectContext?.save()
+                    print("Save \(song.title) as favorite!")
+                } catch {
+                    let saveError = error as NSError
+                    print(saveError)
+                }
+                
+                self.setupResult()
                 
                 return true
                 
@@ -281,7 +317,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         
         if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
             
-            var song: Song
+            var song: SongModel
             
             if inSearchMode {
                 song = filteredSongs[indexPath.row]

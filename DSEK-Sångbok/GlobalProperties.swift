@@ -15,3 +15,5 @@ var realm = try! Realm()
 var iPhoneType = ""
 var hud = MBProgressHUD()
 var isDownloadingSetupData = true
+var allSongs = [SongModel]()
+var allCategories = [String]()

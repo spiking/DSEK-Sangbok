@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="10174" systemVersion="15G31" minimumToolsVersion="Xcode 7.0">
+    <entity name="SongModel" representedClassName=".Song" syncable="YES">
+        <attribute name="categoryTitle" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="created" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="favorite" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="key" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="lyrics" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="melodyTitle" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="rating" optional="YES" attributeType="Double" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="SongModel" positionX="-54" positionY="-9" width="128" height="165"/>
+    </elements>
+</model>

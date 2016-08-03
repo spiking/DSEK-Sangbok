@@ -17,8 +17,8 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     @IBOutlet weak var tableView: UITableView!
     
     var category = ""
-    private var categorySongs = realm.objects(Song.self)
-    private var filteredSongs = [Song]()
+    private var categorySongs = allSongs
+    private var filteredSongs = [SongModel]()
     private var inSearchMode = false
     private var actionSheet = AHKActionSheet()
     private var mode = SORT_MODE.TITEL
@@ -47,7 +47,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
         
-        categorySongs = realm.objects(Song.self).filter("_categoryTitle = '\(category)'")
+        categorySongs = allSongs
         
         searchBar.keyboardAppearance = .Dark
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
@@ -101,31 +101,39 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
             self.mode = .TITEL
-            self.realoadData()
+            self.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
             self.mode = .MELODI
-            self.realoadData()
+            self.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Senast Tillagd", type: .Default) { (actionSheet) in
             self.mode = .SKAPAD
-            self.realoadData()
+            self.reloadData()
         }
     }
     
-    func realoadData() {
+    func reloadData() {
+        
+        let swedish = NSLocale(localeIdentifier: "sv")
         
         switch self.mode {
         case .TITEL:
-            self.categorySongs = realm.objects(Song.self).filter("_categoryTitle = '\(category)'").sorted("_title")
+            
+            categorySongs = categorySongs.sort {
+                $0.title!.compare($1.title!, locale: swedish) == .OrderedAscending
+            }
+            
             self.tableView.reloadData()
         case .MELODI:
-            self.categorySongs = realm.objects(Song.self).filter("_categoryTitle = '\(category)'").sorted("_melodyTitle")
+            categorySongs = categorySongs.sort {
+                $0.melodyTitle!.compare($1.melodyTitle!, locale: swedish) == .OrderedAscending
+            }
             self.tableView.reloadData()
         case .SKAPAD:
-            self.categorySongs = realm.objects(Song.self).filter("_categoryTitle = '\(category)'").sorted("_created", ascending: false)
+            categorySongs = categorySongs.sort({$0.created > $1.created})
             self.tableView.reloadData()
         default:
             print("Default")
@@ -146,7 +154,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         
         inSearchMode = false
         searchBar.text = ""
-        tableView.reloadData()
+        reloadData()
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
@@ -159,10 +167,10 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
-            filteredSongs = categorySongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
+            filteredSongs = categorySongs.filter({ $0.title!.lowercaseString.rangeOfString(lower) != nil })
         }
         
-        realoadData()
+        reloadData()
     }
     
     
@@ -170,7 +178,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         
         dismisskeyboard()
         
-        let song: Song!
+        let song: SongModel!
         
         if inSearchMode {
             song = filteredSongs[indexPath.row]
@@ -185,14 +193,14 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
-                if let song = sender as? Song {
+                if let song = sender as? SongModel {
                     detailVC.song = song
                 }
             }
         }
     }
     
-    func songForIndexpath(indexPath: NSIndexPath) -> Song {
+    func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
         return categorySongs[indexPath.row]
         
     }
@@ -212,19 +220,26 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
-                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                var song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
-                try! realm.write {
-                    
-                    if song.favorite == "TRUE" {
-                        song._favorite = "FALSE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
-                        showFavoriteAlert(false, view: self.view)
-                    } else {
-                        song._favorite = "TRUE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
-                        showFavoriteAlert(true, view: self.view)
-                    }
+                if song.favorite == true {
+                    print("Already favorite")
+                    showFavoriteAlert(false, view: self.view)
+                    song.setValue(false, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+                } else {
+                    print("Add to favorite")
+                    showFavoriteAlert(true, view: self.view)
+                    song.setValue(true, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
+                }
+                
+                do {
+                    try song.managedObjectContext?.save()
+                    print("Save \(song.title) as favorite!")
+                } catch {
+                    let saveError = error as NSError
+                    print(saveError)
                 }
                 
                 return true
@@ -246,7 +261,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         
         if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
             
-            var song: Song
+            var song: SongModel
             
             if inSearchMode {
                 song = filteredSongs[indexPath.row]

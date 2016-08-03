@@ -7,13 +7,13 @@
 //
 
 import UIKit
-import Realm
-import RealmSwift
 import MBProgressHUD
 import Firebase
 import GSMessages
 import MGSwipeTableCell
 import DZNEmptyDataSet
+
+import CoreData
 
 class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MGSwipeTableCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
@@ -21,12 +21,11 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     @IBOutlet weak var tableView: UITableView!
     
     private var inSearchMode = false
-    private var filteredSongs = [Song]()
-    private var allSongs = realm.objects(Song.self)
+    private var filteredSongs = [SongModel]()
     private var mode = SORT_MODE.TITEL
     private var hud = MBProgressHUD()
     private var alert = false
-    private var songCount = realm.objects(Song.self).count
+    private var songCount = allSongs.count
     private var isDownloading = false
     
     enum SORT_MODE: String {
@@ -68,6 +67,8 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         authenticateUser()
         
+        loadCoreData()
+        
         delay(1) {
             self.setupData()
         }
@@ -85,19 +86,42 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         loadSortMode()
     }
     
+    func loadCoreData() {
+        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = app.managedObjectContext
+        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        
+        do {
+            let results = try context.executeFetchRequest(fetchRequest)
+            allSongs = results as! [SongModel]
+            loadCategories()
+        } catch let err as NSError {
+            print(err.debugDescription)
+        }
+    }
+    
+    func loadCategories() {
+        for song in allSongs {
+            if !allCategories.contains(song.categoryTitle!) {
+                print(song.categoryTitle!)
+                allCategories.append(song.categoryTitle!)
+            }
+        }
+    }
+    
     func setupData() {
         
         if isConnectedToNetwork() {
             
             Downloader.downloader.toplistObserver()
+            Downloader.downloader.loadToplistFromFirebase()
             Downloader.downloader.observeNumberOfAvailableSong()
             
-            if realm.objects(Song.self).isEmpty {
+            if allSongs.isEmpty {
                 self.showDownloadIndicator()
                 Downloader.downloader.downloadSongsFromFirebase()
                 self.isDownloading = true
             }
-            
         }
     }
     
@@ -155,14 +179,14 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         hud.hide(true, afterDelay: 0)
         
         if songCount == 0 {
-            self.showMessage("\(realm.objects(Song.self).count) sånger har hämtats.", type: .Success , options: nil)
+            self.showMessage("\(allSongs.count) sånger har hämtats.", type: .Success , options: nil)
         }
         
-        songCount = realm.objects(Song.self).count
+        songCount = allSongs.count
     }
     
     func reloadTableData(notification: NSNotification) {
-        self.realoadData()
+        self.reloadData()
         dismissDownloadIndicator()
     }
     
@@ -186,7 +210,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             }
         }
         
-        self.realoadData()
+        self.reloadData()
     }
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
@@ -194,7 +218,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         inSearchMode = false
         self.searchBar.text = ""
-        self.realoadData()
+        self.reloadData()
     }
     
     func doSomeWorkWithProgress() {
@@ -238,31 +262,39 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
             self.mode = .TITEL
-            self.realoadData()
+            self.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
             self.mode = .MELODI
-            self.realoadData()
+            self.reloadData()
         }
         
         actionSheet.addButtonWithTitle("Senast Tillagd", type: .Default) { (actionSheet) in
             self.mode = .SKAPAD
-            self.realoadData()
+            self.reloadData()
         }
     }
     
-    func realoadData() {
+    func reloadData() {
+        
+        let swedish = NSLocale(localeIdentifier: "sv")
         
         switch self.mode {
         case .TITEL:
-            self.allSongs = realm.objects(Song.self).sorted("_title")
+            
+            allSongs = allSongs.sort {
+                $0.title!.compare($1.title!, locale: swedish) == .OrderedAscending
+            }
+            
             self.tableView.reloadData()
         case .MELODI:
-            self.allSongs = realm.objects(Song.self).sorted("_melodyTitle")
+            allSongs = allSongs.sort {
+                $0.melodyTitle!.compare($1.melodyTitle!, locale: swedish) == .OrderedAscending
+            }
             self.tableView.reloadData()
         case .SKAPAD:
-            self.allSongs = realm.objects(Song.self).sorted("_created", ascending: false)
+            allSongs = allSongs.sort({$0.created > $1.created})
             self.tableView.reloadData()
         default:
             print("Default")
@@ -285,10 +317,10 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         } else {
             inSearchMode = true
             let lower = searchBar.text!.lowercaseString
-            filteredSongs = allSongs.filter({ $0.title.lowercaseString.rangeOfString(lower) != nil })
+            filteredSongs = allSongs.filter({ $0.title!.lowercaseString.rangeOfString(lower) != nil })
         }
         
-        realoadData()
+        reloadData()
     }
     
     
@@ -296,7 +328,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         dismisskeyboard()
         
-        let song: Song!
+        let song: SongModel!
         
         if inSearchMode {
             song = filteredSongs[indexPath.row]
@@ -311,7 +343,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
-                if let song = sender as? Song {
+                if let song = sender as? SongModel {
                     detailVC.song = song
                 }
             }
@@ -331,7 +363,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         }
     }
     
-    func songForIndexpath(indexPath: NSIndexPath) -> Song {
+    func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
         return allSongs[indexPath.row]
     }
     
@@ -350,20 +382,28 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
-                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                var song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
-                try! realm.write {
-                    
-                    if song.favorite == "TRUE" {
-                        song._favorite = "FALSE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
-                        showFavoriteAlert(false, view: self.view)
-                    } else {
-                        song._favorite = "TRUE"
-                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
-                        showFavoriteAlert(true, view: self.view)
-                    }
+                if song.favorite == true {
+                    print("Already favorite")
+                    showFavoriteAlert(false, view: self.view)
+                    song.setValue(false, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+                } else {
+                    print("Add to favorite")
+                    showFavoriteAlert(true, view: self.view)
+                    song.setValue(true, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
                 }
+                
+                do {
+                    try song.managedObjectContext?.save()
+                    print("Save \(song.title) as favorite!")
+                } catch {
+                    let saveError = error as NSError
+                    print(saveError)
+                }
+                
                 
                 return true
                 
@@ -383,7 +423,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
             
-            var song: Song
+            var song: SongModel
             
             if inSearchMode {
                 song = filteredSongs[indexPath.row]
@@ -416,7 +456,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = ""
         
-        if filteredSongs.count == 0 && !realm.objects(Song.self).isEmpty {
+        if filteredSongs.count == 0 && !allSongs.isEmpty {
             str = "Det finns inga sånger som matchar den angivna sökningen."
         } else {
             str = "Om sångerna inte hämtas automatiskt, klicka på ikonen nedanför."
@@ -429,7 +469,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
         
-        if !realm.objects(Song.self).isEmpty {
+        if !allSongs.isEmpty {
             return UIImage(named: "EmptyDataSearch")
         }
         
@@ -438,7 +478,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func buttonImageForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> UIImage! {
         
-        if realm.objects(Song.self).isEmpty {
+        if !allSongs.isEmpty {
             return UIImage(named: "Download")
         }
         
@@ -450,8 +490,15 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         if !isDownloading {
             if isConnectedToNetwork() {
+                
                 authenticateUser()
-                setupData()
+               
+                if allSongs.isEmpty {
+                     setupData()
+                } else {
+                    self.showMessage("\(allSongs.count) sånger har redan hämtats.", type: .Success , options: nil)
+                }
+               
             } else {
                 self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
             }
@@ -469,3 +516,4 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         dismisskeyboard()
     }
 }
+
