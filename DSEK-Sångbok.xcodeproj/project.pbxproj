@@ -19,10 +19,6 @@
 		6FD200261D415F0A00A36E41 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200241D415F0A00A36E41 /* Main.storyboard */; };
 		6FD200281D415F0A00A36E41 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200271D415F0A00A36E41 /* Assets.xcassets */; };
 		6FD2002B1D415F0A00A36E41 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6FD200291D415F0A00A36E41 /* LaunchScreen.storyboard */; };
-		6FD200341D415F6000A36E41 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200321D415F6000A36E41 /* Realm.framework */; };
-		6FD200351D415F6100A36E41 /* Realm.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200321D415F6000A36E41 /* Realm.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		6FD200361D415F6100A36E41 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200331D415F6000A36E41 /* RealmSwift.framework */; };
-		6FD200371D415F6100A36E41 /* RealmSwift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6FD200331D415F6000A36E41 /* RealmSwift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6FD200451D415FEF00A36E41 /* AllSongsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD2003F1D415FEF00A36E41 /* AllSongsVC.swift */; };
 		6FD200471D415FEF00A36E41 /* FavoritesVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200411D415FEF00A36E41 /* FavoritesVC.swift */; };
 		6FD200491D415FEF00A36E41 /* ToplistVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6FD200431D415FEF00A36E41 /* ToplistVC.swift */; };
@@ -49,8 +45,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				6FD200371D415F6100A36E41 /* RealmSwift.framework in Embed Frameworks */,
-				6FD200351D415F6100A36E41 /* Realm.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -74,8 +68,6 @@
 		6FD200271D415F0A00A36E41 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6FD2002A1D415F0A00A36E41 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6FD2002C1D415F0A00A36E41 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		6FD200321D415F6000A36E41 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = ../Realm.framework; sourceTree = "<group>"; };
-		6FD200331D415F6000A36E41 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = ../RealmSwift.framework; sourceTree = "<group>"; };
 		6FD2003F1D415FEF00A36E41 /* AllSongsVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AllSongsVC.swift; sourceTree = "<group>"; };
 		6FD200411D415FEF00A36E41 /* FavoritesVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FavoritesVC.swift; sourceTree = "<group>"; };
 		6FD200431D415FEF00A36E41 /* ToplistVC.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ToplistVC.swift; sourceTree = "<group>"; };
@@ -101,9 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6FD200341D415F6000A36E41 /* Realm.framework in Frameworks */,
 				4937FB8231D5DCA0B74D0DBC /* Pods_DSEK_Sa_ngbok.framework in Frameworks */,
-				6FD200361D415F6100A36E41 /* RealmSwift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,7 +146,6 @@
 			isa = PBXGroup;
 			children = (
 				6F6060941D454B71005DA452 /* Utilities */,
-				6FD200511D4163EA00A36E41 /* Framworks */,
 				6FD2003A1D415FCA00A36E41 /* Model */,
 				6FD2003C1D415FDB00A36E41 /* Cells */,
 				6FD2003B1D415FD000A36E41 /* Controllers */,
@@ -205,15 +194,6 @@
 				6FD2B5181D4CA14900FE2D65 /* CategoryCell.xib */,
 			);
 			name = Cells;
-			sourceTree = "<group>";
-		};
-		6FD200511D4163EA00A36E41 /* Framworks */ = {
-			isa = PBXGroup;
-			children = (
-				6FD200321D415F6000A36E41 /* Realm.framework */,
-				6FD200331D415F6000A36E41 /* RealmSwift.framework */,
-			);
-			name = Framworks;
 			sourceTree = "<group>";
 		};
 		B12C0FD8F1624A9292932B8A /* Frameworks */ = {

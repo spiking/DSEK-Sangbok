@@ -469,7 +469,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
         
-        if !allSongs.isEmpty {
+        if allSongs.isEmpty {
             return UIImage(named: "EmptyDataSearch")
         }
         
@@ -478,7 +478,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func buttonImageForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> UIImage! {
         
-        if !allSongs.isEmpty {
+        if allSongs.isEmpty {
             return UIImage(named: "Download")
         }
         

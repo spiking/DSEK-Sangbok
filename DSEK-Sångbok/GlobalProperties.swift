@@ -7,11 +7,8 @@
 //
 
 import Foundation
-import RealmSwift
-import Realm
 import MBProgressHUD
 
-var realm = try! Realm()
 var iPhoneType = ""
 var hud = MBProgressHUD()
 var isDownloadingSetupData = true
