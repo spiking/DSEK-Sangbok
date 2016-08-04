@@ -26,22 +26,22 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Arrow" translatesAutoresizingMaskIntoConstraints="NO" id="NRe-9m-ciE">
-                        <rect key="frame" x="292" y="25" width="20" height="20"/>
+                        <rect key="frame" x="292" y="28" width="15" height="15"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="20" id="Usr-yf-OI6"/>
-                            <constraint firstAttribute="height" constant="20" id="pTb-9A-EMV"/>
+                            <constraint firstAttribute="width" constant="15" id="Usr-yf-OI6"/>
+                            <constraint firstAttribute="height" constant="15" id="pTb-9A-EMV"/>
                         </constraints>
                     </imageView>
                 </subviews>
                 <color key="backgroundColor" red="0.090196078430000007" green="0.090196078430000007" blue="0.090196078430000007" alpha="1" colorSpace="calibratedRGB"/>
                 <constraints>
-                    <constraint firstItem="NRe-9m-ciE" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="17" id="7AC-uo-mEF"/>
-                    <constraint firstItem="NRe-9m-ciE" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="9C3-5W-TvS"/>
+                    <constraint firstItem="NRe-9m-ciE" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="20" id="7AC-uo-mEF"/>
+                    <constraint firstItem="NRe-9m-ciE" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-5" id="9C3-5W-TvS"/>
                     <constraint firstItem="NRe-9m-ciE" firstAttribute="leading" secondItem="ZuH-xR-gGS" secondAttribute="trailing" constant="6" id="E7U-LV-OUw"/>
                     <constraint firstItem="ZuH-xR-gGS" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="8" id="VoI-OQ-4mm"/>
                     <constraint firstItem="ZuH-xR-gGS" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="14" id="qkd-B9-55z"/>
                     <constraint firstAttribute="bottomMargin" secondItem="ZuH-xR-gGS" secondAttribute="bottom" constant="13" id="yEi-Ih-zOp"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="NRe-9m-ciE" secondAttribute="bottom" constant="16" id="zu1-gC-xfo"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="NRe-9m-ciE" secondAttribute="bottom" constant="18" id="zu1-gC-xfo"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" red="0.090196078430000007" green="0.090196078430000007" blue="0.090196078430000007" alpha="1" colorSpace="calibratedRGB"/>

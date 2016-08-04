@@ -27,14 +27,13 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     private var alert = false
     private var songCount = allSongs.count
     private var isDownloading = false
+    private var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     
     enum SORT_MODE: String {
         case TITEL = "TITEL"
         case MELODI = "MELODI"
         case SKAPAD = "SKAPAD"
     }
-    
-    var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,17 +56,18 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
         
-        setupMenu()
-        
-        loadSortMode()
+        setupMenu(actionSheet)
+        setupMenuOptions()
         
         NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(AllSongsVC.observeNetworkConnection), userInfo: nil, repeats: true)
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: "reload", object: nil)
         
-        authenticateUser()
+        // Setup
         
-        loadCoreData()
+        loadSortMode()
+        authenticateUser()
+        loadAllSongsFromCoreData()
         
         delay(1) {
             self.setupData()
@@ -77,7 +77,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         inSearchMode = false
-        
         saveSortMode()
     }
     
@@ -86,7 +85,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         loadSortMode()
     }
     
-    func loadCoreData() {
+    func loadAllSongsFromCoreData() {
         let app = UIApplication.sharedApplication().delegate as! AppDelegate
         let context = app.managedObjectContext
         let fetchRequest  = NSFetchRequest(entityName: "SongModel")
@@ -113,9 +112,9 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         if isConnectedToNetwork() {
             
-            Downloader.downloader.toplistObserver()
+            Downloader.downloader.numberOfAvailableSong()
             Downloader.downloader.loadToplistFromFirebase()
-            Downloader.downloader.observeNumberOfAvailableSong()
+            Downloader.downloader.toplistObserver()
             
             if allSongs.isEmpty {
                 self.showDownloadIndicator()
@@ -130,26 +129,20 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
             
             if error != nil {
-                print(error)
+                print(error.debugDescription)
             }
             
             let isAnonymous = user!.anonymous
             let uid = user!.uid
-            
-            print(uid)
             
             NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
             
             DataService.ds.REF_USERS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
                 
                 if !snapshot.hasChild(getUserID()) {
-                    print("USER NOT IN FIREBASE")
                     let data = ["ACTIVE" : true]
                     DataService.ds.REF_USERS.child(getUserID()).updateChildValues(data)
-                } else {
-                    print("USER ALREADY IN FIREBASE")
                 }
-                
             }
         }
     }
@@ -221,45 +214,14 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         self.reloadData()
     }
     
-    func doSomeWorkWithProgress() {
-        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.mode = MBProgressHUDMode.CustomView
-        let image = UIImage(named: "Checkmark")
-        hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        hud.labelText = "KLAR"
-        hud.customView = UIImageView(image: image)
-        hud.square = true
-        hud.hide(true, afterDelay: 1.0)
-    }
-    
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
         dismisskeyboard()
+        inSearchMode = false
         actionSheet.show()
     }
     
-    func setupMenu() {
-        actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
-        actionSheet.blurRadius = 8.0
-        
-        if iPhoneType == "4" || iPhoneType == "5" {
-            actionSheet.buttonHeight = 50.0
-            actionSheet.cancelButtonHeight = 70
-        } else {
-            actionSheet.buttonHeight = 60.0
-            actionSheet.cancelButtonHeight = 80
-        }
-        
-        actionSheet.cancelButtonHeight = 80
-        actionSheet.animationDuration = 0.5
-        actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
-        actionSheet.separatorColor = UIColor(red: 30, green: 30, blue: 30, alpha: 0.2)
-        actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
-        let font = UIFont(name: "Avenir", size: 17)
-        actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
-        actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
-        actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        
+    func setupMenuOptions() {
+
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
             self.mode = .TITEL
             self.reloadData()
@@ -278,28 +240,22 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func reloadData() {
         
-        let swedish = NSLocale(localeIdentifier: "sv")
-        
         switch self.mode {
         case .TITEL:
-            
             allSongs = allSongs.sort {
-                $0.title!.compare($1.title!, locale: swedish) == .OrderedAscending
+                $0.title!.compare($1.title!, locale: SWEDISH) == .OrderedAscending
             }
-            
-            self.tableView.reloadData()
         case .MELODI:
             allSongs = allSongs.sort {
-                $0.melodyTitle!.compare($1.melodyTitle!, locale: swedish) == .OrderedAscending
+                $0.melodyTitle!.compare($1.melodyTitle!, locale: SWEDISH) == .OrderedAscending
             }
-            self.tableView.reloadData()
         case .SKAPAD:
             allSongs = allSongs.sort({$0.created > $1.created})
-            self.tableView.reloadData()
         default:
-            print("Default")
-            self.tableView.reloadData()
+            break
         }
+        
+        self.tableView.reloadData()
     }
     
     func dismisskeyboard() {
@@ -382,15 +338,13 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
-                var song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
                 if song.favorite == true {
-                    print("Already favorite")
                     showFavoriteAlert(false, view: self.view)
                     song.setValue(false, forKey: "favorite")
                     DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
                 } else {
-                    print("Add to favorite")
                     showFavoriteAlert(true, view: self.view)
                     song.setValue(true, forKey: "favorite")
                     DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
@@ -398,15 +352,12 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
                 
                 do {
                     try song.managedObjectContext?.save()
-                    print("Save \(song.title) as favorite!")
                 } catch {
                     let saveError = error as NSError
                     print(saveError)
                 }
                 
-                
                 return true
-                
             })
             
             return [addButton]
@@ -448,9 +399,8 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = "Inga sånger"
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
-        
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
@@ -462,24 +412,28 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             str = "Om sångerna inte hämtas automatiskt, klicka på ikonen nedanför."
         }
         
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
         
-        return NSAttributedString(string: str, attributes: attrs)
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
         
-        if allSongs.isEmpty {
-            return UIImage(named: "EmptyDataSearch")
+        var imgName = ""
+        
+        if filteredSongs.count == 0 && !allSongs.isEmpty  {
+            imgName = "EmptyDataSearch"
+        } else {
+            imgName = ""
         }
         
-        return UIImage(named: "")
+        return UIImage(named: imgName)
     }
     
     func buttonImageForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> UIImage! {
         
         if allSongs.isEmpty {
-            return UIImage(named: "Download")
+            return UIImage(named: "DownloadMedium")
         }
         
         return UIImage(named: "")
@@ -502,13 +456,13 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             } else {
                 self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
             }
-            
-        } else {
-            print("ALREADY DOWNLOADING")
         }
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        if iPhoneType == "4" {
+            return -50
+        }
         return -70
     }
     

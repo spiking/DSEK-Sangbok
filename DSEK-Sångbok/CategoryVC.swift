@@ -36,8 +36,7 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         navigationItem.title = "KATEGORIER"
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
         
-        categories = allCategories
-    
+        categories = allCategories.sort()
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -141,8 +140,8 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = "Inga kategorier"
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
@@ -154,16 +153,26 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             str = "Det finns i nuläget inga kategorier."
         }
         
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        var imgName = "EmptyDataStar"
+        var imgName = ""
+        
+        if filteredCategories.count == 0 && categories.count != 0 {
+            imgName = "EmptyDataSearch"
+        } else {
+            imgName = "EmptyDataStar"
+        }
+        
         return UIImage(named: imgName)
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        if iPhoneType == "4" {
+            return -50
+        }
         return -70
     }
     

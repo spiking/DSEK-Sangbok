@@ -29,10 +29,10 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Arrow" translatesAutoresizingMaskIntoConstraints="NO" id="O68-yM-Ngc">
-                        <rect key="frame" x="292" y="25" width="20" height="20"/>
+                        <rect key="frame" x="292" y="27" width="15" height="15"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="20" id="C5i-2F-csH"/>
-                            <constraint firstAttribute="height" constant="20" id="UQY-7t-Zdg"/>
+                            <constraint firstAttribute="width" constant="15" id="C5i-2F-csH"/>
+                            <constraint firstAttribute="height" constant="15" id="UQY-7t-Zdg"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dtc-BS-QBN">
@@ -50,7 +50,7 @@
                     <constraint firstItem="1X4-ss-vBj" firstAttribute="bottom" secondItem="H2p-sc-9uM" secondAttribute="bottomMargin" id="4wF-je-YPS"/>
                     <constraint firstItem="dtc-BS-QBN" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="5" id="QXS-3Y-K6p"/>
                     <constraint firstItem="1X4-ss-vBj" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="8" id="R7w-uV-nSF"/>
-                    <constraint firstItem="O68-yM-Ngc" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="Zzt-yI-RVb"/>
+                    <constraint firstItem="O68-yM-Ngc" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" constant="-5" id="Zzt-yI-RVb"/>
                     <constraint firstItem="dtc-BS-QBN" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="8" id="dWu-KW-jwY"/>
                     <constraint firstAttribute="trailingMargin" secondItem="dtc-BS-QBN" secondAttribute="trailing" constant="47" id="i5v-V4-jm9"/>
                     <constraint firstItem="O68-yM-Ngc" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="mqr-NX-nD8"/>

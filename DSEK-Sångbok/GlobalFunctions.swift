@@ -51,6 +51,30 @@ func checkiPhoneModel() {
     }
 }
 
+func setupMenu(actionSheet: AHKActionSheet) {
+    actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+    actionSheet.blurRadius = 8.0
+    
+    if iPhoneType == "4" || iPhoneType == "5" {
+        actionSheet.buttonHeight = 50.0
+        actionSheet.cancelButtonHeight = 70
+    } else {
+        actionSheet.buttonHeight = 60.0
+        actionSheet.cancelButtonHeight = 80
+    }
+    
+    actionSheet.cancelButtonHeight = 80
+    actionSheet.animationDuration = 0.5
+    actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
+    actionSheet.separatorColor = UIColor(red: 30, green: 30, blue: 30, alpha: 0.2)
+    actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
+    let font = UIFont(name: "Avenir", size: 17)
+    actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
+    actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
+    actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
+    actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
+}
+
 func getUserID() -> String {
     if let uid = NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) as? String {
         return uid

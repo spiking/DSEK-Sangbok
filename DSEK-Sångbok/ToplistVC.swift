@@ -17,16 +17,12 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    var parentNavigationController : UINavigationController?
     
     private var inSearchMode = false
     private var filteredSongs = [SongModel]()
     private var toplistSongs = allSongs
     private var refreshControl: UIRefreshControl!
     private var spinner = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
-    
-    var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
-    var hud = MBProgressHUD()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -59,8 +55,6 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
-        
-        setupMenu()
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ToplistVC.reloadTableData(_:)), name: "reloadToplist", object: nil)
         
@@ -101,11 +95,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
     
     func reloadTableData(notification: NSNotification) {
-        
-        print("UPDATE!")
-        
-        setupResult() 
-        
+        setupResult()
         refreshControl.endRefreshing()
     }
     
@@ -122,15 +112,6 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         hud.square = true
     }
     
-    func dismissDownloadIndicator() {
-        hud.mode = MBProgressHUDMode.CustomView
-        let image = UIImage(named: "Checkmark")
-        hud.labelText = "Klar"
-        hud.customView = UIImageView(image: image)
-        hud.square = true
-        hud.hide(true, afterDelay: 2)
-    }
-    
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         inSearchMode = false
@@ -141,11 +122,6 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         self.tableView.reloadData()
     }
     
-    func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
-        dismisskeyboard()
-        actionSheet.show()
-    }
-    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == SEUGE_DETAILVC {
             if let detailVC = segue.destinationViewController as? DetailVC {
@@ -154,46 +130,6 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 }
             }
         }
-    }
-    
-    func setupMenu() {
-        actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
-        actionSheet.blurRadius = 8.0
-        
-        if iPhoneType == "4" || iPhoneType == "5" {
-            actionSheet.buttonHeight = 50.0
-            actionSheet.cancelButtonHeight = 70
-        } else {
-            actionSheet.buttonHeight = 60.0
-            actionSheet.cancelButtonHeight = 80
-        }
-        
-        actionSheet.cancelButtonHeight = 80
-        actionSheet.animationDuration = 0.5
-        actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
-        actionSheet.separatorColor = UIColor(red: 30, green: 30, blue: 30, alpha: 0.2)
-        actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
-        let font = UIFont(name: "Avenir", size: 17)
-        actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
-        actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
-        actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        
-        actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
-//            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_title")
-            self.tableView.reloadData()
-        }
-        
-        actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
-//            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_melodyTitle")
-            self.tableView.reloadData()
-        }
-        
-        actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
-//            self.toplistSongs = realm.objects(Song.self).filter("_rating > 0").sorted("_created")
-            self.tableView.reloadData()
-        }
-        
     }
     
     func updateTableView() {
@@ -270,20 +206,25 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 
                 let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
-//                try! realm.write {
-//                    
-//                    if song.favorite == "TRUE" {
-//                        song._favorite = "FALSE"
-//                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).removeValue()
-//                        showFavoriteAlert(false, view: self.view)
-//                    } else {
-//                        song._favorite = "TRUE"
-//                        DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key).setValue(true)
-//                        showFavoriteAlert(true, view: self.view)
-//                    }
-//                    
-//                    self.tableView.reloadData()
-//                }
+                if song.favorite == true {
+                    print("Already favorite")
+                    showFavoriteAlert(false, view: self.view)
+                    song.setValue(false, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+                } else {
+                    print("Add to favorite")
+                    showFavoriteAlert(true, view: self.view)
+                    song.setValue(true, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
+                }
+                
+                do {
+                    try song.managedObjectContext?.save()
+                    print("Save \(song.title) as favorite!")
+                } catch {
+                    let saveError = error as NSError
+                    print(saveError)
+                }
                 
                 return true
                 
@@ -329,8 +270,8 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = "Inga sånger"
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
@@ -342,8 +283,8 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
             str = "Det finns i nuläget ingen topplista."
         }
         
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {

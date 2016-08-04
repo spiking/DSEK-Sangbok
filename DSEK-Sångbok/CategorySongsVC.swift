@@ -10,6 +10,7 @@ import UIKit
 import AHKActionSheet
 import MGSwipeTableCell
 import DZNEmptyDataSet
+import CoreData
 
 class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, MGSwipeTableCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate {
 
@@ -20,7 +21,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     private var categorySongs = allSongs
     private var filteredSongs = [SongModel]()
     private var inSearchMode = false
-    private var actionSheet = AHKActionSheet()
+    private var actionSheet = AHKActionSheet(title: "BETYGSÄTT SÅNG")
     private var mode = SORT_MODE.TITEL
     
     enum SORT_MODE: String {
@@ -52,10 +53,65 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         searchBar.keyboardAppearance = .Dark
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
-        setupMenu()
+        setupMenu(actionSheet)
+        setupMenuOptions()
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
         
+        loadCategorySongs()
+        
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        inSearchMode = false
+        saveSortMode()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        loadSortMode()
+    }
+    
+    func loadCategorySongs() {
+        
+        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = app.managedObjectContext
+        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        
+        let predicate = NSPredicate(format: "categoryTitle = %@", category)
+        fetchRequest.predicate = predicate
+        
+        do {
+            let results = try context.executeFetchRequest(fetchRequest)
+            categorySongs = results as! [SongModel]
+            loadSortMode()
+        } catch let err as NSError {
+            print(err.debugDescription)
+        }
+    }
+    
+    func saveSortMode() {
+        NSUserDefaults.standardUserDefaults().setValue("\(self.mode)", forKey: "SORT_MODE_CAT")
+    }
+    
+    func loadSortMode() {
+        
+        if let sortMode = NSUserDefaults.standardUserDefaults().valueForKey("SORT_MODE_CAT") as? String {
+            
+            switch sortMode {
+            case "TITEL":
+                self.mode = .TITEL
+            case "MELODI":
+                self.mode = .MELODI
+            case "SKAPAD":
+                self.mode = .SKAPAD
+            default:
+                self.mode = .TITEL
+            }
+        }
+        
+        self.reloadData()
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -73,31 +129,11 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
         dismisskeyboard()
+        inSearchMode = false
         actionSheet.show()
     }
     
-    func setupMenu() {
-        actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
-        actionSheet.blurRadius = 8.0
-        
-        if iPhoneType == "4" || iPhoneType == "5" {
-            actionSheet.buttonHeight = 50.0
-            actionSheet.cancelButtonHeight = 70
-        } else {
-            actionSheet.buttonHeight = 60.0
-            actionSheet.cancelButtonHeight = 80
-        }
-        
-        actionSheet.cancelButtonHeight = 80
-        actionSheet.animationDuration = 0.5
-        actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
-        actionSheet.separatorColor = UIColor(red: 30, green: 30, blue: 30, alpha: 0.2)
-        actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
-        let font = UIFont(name: "Avenir", size: 17)
-        actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
-        actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
-        actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
+    func setupMenuOptions() {
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
             self.mode = .TITEL
@@ -159,8 +195,6 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         
-        print("GO!")
-        
         if searchBar.text == nil && searchBar.text != "" {
             inSearchMode = false
             dismisskeyboard()
@@ -202,7 +236,6 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
         return categorySongs[indexPath.row]
-        
     }
     
     func swipeTableCell(cell: MGSwipeTableCell!, swipeButtonsForDirection direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
@@ -286,8 +319,8 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = "Inga sånger"
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
@@ -296,11 +329,11 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         if filteredSongs.count == 0 {
             str = "Det finns inga sånger som matchar den angivna sökningen."
         } else {
-            str = "Det finns i nuläget inga sånger som matchar den valda kategorin."
+            str = "Det finns inga sånger som matchar den valda kategorin."
         }
         
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
@@ -309,6 +342,9 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        if iPhoneType == "4" {
+            return -50
+        }
         return -70
     }
     

@@ -18,14 +18,11 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
-    var parentNavigationController : UINavigationController?
-    var hud = MBProgressHUD()
-    
     private var inSearchMode = false
     private var filteredSongs = [SongModel]()
     private var favoriteSongs = allSongs
     private var mode = SORT_MODE.TITEL
+    private var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     
     enum SORT_MODE: String {
         case TITEL = "TITEL"
@@ -55,11 +52,12 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
         
-        setupMenu()
+        setupMenu(actionSheet)
+        setupMenuOptions()
         
         loadSortMode()
         
-        setupResult()
+        loadFavoritesFromCoreData()
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -71,10 +69,10 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         loadSortMode()
-        setupResult()
+        loadFavoritesFromCoreData()
     }
     
-    func setupResult() {
+    func loadFavoritesFromCoreData() {
         
         let app = UIApplication.sharedApplication().delegate as! AppDelegate
         let context = app.managedObjectContext
@@ -119,6 +117,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
         dismisskeyboard()
+        inSearchMode = false
         actionSheet.show()
     }
     
@@ -130,28 +129,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         self.reloadData()
     }
     
-    func setupMenu() {
-        actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
-        actionSheet.blurRadius = 8.0
-        
-        if iPhoneType == "4" || iPhoneType == "5" {
-            actionSheet.buttonHeight = 50.0
-            actionSheet.cancelButtonHeight = 70
-        } else {
-            actionSheet.buttonHeight = 60.0
-            actionSheet.cancelButtonHeight = 80
-        }
-        
-        actionSheet.cancelButtonHeight = 80
-        actionSheet.animationDuration = 0.5
-        actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
-        actionSheet.separatorColor = UIColor(red: 30, green: 30, blue: 30, alpha: 0.2)
-        actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
-        let font = UIFont(name: "Avenir", size: 17)
-        actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
-        actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
-        actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
+    func setupMenuOptions() {
         
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
             self.mode = .TITEL
@@ -163,7 +141,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             self.reloadData()
         }
         
-        actionSheet.addButtonWithTitle("Skapad", type: .Default) { (actionSheet) in
+        actionSheet.addButtonWithTitle("Senast Tillagd", type: .Default) { (actionSheet) in
             self.mode = .SKAPAD
             self.reloadData()
         }
@@ -180,26 +158,21 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     }
     
     func reloadData() {
-        
-        let swedish = NSLocale(localeIdentifier: "sv")
-        
         switch self.mode {
         case .TITEL:
             favoriteSongs = favoriteSongs.sort {
-                $0.title!.compare($1.title!, locale: swedish) == .OrderedAscending
+                $0.title!.compare($1.title!, locale: SWEDISH) == .OrderedAscending
             }
-            
             self.tableView.reloadData()
         case .MELODI:
             favoriteSongs = favoriteSongs.sort {
-                $0.melodyTitle!.compare($1.melodyTitle!, locale: swedish) == .OrderedAscending
+                $0.melodyTitle!.compare($1.melodyTitle!, locale: SWEDISH) == .OrderedAscending
             }
             self.tableView.reloadData()
         case .SKAPAD:
-            favoriteSongs = favoriteSongs.sort({$0.created < $1.created})
+            favoriteSongs = favoriteSongs.sort({$0.created > $1.created})
             self.tableView.reloadData()
         default:
-            print("Default")
             self.tableView.reloadData()
         }
     }
@@ -274,7 +247,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
-                var song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
                 if song.favorite == true {
                     print("Already favorite")
@@ -296,7 +269,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
                     print(saveError)
                 }
                 
-                self.setupResult()
+                self.loadFavoritesFromCoreData()
                 
                 return true
                 
@@ -343,8 +316,8 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = "Inga favoritsånger"
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
@@ -356,8 +329,8 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             str = "För att lägga till en favoritsång, swipa sången till vänster."
         }
         
-        let attrs = [NSFontAttributeName: UIFont.preferredFontForTextStyle(UIFontTextStyleBody)]
-        return NSAttributedString(string: str, attributes: attrs)
+        let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
+        return NSAttributedString(string: str, attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
@@ -373,6 +346,9 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+        if iPhoneType == "4" {
+            return -50
+        }
         return -70
     }
     

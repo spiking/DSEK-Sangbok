@@ -218,7 +218,6 @@
 				495F8454637DC2FACFFF303A /* 📦 Embed Pods Frameworks */,
 				72A0DEEBF252BE3D1D25A6D7 /* 📦 Copy Pods Resources */,
 				6FD200381D415F6100A36E41 /* Embed Frameworks */,
-				6FD200391D415FA600A36E41 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -295,19 +294,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-DSEK-Sångbok/Pods-DSEK-Sångbok-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		6FD200391D415FA600A36E41 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "bash \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework/strip-frameworks.sh\"";
 		};
 		72A0DEEBF252BE3D1D25A6D7 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;

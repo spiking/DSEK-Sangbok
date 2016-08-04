@@ -27,6 +27,7 @@ class DownloadVC: UIViewController {
         downloadBtn.clipsToBounds = true
         
         let availableSongs = Downloader.downloader.availableSongs
+        songCountLbl.text = "\(Downloader.downloader.availableSongs)"
         
         if availableSongs >= 0 {
             songCountLbl.text = "\(Downloader.downloader.availableSongs)"
@@ -42,6 +43,11 @@ class DownloadVC: UIViewController {
         
         if !isConnectedToNetwork() {
             self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+            return
+        }
+        
+        if Downloader.downloader.availableSongs == 0 {
+            self.showMessage("Alla sånger har redan hämtats.", type: .Success , options: nil)
             return
         }
         

@@ -12,8 +12,17 @@ import Firebase
 
 class DetailVC: UIViewController {
     
-    var song: SongModel!
-    var actionSheet = AHKActionSheet(title: "BETYGSÄTT SONG")
+    private var actionSheet = AHKActionSheet(title: "BETYGSÄTT SONG")
+    private var _song: SongModel!
+    
+    var song: SongModel {
+        get {
+            return _song
+        }
+        set {
+            _song = newValue
+        }
+    }
     
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var lyricsTextView: UITextView!
@@ -98,16 +107,9 @@ class DetailVC: UIViewController {
     func addRatingToFirebase(rating: Int) {
         
         let user_votes_ref = DataService.ds.REF_USERS_CURRENT.child("votes")
-        
         user_votes_ref.child(self.song.key!).setValue(rating)
         
-//        DataService.ds.REF_USERS_CURRENT.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
-//            
-//            
-//        }
-        
         let song_ref = DataService.ds.REF_SONGS.child(self.song.key!)
-
         song_ref.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
             if snapshot.childSnapshotForPath("votes").hasChild(getUserID()) {
@@ -145,34 +147,10 @@ class DetailVC: UIViewController {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
                 song_ref.child("votes").child(getUserID()).setValue(rating)
             }
-            
         }
-
     }
     
     func setupMenu() {
-        actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.85)
-        actionSheet.blurRadius = 8.0
-        
-        if iPhoneType == "4" || iPhoneType == "5" {
-            actionSheet.buttonHeight = 50.0
-            actionSheet.cancelButtonHeight = 70
-        } else {
-            actionSheet.buttonHeight = 60.0
-            actionSheet.cancelButtonHeight = 80
-        }
-        
-        actionSheet.animationDuration = 0.5
-        actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
-        actionSheet.separatorColor = UIColor(red: 255, green: 255, blue: 255, alpha: 0.25)
-        actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
-        let font = UIFont(name: "Avenir", size: 17)
-        actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
-        actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
-        actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-        
-        
         
         actionSheet.addButtonWithTitle("5", image: UIImage(named: "StarFilled"), type: .Default) { (actionSheet) in
             self.addRatingToFirebase(5)
@@ -201,19 +179,22 @@ class DetailVC: UIViewController {
         
         actionSheet.addButtonWithTitle("Favorit", image: UIImage(named: "Checkmark"), type: .Default) { (actionSheet) in
             
-//            try! realm.write {
-//                
-//                if self.song._favorite == "TRUE" {
-//                    self.song._favorite = "FALSE"
-//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).removeValue()
-//                    showFavoriteAlert(false, view: self.view)
-//                } else {
-//                    self.song._favorite = "TRUE"
-//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key).setValue(true)
-//                    showFavoriteAlert(true, view: self.view)
-//                }
-//            }
+            if self.song.favorite == true {
+                showFavoriteAlert(false, view: self.view)
+                self.song.setValue(false, forKey: "favorite")
+                DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key!).removeValue()
+            } else {
+                showFavoriteAlert(true, view: self.view)
+                self.song.setValue(true, forKey: "favorite")
+                DataService.ds.REF_USERS_CURRENT.child("favorites").child(self.song.key!).setValue(true)
+            }
             
+            do {
+                try self.song.managedObjectContext?.save()
+            } catch {
+                let saveError = error as NSError
+                print(saveError)
+            }
             
         }
     }
