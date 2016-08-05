@@ -36,19 +36,24 @@ class DetailVC: UIViewController {
         title = song.title
         titleLbl.text = song.title
         melodyTitleLbl.text = song.melodyTitle
-        createdLbl.text = dateCreatd(song.created!)
+        createdLbl.text = dateCreated(song.created!)
         
         lyricsTextView.text = song.lyrics
-        lyricsTextView.font = UIFont(name: "Avenir-Book", size: 15)
+        lyricsTextView.font = UIFont(name: "Avenir-Roman", size: 15)
         lyricsTextView.textAlignment = .Center
         
         setRating()
         setupMenuButton()
-        setupMenu()
+        setupMenu(actionSheet)
+        setupMenuOptions()
         
     }
     
-    func dateCreatd(timestamp: String) -> String {
+    override func viewDidLayoutSubviews() {
+        lyricsTextView.setContentOffset(CGPointZero, animated: false)
+    }
+    
+    func dateCreated(timestamp: String) -> String {
         let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
         let formatter = NSDateFormatter()
         formatter.dateFormat = "MMM dd, yyyy"
@@ -62,9 +67,7 @@ class DetailVC: UIViewController {
         DataService.ds.REF_SONGS.child(self.song.key!).observeEventType(.Value) { (snapshot: FIRDataSnapshot) in
             
             if let nbrOfVotes = snapshot.childSnapshotForPath("nbr_of_votes").value as? Int {
-                
                 if let totalRatings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
-                    
                     if nbrOfVotes != 0 && totalRatings != 0 {
                         
                         rating = Double(totalRatings) / Double(nbrOfVotes)
@@ -112,11 +115,9 @@ class DetailVC: UIViewController {
         let song_ref = DataService.ds.REF_SONGS.child(self.song.key!)
         song_ref.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
-            if snapshot.childSnapshotForPath("votes").hasChild(getUserID()) {
+            if snapshot.childSnapshotForPath("votes").hasChild(userID()) {
                 
-               print("USER ALREADY VOTED FOR THIS SONG!")
-                
-                if let oldRating = snapshot.childSnapshotForPath("votes").childSnapshotForPath(getUserID()).value as? Int {
+                if let oldRating = snapshot.childSnapshotForPath("votes").childSnapshotForPath(userID()).value as? Int {
                     
                     let difference = rating - oldRating
                     
@@ -145,12 +146,12 @@ class DetailVC: UIViewController {
         delay(0.5) {
             
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
-                song_ref.child("votes").child(getUserID()).setValue(rating)
+                song_ref.child("votes").child(userID()).setValue(rating)
             }
         }
     }
     
-    func setupMenu() {
+    func setupMenuOptions() {
         
         actionSheet.addButtonWithTitle("5", image: UIImage(named: "StarFilled"), type: .Default) { (actionSheet) in
             self.addRatingToFirebase(5)

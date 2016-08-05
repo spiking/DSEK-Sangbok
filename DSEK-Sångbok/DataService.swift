@@ -17,7 +17,7 @@ class DataService {
     
     private var _REF_BASE = URL_BASE
     private var _REF_USERS = URL_BASE.child("users")
-    private var _REF_USERS_CURRENT = URL_BASE.child("users").child(getUserID())
+    private var _REF_USERS_CURRENT = URL_BASE.child("users").child(userID())
     private var _REF_SONGS = URL_BASE.child("songs")
     
     var REF_BASE: FIRDatabaseReference {

@@ -33,20 +33,17 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = "FAVORITER"
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
         tableView.tableFooterView = UIView()
+        tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
         
+        navigationItem.title = "FAVORITER"
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
         searchBar.delegate = self
-        
-        tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
-        
         searchBar.keyboardAppearance = .Dark
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
@@ -54,9 +51,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         
         setupMenu(actionSheet)
         setupMenuOptions()
-        
         loadSortMode()
-        
         loadFavoritesFromCoreData()
     }
     
@@ -112,7 +107,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             }
         }
         
-        self.reloadData()
+        reloadData()
     }
     
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
@@ -125,8 +120,8 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         dismisskeyboard()
         
         inSearchMode = false
-        self.searchBar.text = ""
-        self.reloadData()
+        searchBar.text = ""
+        reloadData()
     }
     
     func setupMenuOptions() {
@@ -303,7 +298,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             cell.delegate = self
             
             let backgroundColorView = UIView()
-            backgroundColorView.backgroundColor = UIColor.blackColor()
+            backgroundColorView.backgroundColor = UIColor(red: 17/255, green: 17/255, blue: 17/255, alpha: 1.0)
             cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
             cell.selectedBackgroundView = backgroundColorView
             
@@ -323,7 +318,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = ""
         
-        if filteredSongs.count == 0 {
+        if filteredSongs.isEmpty && !favoriteSongs.isEmpty {
             str = "Det finns inga sånger som matchar den angivna sökningen."
         } else {
             str = "För att lägga till en favoritsång, swipa sången till vänster."
@@ -336,7 +331,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
         var imgName = ""
         
-        if filteredSongs.count == 0 && favoriteSongs.count != 0 {
+        if filteredSongs.isEmpty && !favoriteSongs.isEmpty {
             imgName = "EmptyDataSearch"
         } else {
             imgName = "EmptyDataStar"

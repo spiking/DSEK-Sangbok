@@ -17,12 +17,21 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    var category = ""
+    private var _category = ""
     private var categorySongs = allSongs
     private var filteredSongs = [SongModel]()
     private var inSearchMode = false
     private var actionSheet = AHKActionSheet(title: "BETYGSÄTT SÅNG")
     private var mode = SORT_MODE.TITEL
+    
+    var category: String {
+        get {
+            return _category
+        }
+        set {
+            _category = newValue
+        }
+    }
     
     enum SORT_MODE: String {
         case TITEL = "TITEL"
@@ -86,8 +95,8 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
             let results = try context.executeFetchRequest(fetchRequest)
             categorySongs = results as! [SongModel]
             loadSortMode()
-        } catch let err as NSError {
-            print(err.debugDescription)
+        } catch let error as NSError {
+            print(error.debugDescription)
         }
     }
     
@@ -307,7 +316,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
             cell.delegate = self
             
             let backgroundColorView = UIView()
-            backgroundColorView.backgroundColor = UIColor.blackColor()
+            backgroundColorView.backgroundColor = UIColor(red: 17/255, green: 17/255, blue: 17/255, alpha: 1.0)
             cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
             cell.selectedBackgroundView = backgroundColorView
             
@@ -326,7 +335,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = ""
         
-        if filteredSongs.count == 0 {
+        if filteredSongs.isEmpty && !categorySongs.isEmpty {
             str = "Det finns inga sånger som matchar den angivna sökningen."
         } else {
             str = "Det finns inga sånger som matchar den valda kategorin."

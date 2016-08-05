@@ -38,16 +38,14 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = "SÅNGER"
-        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
-        
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
-        
+
+        navigationItem.title = "SÅNGER"
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
         searchBar.delegate = self
@@ -56,22 +54,16 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
         
-        setupMenu(actionSheet)
-        setupMenuOptions()
-        
         NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(AllSongsVC.observeNetworkConnection), userInfo: nil, repeats: true)
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: "reload", object: nil)
         
-        // Setup
-        
+        setupMenu(actionSheet)
+        setupMenuOptions()
         loadSortMode()
         authenticateUser()
         loadAllSongsFromCoreData()
-        
-        delay(1) {
-            self.setupData()
-        }
+        setupData()
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -102,7 +94,6 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     func loadCategories() {
         for song in allSongs {
             if !allCategories.contains(song.categoryTitle!) {
-                print(song.categoryTitle!)
                 allCategories.append(song.categoryTitle!)
             }
         }
@@ -139,9 +130,9 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             
             DataService.ds.REF_USERS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
                 
-                if !snapshot.hasChild(getUserID()) {
+                if !snapshot.hasChild(userID()) {
                     let data = ["ACTIVE" : true]
-                    DataService.ds.REF_USERS.child(getUserID()).updateChildValues(data)
+                    DataService.ds.REF_USERS.child(userID()).updateChildValues(data)
                 }
             }
         }
@@ -387,7 +378,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             cell.delegate = self
             
             let backgroundColorView = UIView()
-            backgroundColorView.backgroundColor = UIColor.blackColor()
+            backgroundColorView.backgroundColor = UIColor(red: 17/255, green: 17/255, blue: 17/255, alpha: 1.0)
             cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
             cell.selectedBackgroundView = backgroundColorView
             
@@ -406,7 +397,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = ""
         
-        if filteredSongs.count == 0 && !allSongs.isEmpty {
+        if filteredSongs.isEmpty && !allSongs.isEmpty {
             str = "Det finns inga sånger som matchar den angivna sökningen."
         } else {
             str = "Om sångerna inte hämtas automatiskt, klicka på ikonen nedanför."
@@ -421,7 +412,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         var imgName = ""
         
-        if filteredSongs.count == 0 && !allSongs.isEmpty  {
+        if filteredSongs.isEmpty && !allSongs.isEmpty  {
             imgName = "EmptyDataSearch"
         } else {
             imgName = ""

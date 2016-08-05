@@ -45,7 +45,7 @@ extension NSDate {
         if daysFrom(date)    > 0 { return "\(daysFrom(date)) d"    }
         if hoursFrom(date)   > 0 { return "\(hoursFrom(date)) h"   }
         if minutesFrom(date) > 0 { return "\(minutesFrom(date)) m" }
-        if secondsFrom(date) > 0 { return "\(secondsFrom(date)) s" }
+        if secondsFrom(date) >= 0 { return "\(secondsFrom(date)) s" }
         return ""
     }
 }

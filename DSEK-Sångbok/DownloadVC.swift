@@ -15,6 +15,7 @@ class DownloadVC: UIViewController {
     
     @IBOutlet weak var downloadBtn: UIButton!
     @IBOutlet weak var songCountLbl: UILabel!
+    @IBOutlet weak var dateLbl: UILabel!
     private var songCountBefore = 0
     private var hud = MBProgressHUD()
     
@@ -26,10 +27,7 @@ class DownloadVC: UIViewController {
         downloadBtn.layer.cornerRadius = 20
         downloadBtn.clipsToBounds = true
         
-        let availableSongs = Downloader.downloader.availableSongs
-        songCountLbl.text = "\(Downloader.downloader.availableSongs)"
-        
-        if availableSongs >= 0 {
+        if Downloader.downloader.availableSongs >= 0 {
             songCountLbl.text = "\(Downloader.downloader.availableSongs)"
         } else {
             songCountLbl.text = "0"
@@ -39,15 +37,20 @@ class DownloadVC: UIViewController {
         NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(DownloadVC.updateSongCount(_:)), name: "updateSongCount", object: nil)
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let lastUpdateTimestamp = NSUserDefaults.standardUserDefaults().valueForKey("LAST_UPDATE") as? String {
+            dateLbl.text = "\(lastUpdate(lastUpdateTimestamp))"
+        } else {
+            dateLbl.text = ""
+        }
+    }
+    
     @IBAction func downloadBtnTapped(sender: AnyObject) {
         
         if !isConnectedToNetwork() {
             self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
-            return
-        }
-        
-        if Downloader.downloader.availableSongs == 0 {
-            self.showMessage("Alla sånger har redan hämtats.", type: .Success , options: nil)
             return
         }
         
@@ -56,17 +59,32 @@ class DownloadVC: UIViewController {
         Downloader.downloader.downloadNewSongs()
     }
     
+    func lastUpdate(timestamp: String) -> String {
+        let dateCreated = NSDate(timeIntervalSince1970: Double(timestamp)!)
+        let dateDiff = NSDate().offsetFrom(dateCreated)
+        
+        return dateDiff
+    }
+    
     func showDownloadIndicator() {
         hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
         hud.square = true
     }
     
     func updateSongCount(notification: NSNotification) {
-        print("UPDATE \(Downloader.downloader.availableSongs)")
         let availableSongs = Downloader.downloader.availableSongs
         if availableSongs >= 0 {
-            songCountLbl.text = "\(Downloader.downloader.availableSongs)"
+            songCountLbl.text = "\(availableSongs)"
         }
+        
+        let currentTime = NSDate().timeIntervalSince1970
+        let timeSince = lastUpdate("\(currentTime)")
+        
+        if timeSince != "" {
+            dateLbl.text = "\(timeSince)"
+            NSUserDefaults.standardUserDefaults().setValue("\(currentTime)", forKey: "LAST_UPDATE")
+        }
+
     }
     
     func dismissDownloadIndicator(notification: NSNotification) {

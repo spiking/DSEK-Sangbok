@@ -122,6 +122,14 @@
 			name = Utilities;
 			sourceTree = "<group>";
 		};
+		6FAC40831D54BE64003F6682 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				6F6060921D44E425005DA452 /* DataService.swift */,
+			);
+			name = Services;
+			sourceTree = "<group>";
+		};
 		6FD200141D415F0900A36E41 = {
 			isa = PBXGroup;
 			children = (
@@ -145,12 +153,12 @@
 		6FD2001F1D415F0A00A36E41 /* DSEK-Sångbok */ = {
 			isa = PBXGroup;
 			children = (
+				6FAC40831D54BE64003F6682 /* Services */,
 				6F6060941D454B71005DA452 /* Utilities */,
 				6FD2003A1D415FCA00A36E41 /* Model */,
 				6FD2003C1D415FDB00A36E41 /* Cells */,
 				6FD2003B1D415FD000A36E41 /* Controllers */,
 				6FD200201D415F0A00A36E41 /* AppDelegate.swift */,
-				6F6060921D44E425005DA452 /* DataService.swift */,
 				6FD200241D415F0A00A36E41 /* Main.storyboard */,
 				6FD200271D415F0A00A36E41 /* Assets.xcassets */,
 				6FD200291D415F0A00A36E41 /* LaunchScreen.storyboard */,

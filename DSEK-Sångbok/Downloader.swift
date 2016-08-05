@@ -20,7 +20,6 @@ class Downloader {
     var availableSongs: Int {
         get {
             if let songs = NSUserDefaults.standardUserDefaults().valueForKey("AVAILABLE_SONGS") as? Int {
-                print(songs)
                 return songs - allSongs.count
             } else {
                 return _availableSongs
@@ -50,7 +49,6 @@ class Downloader {
                             let app = UIApplication.sharedApplication().delegate as! AppDelegate
                             let context = app.managedObjectContext
                             let entity = NSEntityDescription.entityForName("SongModel", inManagedObjectContext: context)!
-
                             
                             if self.songDoesNotExist(key) {
                                 
@@ -74,8 +72,8 @@ class Downloader {
                                 
                                 do {
                                     try context.save()
-                                } catch {
-                                    print("Save failed!")
+                                } catch let error as NSError {
+                                    print(error.debugDescription)
                                 }
 
                             } else {
@@ -105,51 +103,6 @@ class Downloader {
         }
     }
     
-    func songDoesNotExist(key: String) -> Bool {
-        
-        let app = UIApplication.sharedApplication().delegate as! AppDelegate
-        let context = app.managedObjectContext
-        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
-        let predicate = NSPredicate(format: "key = %@", key)
-        fetchRequest.predicate = predicate
-        
-        do {
-            let results = try context.executeFetchRequest(fetchRequest)
-            var songs = results as! [SongModel]
-            return songs.isEmpty
-        } catch let error as NSError {
-            print(error.debugDescription)
-        }
-        
-        return false
-    }
-
-    
-    func saveToAllSongs() {
-        let app = UIApplication.sharedApplication().delegate as! AppDelegate
-        let context = app.managedObjectContext
-        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
-        
-        do {
-            let results = try context.executeFetchRequest(fetchRequest)
-            allSongs = results as! [SongModel]
-            saveCategories()
-            NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
-            NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
-        } catch let err as NSError {
-            print(err.debugDescription)
-        }
-    }
-    
-    func saveCategories() {
-        for song in allSongs {
-            if !allCategories.contains(song.categoryTitle!) {
-                print(song.categoryTitle!)
-                allCategories.append(song.categoryTitle!)
-            }
-        }
-    }
-    
     func loadFavorites() {
         DataService.ds.REF_USERS_CURRENT.child("favorites").observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
@@ -164,8 +117,6 @@ class Downloader {
                     let predicate = NSPredicate(format: "key = %@", songKey)
                     fetchRequest.predicate = predicate
                     
-                    print(snap)
-                    
                     do {
                         let results = try context.executeFetchRequest(fetchRequest)
                         var songs = results as! [SongModel]
@@ -179,17 +130,13 @@ class Downloader {
                                 
                                 do {
                                     try song.managedObjectContext?.save()
-                                    print("Set favorite \(favorite) on \(song.title) !")
-                                } catch {
-                                    let saveError = error as NSError
-                                    print(saveError)
+                                } catch let error as NSError {
+                                    print(error.debugDescription)
                                 }
                             }
                         }
-
-                        
-                    } catch let err as NSError {
-                        print(err.debugDescription)
+                    } catch let error as NSError {
+                        print(error.debugDescription)
                     }
                 }
             }
@@ -220,16 +167,13 @@ class Downloader {
                         
                         do {
                             try song.managedObjectContext?.save()
-                        } catch {
-                            let saveError = error as NSError
-                            print(saveError)
+                        } catch let error as NSError {
+                            print(error.debugDescription)
                         }
                     }
-          
                 }
-                
-            } catch let err as NSError {
-                print(err.debugDescription)
+            } catch let error as NSError {
+                print(error.debugDescription)
             }
             
             NSNotificationCenter.defaultCenter().postNotificationName("reloadToplist", object: nil)
@@ -265,15 +209,14 @@ class Downloader {
                                 
                                 do {
                                     try song.managedObjectContext?.save()
-                                } catch {
-                                    let saveError = error as NSError
-                                    print(saveError)
+                                } catch let error as NSError {
+                                    print(error.debugDescription)
                                 }
                             }
                         }
                         
-                    } catch let err as NSError {
-                        print(err.debugDescription)
+                    } catch let error as NSError {
+                        print(error.debugDescription)
                     }
                 }
                 
@@ -305,6 +248,7 @@ class Downloader {
                 }
             }
             
+            NSUserDefaults.standardUserDefaults().setValue("\(NSDate().timeIntervalSince1970)", forKey: "LAST_UPDATE")
             NSUserDefaults.standardUserDefaults().setValue(self._availableSongs, forKey: "AVAILABLE_SONGS")
             NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
         }
@@ -354,8 +298,8 @@ class Downloader {
                             
                             do {
                                 try context.save()
-                            } catch {
-                                print("Save failed!")
+                            } catch let error as NSError {
+                                print(error.debugDescription)
                             }
                             
                         } else {
@@ -388,13 +332,56 @@ class Downloader {
         DataService.ds.REF_SONGS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
             if !snapshot.hasChild(key) {
-                print("Add new song to firebase!")
                 DataService.ds.REF_SONGS.child(key).setValue(song)
                 DataService.ds.REF_SONGS.child(key).child("rating").setValue(0.0)
                 DataService.ds.REF_SONGS.child(key).child("nbr_of_votes").setValue(0)
                 DataService.ds.REF_SONGS.child(key).child("total_ratings").setValue(0)
-            } else {
-                print("Song already in firebase!")
+            }
+        }
+    }
+    
+    
+    func songDoesNotExist(key: String) -> Bool {
+        
+        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = app.managedObjectContext
+        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        let predicate = NSPredicate(format: "key = %@", key)
+        fetchRequest.predicate = predicate
+        
+        do {
+            let results = try context.executeFetchRequest(fetchRequest)
+            var songs = results as! [SongModel]
+            return songs.isEmpty
+        } catch let error as NSError {
+            print(error.debugDescription)
+        }
+        
+        return false
+    }
+    
+    
+    func saveToAllSongs() {
+        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = app.managedObjectContext
+        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        
+        do {
+            let results = try context.executeFetchRequest(fetchRequest)
+            allSongs = results as! [SongModel]
+            saveCategories()
+            NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
+            NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
+        } catch let error as NSError {
+            print(error.debugDescription)
+        }
+    }
+    
+    func saveCategories() {
+        for song in allSongs {
+            if !allCategories.contains(song.categoryTitle!) {
+                print(song.categoryTitle!)
+                allCategories.append(song.categoryTitle!)
             }
         }
     }

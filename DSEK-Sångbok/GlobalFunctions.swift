@@ -13,7 +13,7 @@ import Firebase
 func isUserAuthenticated() {
     DataService.ds.REF_USERS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
         
-        if snapshot.hasChild(getUserID()) {
+        if snapshot.hasChild(userID()) {
             print("Authenticated!")
         } else {
             print("Not Authenticated!")
@@ -75,11 +75,11 @@ func setupMenu(actionSheet: AHKActionSheet) {
     actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
 }
 
-func getUserID() -> String {
+func userID() -> String {
     if let uid = NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) as? String {
         return uid
     } else {
-        return ""
+        return " "
     }
 }
 

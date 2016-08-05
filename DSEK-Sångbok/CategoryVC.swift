@@ -129,7 +129,8 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             cell.configureCell(category)
             
             let backgroundColorView = UIView()
-            backgroundColorView.backgroundColor = UIColor.blackColor()
+            backgroundColorView.backgroundColor = UIColor(red: 17/255, green: 17/255, blue: 17/255, alpha: 1.0)
+            cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
             cell.selectedBackgroundView = backgroundColorView
             
             return cell
@@ -147,7 +148,7 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
         var str = ""
         
-        if filteredCategories.count == 0 {
+        if filteredCategories.isEmpty {
             str = "Det finns inga kategorier som matchar den angivna sökningen."
         } else {
             str = "Det finns i nuläget inga kategorier."
@@ -160,7 +161,7 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
         var imgName = ""
         
-        if filteredCategories.count == 0 && categories.count != 0 {
+        if filteredCategories.isEmpty && !categories.isEmpty {
             imgName = "EmptyDataSearch"
         } else {
             imgName = "EmptyDataStar"
