@@ -35,13 +35,14 @@ class ToplistCell: MGSwipeTableCell {
         self._song = song
         self.songLbl.text = song.title
         self.numberLbl.text = "\(number + 1)."
-        self.yearLbl.text = dateCreated(song.created!)
+        self.yearLbl.text = "(" + dateCreated(song.created!) + ")"
 
         if song.rating == 0.0 {
             self.ratingLbl.text = "-"
         } else {
             if let rating = song.rating as? Double {
-                self.ratingLbl.text = "\(rating)"
+                let ratingRounded = Double(round(10*rating)/10)
+                self.ratingLbl.text = "\(ratingRounded)"
             }
         }
         

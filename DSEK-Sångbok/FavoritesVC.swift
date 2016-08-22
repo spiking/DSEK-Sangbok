@@ -118,7 +118,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
         dismisskeyboard()
-        
         inSearchMode = false
         searchBar.text = ""
         reloadData()
@@ -180,7 +179,6 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         dismisskeyboard()
     }
     
-    
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == nil && searchBar.text != "" {
             inSearchMode = false
@@ -206,7 +204,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             song = favoriteSongs[indexPath.row]
         }
         
-        self.performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
+        performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -214,12 +212,7 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if inSearchMode {
-            return filteredSongs.count
-        } else {
-            return favoriteSongs.count
-        }
+        return inSearchMode ? filteredSongs.count : favoriteSongs.count
     }
     
     func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
@@ -236,21 +229,18 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
         expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
         expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
         expansionSettings.fillOnTrigger = true
-        expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
         
-        if direction == MGSwipeDirection.RightToLeft {
+        switch direction {
+            
+        case .RightToLeft:
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
+                expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+                
                 let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
-                if song.favorite == true {
-                    print("Already favorite")
-                    showFavoriteAlert(false, view: self.view)
-                    song.setValue(false, forKey: "favorite")
-                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
-                } else {
-                    print("Add to favorite")
+                if song.favorite != true {
                     showFavoriteAlert(true, view: self.view)
                     song.setValue(true, forKey: "favorite")
                     DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
@@ -258,19 +248,49 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
                 
                 do {
                     try song.managedObjectContext?.save()
-                    print("Save \(song.title) as favorite!")
-                } catch {
-                    let saveError = error as NSError
-                    print(saveError)
+                } catch let saveError as NSError {
+                    print(saveError.debugDescription)
                 }
+                
+                // Update UI
                 
                 self.loadFavoritesFromCoreData()
                 
                 return true
-                
             })
             
             return [addButton]
+            
+        case .LeftToRight:
+            
+            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.redColor(), callback: { (cell) -> Bool in
+                
+                expansionSettings.expansionColor = UIColor.redColor()
+                
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                
+                if song.favorite == true {
+                    showFavoriteAlert(false, view: self.view)
+                    song.setValue(false, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+                }
+                
+                do {
+                    try song.managedObjectContext?.save()
+                } catch let saveError as NSError {
+                    print(saveError.debugDescription)
+                }
+                
+                // Update UI
+                
+                self.loadFavoritesFromCoreData()
+                
+                return true
+            })
+            
+            return [removeButton]
+        default:
+            break
         }
         
         return nil
@@ -307,44 +327,24 @@ class FavoritesVC: UIViewController, UITableViewDelegate, UITableViewDataSource,
             return SongCell()
         }
     }
-
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = "Inga favoritsånger"
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
-        return NSAttributedString(string: str, attributes: attribute)
+        return NSAttributedString(string: "Inga favoritsånger", attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = ""
-        
-        if filteredSongs.isEmpty && !favoriteSongs.isEmpty {
-            str = "Det finns inga sånger som matchar den angivna sökningen."
-        } else {
-            str = "För att lägga till en favoritsång, swipa sången till vänster."
-        }
-        
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
-        return NSAttributedString(string: str, attributes: attribute)
+        
+        return filteredSongs.isEmpty && !favoriteSongs.isEmpty ? NSAttributedString(string: "Det finns inga sånger som matchar den angivna sökningen.", attributes: attribute) : NSAttributedString(string: "För att lägga till en favoritsång, swipa sången till vänster.", attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        var imgName = ""
-        
-        if filteredSongs.isEmpty && !favoriteSongs.isEmpty {
-            imgName = "EmptyDataSearch"
-        } else {
-            imgName = "EmptyDataStar"
-        }
-        
-        return UIImage(named: imgName)
+        return filteredSongs.isEmpty && !favoriteSongs.isEmpty ? UIImage(named:"EmptyDataSearch") : UIImage(named: "EmptyDataStar")
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
-        if iPhoneType == "4" {
-            return -50
-        }
-        return -70
+        return iPhoneType == "4" ? -50 : -70
     }
     
     func emptyDataSetDidTapView(scrollView: UIScrollView!) {

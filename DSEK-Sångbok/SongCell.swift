@@ -26,7 +26,6 @@ class SongCell: MGSwipeTableCell {
     }
     
     func configureCell(song: SongModel) {
-        
         self._song = song
         self.songTitleLbl.text = song.title
         self.songMelodyLbl.text = song.melodyTitle

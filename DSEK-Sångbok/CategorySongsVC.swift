@@ -48,19 +48,16 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         tableView.emptyDataSetSource = self
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 70
-        
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
         
         searchBar.delegate = self
+        searchBar.keyboardAppearance = .Dark
+        searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
         navigationItem.title = "\(category)".uppercaseString
-        
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
         
         categorySongs = allSongs
-        
-        searchBar.keyboardAppearance = .Dark
-        searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
         
         setupMenu(actionSheet)
         setupMenuOptions()
@@ -68,7 +65,6 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
         
         loadCategorySongs()
-        
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -128,12 +124,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if inSearchMode {
-            return filteredSongs.count
-        } else {
-            return categorySongs.count
-        }
+        return inSearchMode ? filteredSongs.count : categorySongs.count
     }
     
     func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
@@ -162,19 +153,17 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     
     func reloadData() {
         
-        let swedish = NSLocale(localeIdentifier: "sv")
-        
         switch self.mode {
         case .TITEL:
             
             categorySongs = categorySongs.sort {
-                $0.title!.compare($1.title!, locale: swedish) == .OrderedAscending
+                $0.title!.compare($1.title!, locale: SWEDISH) == .OrderedAscending
             }
             
             self.tableView.reloadData()
         case .MELODI:
             categorySongs = categorySongs.sort {
-                $0.melodyTitle!.compare($1.melodyTitle!, locale: swedish) == .OrderedAscending
+                $0.melodyTitle!.compare($1.melodyTitle!, locale: SWEDISH) == .OrderedAscending
             }
             self.tableView.reloadData()
         case .SKAPAD:
@@ -229,8 +218,7 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
             song = categorySongs[indexPath.row]
         }
         
-        self.performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
-        
+        performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -256,21 +244,18 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
         expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
         expansionSettings.fillOnTrigger = true
-        expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
         
-        if direction == MGSwipeDirection.RightToLeft {
+        switch direction {
+            
+        case .RightToLeft:
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
-                var song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
                 
-                if song.favorite == true {
-                    print("Already favorite")
-                    showFavoriteAlert(false, view: self.view)
-                    song.setValue(false, forKey: "favorite")
-                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
-                } else {
-                    print("Add to favorite")
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                
+                if song.favorite != true {
                     showFavoriteAlert(true, view: self.view)
                     song.setValue(true, forKey: "favorite")
                     DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
@@ -278,17 +263,41 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
                 
                 do {
                     try song.managedObjectContext?.save()
-                    print("Save \(song.title) as favorite!")
-                } catch {
-                    let saveError = error as NSError
-                    print(saveError)
+                } catch let saveError as NSError {
+                    print(saveError.debugDescription)
                 }
                 
                 return true
-                
             })
             
             return [addButton]
+            
+        case .LeftToRight:
+            
+            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.redColor(), callback: { (cell) -> Bool in
+                
+                expansionSettings.expansionColor = UIColor.redColor()
+                
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                
+                if song.favorite == true {
+                    showFavoriteAlert(false, view: self.view)
+                    song.setValue(false, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+                }
+                
+                do {
+                    try song.managedObjectContext?.save()
+                } catch let saveError as NSError {
+                    print(saveError.debugDescription)
+                }
+                
+                return true
+            })
+            
+            return [removeButton]
+        default:
+            break
         }
         
         return nil
@@ -327,34 +336,22 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     }
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = "Inga sånger"
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
-        return NSAttributedString(string: str, attributes: attribute)
+        return NSAttributedString(string: "Inga sånger", attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = ""
-        
-        if filteredSongs.isEmpty && !categorySongs.isEmpty {
-            str = "Det finns inga sånger som matchar den angivna sökningen."
-        } else {
-            str = "Det finns inga sånger som matchar den valda kategorin."
-        }
-        
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
-        return NSAttributedString(string: str, attributes: attribute)
+        
+        return filteredSongs.isEmpty && !categorySongs.isEmpty ? NSAttributedString(string:  "Det finns inga sånger som matchar den angivna sökningen.", attributes: attribute) : NSAttributedString(string:  "Det finns inga sånger som matchar den valda kategorin.", attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        var imgName = "EmptyDataSearch"
-        return UIImage(named: imgName)
+        return filteredSongs.isEmpty && !categorySongs.isEmpty ? UIImage(named: "EmptyDataSearch") : UIImage(named: "EmptyDataStar")
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
-        if iPhoneType == "4" {
-            return -50
-        }
-        return -70
+        return iPhoneType == "4" ? -50 : -70
     }
     
     func emptyDataSetDidTapView(scrollView: UIScrollView!) {

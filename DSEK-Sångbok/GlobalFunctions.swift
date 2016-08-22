@@ -46,7 +46,7 @@ func checkiPhoneModel() {
             print("iPhone 6+ or 6S+")
             iPhoneType = "6+"
         default:
-            print("unknown")
+            print("Unknown")
         }
     }
 }
@@ -108,5 +108,5 @@ func showFavoriteAlert(favorite: Bool, view: UIView) {
     
     hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
     hud.customView = UIImageView(image: image)
-    hud.hide(true, afterDelay: 1.0)
+    hud.hide(true, afterDelay: 1.5)
 }

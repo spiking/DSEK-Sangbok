@@ -141,7 +141,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     func observeNetworkConnection() {
         if !isConnectedToNetwork() {
             if !alert {
-                self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+                self.showMessage("Ingen Internetanslutning", type: .Error , options: nil)
                 alert = true
                 hud.hide(true, afterDelay: 0)
             }
@@ -283,7 +283,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             song = allSongs[indexPath.row]
         }
         
-        self.performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
+        performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
         
     }
     
@@ -302,12 +302,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if inSearchMode {
-            return filteredSongs.count
-        } else {
-            return allSongs.count
-        }
+        return inSearchMode ? filteredSongs.count : allSongs.count
     }
     
     func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
@@ -323,19 +318,18 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
         expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
         expansionSettings.fillOnTrigger = true
-        expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
         
-        if direction == MGSwipeDirection.RightToLeft {
+        switch direction {
+            
+        case .RightToLeft:
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
+                expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+                
                 let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
                 
-                if song.favorite == true {
-                    showFavoriteAlert(false, view: self.view)
-                    song.setValue(false, forKey: "favorite")
-                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
-                } else {
+                if song.favorite != true {
                     showFavoriteAlert(true, view: self.view)
                     song.setValue(true, forKey: "favorite")
                     DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
@@ -343,15 +337,41 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
                 
                 do {
                     try song.managedObjectContext?.save()
-                } catch {
-                    let saveError = error as NSError
-                    print(saveError)
+                } catch let saveError as NSError {
+                    print(saveError.debugDescription)
                 }
                 
                 return true
             })
             
             return [addButton]
+            
+        case .LeftToRight:
+            
+            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.redColor(), callback: { (cell) -> Bool in
+                
+                expansionSettings.expansionColor = UIColor.redColor()
+                
+                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                
+                if song.favorite == true {
+                    showFavoriteAlert(false, view: self.view)
+                    song.setValue(false, forKey: "favorite")
+                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+                }
+                
+                do {
+                    try song.managedObjectContext?.save()
+                } catch let saveError as NSError {
+                    print(saveError.debugDescription)
+                }
+                
+                return true
+            })
+            
+            return [removeButton]
+        default:
+            break
         }
         
         return nil
@@ -389,72 +409,41 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = "Inga sånger"
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
-        return NSAttributedString(string: str, attributes: attribute)
+        return NSAttributedString(string: "Inga sånger", attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = ""
-        
-        if filteredSongs.isEmpty && !allSongs.isEmpty {
-            str = "Det finns inga sånger som matchar den angivna sökningen."
-        } else {
-            str = "Om sångerna inte hämtas automatiskt, klicka på ikonen nedanför."
-        }
-        
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
         
-        return NSAttributedString(string: str, attributes: attribute)
+        return filteredSongs.isEmpty && !allSongs.isEmpty ? NSAttributedString(string: "Det finns inga sånger som matchar den angivna sökningen.", attributes: attribute) : NSAttributedString(string: "Om sångerna inte hämtas automatiskt, klicka på ikonen nedanför.", attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        
-        var imgName = ""
-        
-        if filteredSongs.isEmpty && !allSongs.isEmpty  {
-            imgName = "EmptyDataSearch"
-        } else {
-            imgName = ""
-        }
-        
-        return UIImage(named: imgName)
+        return filteredSongs.isEmpty && !allSongs.isEmpty ? UIImage(named:"EmptyDataSearch") : UIImage(named: "")
     }
     
     func buttonImageForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> UIImage! {
-        
-        if allSongs.isEmpty {
-            return UIImage(named: "DownloadMedium")
-        }
-        
-        return UIImage(named: "")
-        
+        return allSongs.isEmpty ? UIImage(named:"DownloadMedium") : UIImage(named: "")
     }
     
     func emptyDataSetDidTapButton(scrollView: UIScrollView!) {
-        
         if !isDownloading {
             if isConnectedToNetwork() {
-                
                 authenticateUser()
-               
                 if allSongs.isEmpty {
                      setupData()
                 } else {
                     self.showMessage("\(allSongs.count) sånger har redan hämtats.", type: .Success , options: nil)
                 }
-               
             } else {
-                self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
+                self.showMessage("Ingen Internetanslutning", type: .Error , options: nil)
             }
         }
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
-        if iPhoneType == "4" {
-            return -50
-        }
-        return -70
+        return iPhoneType == "4" ? -50 : -70
     }
     
     func emptyDataSetDidTapView(scrollView: UIScrollView!) {

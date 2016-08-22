@@ -10,9 +10,9 @@ import UIKit
 import DZNEmptyDataSet
 import CoreData
 
-class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
+class CategoryVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UISearchBarDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource {
     
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
     
     private var categories = allCategories
@@ -22,13 +22,11 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        tableView.delegate = self
-        tableView.dataSource = self
-        tableView.emptyDataSetSource = self
-        tableView.emptyDataSetDelegate = self
-        tableView.estimatedRowHeight = 70
-        tableView.tableFooterView = UIView()
-        tableView.registerNib(UINib(nibName: "CategoryCell", bundle: nil), forCellReuseIdentifier: "CategoryCell")
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.emptyDataSetSource = self
+        collectionView.emptyDataSetDelegate = self
+        collectionView.registerNib(UINib(nibName: "CategoryCell", bundle: nil), forCellWithReuseIdentifier: "CategoryCell")
         
         searchBar.delegate = self
         searchBar.keyboardAppearance = .Dark
@@ -41,32 +39,28 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        tableView.reloadData()
+        collectionView.reloadData()
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         inSearchMode = false
     }
-    
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
-        if inSearchMode {
-            return filteredCategories.count
-        } else {
-            return categories.count
-        }
+    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return inSearchMode ? filteredCategories.count : categories.count
     }
+
     
     func dismisskeyboard() {
         view.endEditing(true)
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
         dismisskeyboard()
         
@@ -78,7 +72,23 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             category = categories[indexPath.row]
         }
         
-        self.performSegueWithIdentifier("categorySongsVC", sender: category)
+        performSegueWithIdentifier("categorySongsVC", sender: category)
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+        
+        let numberOfColumns: CGFloat = 3
+        let itemWidth = (CGRectGetWidth(self.collectionView!.frame) - 2 - (numberOfColumns - 1)) / numberOfColumns
+        
+        return CGSizeMake(itemWidth, itemWidth)
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
+        return 2.0
+    }
+    
+    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
+        return 2.0
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -93,10 +103,9 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func searchBarCancelButtonClicked(searchBar: UISearchBar) {
         dismisskeyboard()
-        
         inSearchMode = false
         searchBar.text = ""
-        tableView.reloadData()
+        collectionView.reloadData()
     }
     
     func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
@@ -109,12 +118,12 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             filteredCategories = categories.filter({ $0.lowercaseString.rangeOfString(lower) != nil })
         }
         
-        tableView.reloadData()
+        collectionView.reloadData()
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
-        if let cell = tableView.dequeueReusableCellWithIdentifier("CategoryCell") as? CategoryCell {
+        if let cell = collectionView.dequeueReusableCellWithReuseIdentifier("CategoryCell", forIndexPath: indexPath) as? CategoryCell {
             
             var category: String
             
@@ -123,8 +132,6 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             } else {
                 category = categories[indexPath.row]
             }
-            
-            print(category)
             
             cell.configureCell(category)
             
@@ -138,43 +145,24 @@ class CategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             return CategoryCell()
         }
     }
-    
+
     func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = "Inga kategorier"
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
-        return NSAttributedString(string: str, attributes: attribute)
+        return NSAttributedString(string: "Inga kategorier", attributes: attribute)
     }
     
     func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
-        var str = ""
-        
-        if filteredCategories.isEmpty {
-            str = "Det finns inga kategorier som matchar den angivna sökningen."
-        } else {
-            str = "Det finns i nuläget inga kategorier."
-        }
-        
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
-        return NSAttributedString(string: str, attributes: attribute)
+        
+        return filteredCategories.isEmpty && !allCategories.isEmpty ? NSAttributedString(string: "Det finns inga kategorier som matchar den angivna sökningen.", attributes: attribute) : NSAttributedString(string: "Det finns i nuläget inga kategorier.", attributes: attribute)
     }
     
     func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
-        var imgName = ""
-        
-        if filteredCategories.isEmpty && !categories.isEmpty {
-            imgName = "EmptyDataSearch"
-        } else {
-            imgName = "EmptyDataStar"
-        }
-        
-        return UIImage(named: imgName)
+        return filteredCategories.isEmpty && !categories.isEmpty ? UIImage(named: "EmptyDataSearch") : UIImage(named: "EmptyDataStar")
     }
     
     func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
-        if iPhoneType == "4" {
-            return -50
-        }
-        return -70
+        return iPhoneType == "4" ? -50 : -70
     }
     
     func emptyDataSetDidTapView(scrollView: UIScrollView!) {

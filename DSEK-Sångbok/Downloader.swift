@@ -32,8 +32,6 @@ class Downloader {
     
     func downloadSongsFromFirebase() {
         
-        var count = 0
-        
         DataService.ds.REF_SONGS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
             
             if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
@@ -44,8 +42,6 @@ class Downloader {
                         
                         if let title = songData["title"] as? String, let created = songData["created"] as? String, let lyrics = songData["lyrics"] as? String, let categoryTitle = songData["categoryTitle"] as? String, let rating = songData["rating"] as? Double {
                             
-                            count += 1
-                            
                             let app = UIApplication.sharedApplication().delegate as! AppDelegate
                             let context = app.managedObjectContext
                             let entity = NSEntityDescription.entityForName("SongModel", inManagedObjectContext: context)!
@@ -54,16 +50,23 @@ class Downloader {
                                 
                                 let songModel = SongModel(entity: entity, insertIntoManagedObjectContext: context)
                                 
-                                songModel.title = title
+                                // Decode JSON
+                                
+                                let decodedTitle = String(htmlEncodedString: title)
+                                let decodedLyrics = String(htmlEncodedString: lyrics)
+                                let decodedCategoryTitle = String(htmlEncodedString: categoryTitle)
+                                
+                                songModel.title = decodedTitle
                                 songModel.created = created
-                                songModel.lyrics = lyrics
-                                songModel.categoryTitle = categoryTitle
+                                songModel.lyrics = decodedLyrics
+                                songModel.categoryTitle = decodedCategoryTitle
                                 songModel.rating = rating
                                 songModel.favorite = false
                                 songModel.key = key
                                 
                                 if let melodyTitle = songData["melodyTitle"] as? String {
-                                    songModel.melodyTitle = melodyTitle
+                                    let decodedMelodyTitle = String(htmlEncodedString: melodyTitle)
+                                    songModel.melodyTitle = decodedMelodyTitle
                                 } else {
                                     songModel.melodyTitle = "Okänd"
                                 }
@@ -78,17 +81,6 @@ class Downloader {
 
                             } else {
                                 print("Song already exists!")
-                            }
-
-                            if count == 927 {
-                                
-                                self.loadFavorites()
-                                self.saveToAllSongs()
-                                
-                                NSNotificationCenter.defaultCenter().postNotificationName("updateSongCount", object: nil)
-                                NSNotificationCenter.defaultCenter().postNotificationName("reload", object: nil)
-                                
-                                return
                             }
                         }
                     }
@@ -280,16 +272,23 @@ class Downloader {
                             
                             let songModel = SongModel(entity: entity, insertIntoManagedObjectContext: context)
                             
-                            songModel.title = title
+                            // Decode JSON
+                            
+                            let decodedTitle = String(htmlEncodedString: title)
+                            let decodedLyrics = String(htmlEncodedString: lyrics)
+                            let decodedCategoryTitle = String(htmlEncodedString: categoryTitle)
+                            
+                            songModel.title = decodedTitle
                             songModel.created = created
-                            songModel.lyrics = lyrics
-                            songModel.categoryTitle = categoryTitle
+                            songModel.lyrics = decodedLyrics
+                            songModel.categoryTitle = decodedCategoryTitle
                             songModel.rating = 0
                             songModel.favorite = false
                             songModel.key = key
                             
                             if let melodyTitle = songData["melodyTitle"] as? String {
-                                songModel.melodyTitle = melodyTitle
+                                let decodedMelodyTitle = String(htmlEncodedString: melodyTitle)
+                                songModel.melodyTitle = decodedMelodyTitle
                             } else {
                                 songModel.melodyTitle = "Okänd"
                             }
@@ -386,6 +385,5 @@ class Downloader {
         }
     }
 }
-
 
 

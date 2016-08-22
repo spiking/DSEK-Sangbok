@@ -1,5 +1,5 @@
 //
-//  DownloadVC.swift
+//  MoreVC.swift
 //  DSEK-Sångbok
 //
 //  Created by Adam Thuvesen on 2016-07-28.
@@ -10,31 +10,32 @@ import UIKit
 import MBProgressHUD
 import Alamofire
 import Firebase
+import MessageUI
 
-class DownloadVC: UIViewController {
+class MoreVC: UIViewController, MFMailComposeViewControllerDelegate {
     
     @IBOutlet weak var downloadBtn: UIButton!
+    @IBOutlet weak var feedbackBtn: UIButton!
     @IBOutlet weak var songCountLbl: UILabel!
     @IBOutlet weak var dateLbl: UILabel!
+
     private var songCountBefore = 0
     private var hud = MBProgressHUD()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationItem.title = "LADDA NER"
+        navigationItem.title = "MER"
 
         downloadBtn.layer.cornerRadius = 20
         downloadBtn.clipsToBounds = true
+        feedbackBtn.layer.cornerRadius = 20
+        feedbackBtn.clipsToBounds = true
         
-        if Downloader.downloader.availableSongs >= 0 {
-            songCountLbl.text = "\(Downloader.downloader.availableSongs)"
-        } else {
-            songCountLbl.text = "0"
-        }
+        setupSongCount()
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(DownloadVC.dismissDownloadIndicator(_:)), name: "dismissDownloadIndicator", object: nil)
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(DownloadVC.updateSongCount(_:)), name: "updateSongCount", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MoreVC.dismissDownloadIndicator(_:)), name: "dismissDownloadIndicator", object: nil)
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(MoreVC.updateSongCount(_:)), name: "updateSongCount", object: nil)
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -47,16 +48,12 @@ class DownloadVC: UIViewController {
         }
     }
     
-    @IBAction func downloadBtnTapped(sender: AnyObject) {
-        
-        if !isConnectedToNetwork() {
-            self.showMessage("Ingen internetanslutning", type: .Error , options: nil)
-            return
+    func setupSongCount() {
+        if Downloader.downloader.availableSongs >= 0 {
+            songCountLbl.text = "\(Downloader.downloader.availableSongs)"
+        } else {
+            songCountLbl.text = "0"
         }
-        
-        showDownloadIndicator()
-        songCountBefore = allSongs.count
-        Downloader.downloader.downloadNewSongs()
     }
     
     func lastUpdate(timestamp: String) -> String {
@@ -84,7 +81,22 @@ class DownloadVC: UIViewController {
             dateLbl.text = "\(timeSince)"
             NSUserDefaults.standardUserDefaults().setValue("\(currentTime)", forKey: "LAST_UPDATE")
         }
-
+    }
+    
+    
+    func sendEmail() {
+        if MFMailComposeViewController.canSendMail() {
+            let mail = MFMailComposeViewController()
+            mail.mailComposeDelegate = self
+            mail.setToRecipients(["a.thuvesen@gmail.com"])
+            presentViewController(mail, animated: true, completion: nil)
+        } else {
+            self.showMessage("Ett fel uppstod med email-klienten", type: .Error , options: nil)
+        }
+    }
+    
+    func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        controller.dismissViewControllerAnimated(true, completion: nil)
     }
     
     func dismissDownloadIndicator(notification: NSNotification) {
@@ -98,4 +110,21 @@ class DownloadVC: UIViewController {
             self.showMessage("Alla sånger har redan hämtats.", type: .Success , options: nil)
         }
     }
+    
+    @IBAction func downloadBtnTapped(sender: AnyObject) {
+        
+        if !isConnectedToNetwork() {
+            self.showMessage("Ingen Internetanslutning", type: .Error , options: nil)
+            return
+        }
+        
+        showDownloadIndicator()
+        songCountBefore = allSongs.count
+        Downloader.downloader.downloadNewSongs()
+    }
+    
+    @IBAction func feedbackBtnTapped(sender: AnyObject) {
+        sendEmail()
+    }
+
 }

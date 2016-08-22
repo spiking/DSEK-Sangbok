@@ -23,23 +23,11 @@
                                     <constraint firstAttribute="width" constant="150" id="Nnj-HU-7tM"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Copyright © 2016 Adam Thuvesen. All rights reserved." textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zPL-Ea-0LM">
-                                <rect key="frame" x="193" y="536" width="215" height="44"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="44" id="raM-0o-Fsb"/>
-                                    <constraint firstAttribute="width" constant="215" id="z2Q-U9-cyZ"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
                         </subviews>
-                        <color key="backgroundColor" red="0.090196078431372548" green="0.090196078431372548" blue="0.090196078431372548" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.094117647058823528" green="0.094117647058823528" blue="0.094117647058823528" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="vRO-tf-nWT" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="19s-bt-Mv3"/>
                             <constraint firstItem="vRO-tf-nWT" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="IbT-0K-Ync"/>
-                            <constraint firstItem="zPL-Ea-0LM" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="JO0-Nx-4GU"/>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="zPL-Ea-0LM" secondAttribute="bottom" constant="20" id="idB-sF-x9k"/>
                         </constraints>
                     </view>
                 </viewController>
