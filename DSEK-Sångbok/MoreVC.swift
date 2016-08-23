@@ -86,6 +86,10 @@ class MoreVC: UIViewController, MFMailComposeViewControllerDelegate {
     
     func sendEmail() {
         if MFMailComposeViewController.canSendMail() {
+            UINavigationBar.appearance().tintColor = UIColor.blueColor()
+            UINavigationBar.appearance().titleTextAttributes = [
+                NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 15)!, NSForegroundColorAttributeName: UIColor.blackColor()
+            ]
             let mail = MFMailComposeViewController()
             mail.mailComposeDelegate = self
             mail.setToRecipients(["a.thuvesen@gmail.com"])
@@ -96,6 +100,10 @@ class MoreVC: UIViewController, MFMailComposeViewControllerDelegate {
     }
     
     func mailComposeController(controller: MFMailComposeViewController, didFinishWithResult result: MFMailComposeResult, error: NSError?) {
+        UINavigationBar.appearance().tintColor = UIColor.whiteColor()
+        UINavigationBar.appearance().titleTextAttributes = [
+            NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 15)!, NSForegroundColorAttributeName: UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+        ]
         controller.dismissViewControllerAnimated(true, completion: nil)
     }
     
@@ -126,5 +134,4 @@ class MoreVC: UIViewController, MFMailComposeViewControllerDelegate {
     @IBAction func feedbackBtnTapped(sender: AnyObject) {
         sendEmail()
     }
-
 }

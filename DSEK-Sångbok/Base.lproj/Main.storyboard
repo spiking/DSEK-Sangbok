@@ -558,10 +558,10 @@
         <scene sceneID="AER-H5-npl">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="D3y-1C-aq9" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Sånger" image="TabBarMusicEmpty" selectedImage="TabBarMusicFilled" id="yVe-PR-EXK">
+                    <tabBarItem key="tabBarItem" title="Sånger" image="TabBarMusicFilled" selectedImage="TabBarMusicFilled" id="yVe-PR-EXK">
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                                <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="value" red="0.94117647058823528" green="0.50588235294117645" blue="0.63529411764705879" alpha="1" colorSpace="calibratedRGB"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </tabBarItem>
@@ -588,10 +588,10 @@
         <scene sceneID="vkZ-qx-SG9">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="3bj-Wq-w4X" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Favoriter" image="TabBarStarEmpty" selectedImage="TabBarStarFilled" id="ZlL-4g-Oyk" customClass="RAMAnimatedTabBarItem" customModule="RAMAnimatedTabBarController">
+                    <tabBarItem key="tabBarItem" title="Favoriter" image="TabBarStarFilled" selectedImage="TabBarStarFilled" id="ZlL-4g-Oyk">
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                                <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="value" red="0.94117647058823528" green="0.50588235294117645" blue="0.63529411764705879" alpha="1" colorSpace="calibratedRGB"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </tabBarItem>
@@ -618,10 +618,10 @@
         <scene sceneID="OsL-gV-OqU">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="TyZ-Y2-QOR" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Mer" image="TabBarMoreEmpty" selectedImage="TabBarMoreFilled" id="IFd-IC-uNC">
+                    <tabBarItem key="tabBarItem" title="Mer" image="TabBarMoreFilled" selectedImage="TabBarMoreFilled" id="IFd-IC-uNC">
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                                <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="value" red="0.94117647058823528" green="0.50588235294117645" blue="0.63529411764705879" alpha="1" colorSpace="calibratedRGB"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </tabBarItem>
@@ -644,10 +644,10 @@
         <scene sceneID="hUr-HO-wmb">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="kLL-RK-vvN" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Topplista" image="TabbarToplistEmpty" selectedImage="TabBarToplistFilled" id="r3l-fh-CD1" customClass="RAMAnimatedTabBarItem" customModule="RAMAnimatedTabBarController">
+                    <tabBarItem key="tabBarItem" title="Topplista" image="TabBarToplistFilled" selectedImage="TabBarToplistFilled" id="r3l-fh-CD1" customClass="RAMAnimatedTabBarItem" customModule="RAMAnimatedTabBarController">
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                                <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="value" red="0.94117647058823528" green="0.50588235294117645" blue="0.63529411764705879" alpha="1" colorSpace="calibratedRGB"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </tabBarItem>
@@ -780,10 +780,10 @@
         <scene sceneID="yFT-JU-t6h">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ljd-FF-q1e" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Kategorier" image="TabBarListEmpty" selectedImage="TabBarListFilled" id="ACA-7P-l8e">
+                    <tabBarItem key="tabBarItem" title="Kategorier" image="TabBarListFilled" selectedImage="TabBarListFilled" id="ACA-7P-l8e">
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
-                                <color key="value" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="value" red="0.94117647058823528" green="0.50588235294117645" blue="0.63529411764705879" alpha="1" colorSpace="calibratedRGB"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </tabBarItem>
@@ -806,16 +806,11 @@
         </scene>
     </scenes>
     <resources>
-        <image name="TabBarListEmpty" width="25" height="25"/>
         <image name="TabBarListFilled" width="25" height="25"/>
-        <image name="TabBarMoreEmpty" width="25" height="25"/>
         <image name="TabBarMoreFilled" width="25" height="25"/>
-        <image name="TabBarMusicEmpty" width="25" height="25"/>
         <image name="TabBarMusicFilled" width="25" height="25"/>
-        <image name="TabBarStarEmpty" width="25" height="25"/>
         <image name="TabBarStarFilled" width="25" height="25"/>
         <image name="TabBarToplistFilled" width="25" height="25"/>
-        <image name="TabbarToplistEmpty" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="SMH-XV-P29"/>
