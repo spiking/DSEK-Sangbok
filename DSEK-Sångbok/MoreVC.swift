@@ -95,7 +95,9 @@ class MoreVC: UIViewController, MFMailComposeViewControllerDelegate {
             mail.setToRecipients(["a.thuvesen@gmail.com"])
             presentViewController(mail, animated: true, completion: nil)
         } else {
-            self.showMessage("Ett fel uppstod med email-klienten", type: .Error , options: nil)
+            let alert = UIAlertController(title: "Inget e-postkonto tillgängligt.", message: "Det verkar som du inte har anslutit ett e-postkonto till mailklienten på din iOS-enhet.", preferredStyle: UIAlertControllerStyle.Alert)
+            alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.Default, handler: nil))
+            self.presentViewController(alert, animated: true, completion: nil)
         }
     }
     

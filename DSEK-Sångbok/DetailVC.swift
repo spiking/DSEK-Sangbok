@@ -56,7 +56,7 @@ class DetailVC: UIViewController {
         let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
         let formatter = NSDateFormatter()
         formatter.dateFormat = "MMM dd, yyyy"
-        return formatter.stringFromDate(date)
+        return formatter.stringFromDate(date).capitalizedString
     }
     
     func setRating() {

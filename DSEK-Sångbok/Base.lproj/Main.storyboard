@@ -108,16 +108,7 @@
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="0" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Iap-g6-nM1">
                                 <rect key="frame" x="158" y="81" width="43" height="25"/>
                                 <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="15"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Om du har hittat en bugg, har förslag på förbättringar eller vill ge feedback - kan du göra det nedan." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MU4-K4-ax0">
-                                <rect key="frame" x="20" y="210" width="560" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="noJ-7y-6Gf"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="15"/>
-                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="8Ii-El-fel">
@@ -148,6 +139,15 @@
                                 </constraints>
                                 <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="15"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Om du har förslag på förbättringar eller vill ge  allmän feedback, klicka nedan." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MU4-K4-ax0">
+                                <rect key="frame" x="20" y="210" width="560" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="noJ-7y-6Gf"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Avenir-Medium" family="Avenir" pointSize="15"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
@@ -780,7 +780,7 @@
         <scene sceneID="yFT-JU-t6h">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="ljd-FF-q1e" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Kategorier" image="TabBarListFilled" selectedImage="TabBarListFilled" id="ACA-7P-l8e">
+                    <tabBarItem key="tabBarItem" title="Kategorier" image="TabBarCategoriesFilled" selectedImage="TabBarCategoriesFilled" id="ACA-7P-l8e">
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="color" keyPath="tintColor">
                                 <color key="value" red="0.94117647058823528" green="0.50588235294117645" blue="0.63529411764705879" alpha="1" colorSpace="calibratedRGB"/>
@@ -806,7 +806,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="TabBarListFilled" width="25" height="25"/>
+        <image name="TabBarCategoriesFilled" width="25" height="25"/>
         <image name="TabBarMoreFilled" width="25" height="25"/>
         <image name="TabBarMusicFilled" width="25" height="25"/>
         <image name="TabBarStarFilled" width="25" height="25"/>

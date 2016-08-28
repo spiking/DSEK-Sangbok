@@ -11,6 +11,7 @@ import Firebase
 import Alamofire
 import CoreData
 
+
 class Downloader {
     
     static let downloader =  Downloader()
@@ -50,11 +51,13 @@ class Downloader {
                                 
                                 let songModel = SongModel(entity: entity, insertIntoManagedObjectContext: context)
                                 
-                                // Decode JSON
+                                // Decode JSON (HTML)
                                 
-                                let decodedTitle = String(htmlEncodedString: title)
-                                let decodedLyrics = String(htmlEncodedString: lyrics)
-                                let decodedCategoryTitle = String(htmlEncodedString: categoryTitle)
+                                print("Save \(key)")
+                                
+                                let decodedTitle = title.decodeHTMLEntities().decodedString
+                                let decodedLyrics = lyrics.decodeHTMLEntities().decodedString
+                                let decodedCategoryTitle = categoryTitle.decodeHTMLEntities().decodedString
                                 
                                 songModel.title = decodedTitle
                                 songModel.created = created
@@ -65,7 +68,7 @@ class Downloader {
                                 songModel.key = key
                                 
                                 if let melodyTitle = songData["melodyTitle"] as? String {
-                                    let decodedMelodyTitle = String(htmlEncodedString: melodyTitle)
+                                    let decodedMelodyTitle = melodyTitle.decodeHTMLEntities().decodedString
                                     songModel.melodyTitle = decodedMelodyTitle
                                 } else {
                                     songModel.melodyTitle = "Okänd"
@@ -272,11 +275,11 @@ class Downloader {
                             
                             let songModel = SongModel(entity: entity, insertIntoManagedObjectContext: context)
                             
-                            // Decode JSON
+                            // Decode JSON (HTML)
                             
-                            let decodedTitle = String(htmlEncodedString: title)
-                            let decodedLyrics = String(htmlEncodedString: lyrics)
-                            let decodedCategoryTitle = String(htmlEncodedString: categoryTitle)
+                            let decodedTitle = title.decodeHTMLEntities().decodedString
+                            let decodedLyrics = lyrics.decodeHTMLEntities().decodedString
+                            let decodedCategoryTitle = categoryTitle.decodeHTMLEntities().decodedString
                             
                             songModel.title = decodedTitle
                             songModel.created = created
@@ -287,7 +290,7 @@ class Downloader {
                             songModel.key = key
                             
                             if let melodyTitle = songData["melodyTitle"] as? String {
-                                let decodedMelodyTitle = String(htmlEncodedString: melodyTitle)
+                                let decodedMelodyTitle = melodyTitle.decodeHTMLEntities().decodedString
                                 songModel.melodyTitle = decodedMelodyTitle
                             } else {
                                 songModel.melodyTitle = "Okänd"

@@ -11,7 +11,7 @@ target 'DSEK-Sångbok' do
   pod 'Firebase/Auth'
   pod 'Alamofire', '~> 3.4'
   pod 'DZNEmptyDataSet'
-  pod "GSMessages"
+  pod 'GSMessages'
   pod 'MGSwipeTableCell'
   # Pods for DSEK-Sångbok
 end
