@@ -47,7 +47,7 @@ class Downloader {
                             let context = app.managedObjectContext
                             let entity = NSEntityDescription.entityForName("SongModel", inManagedObjectContext: context)!
                             
-                            if self.songDoesNotExist(key) {
+                            if self.songDoesNotExist(key) && title != "Brev till Staben (och Martin)" {
                                 
                                 let songModel = SongModel(entity: entity, insertIntoManagedObjectContext: context)
                                 
@@ -74,6 +74,7 @@ class Downloader {
                                     songModel.melodyTitle = "Okänd"
                                 }
                                 
+                                
                                 context.insertObject(songModel)
                                 
                                 do {
@@ -81,7 +82,7 @@ class Downloader {
                                 } catch let error as NSError {
                                     print(error.debugDescription)
                                 }
-
+                                
                             } else {
                                 print("Song already exists!")
                             }
@@ -117,7 +118,7 @@ class Downloader {
                         var songs = results as! [SongModel]
                         
                         if !songs.isEmpty {
-
+                            
                             var song = songs[0]
                             
                             if let favorite = snap.value as? Bool {
@@ -140,7 +141,7 @@ class Downloader {
     
     func toplistObserver() {
         
-         DataService.ds.REF_SONGS.observeEventType(.ChildChanged) { (snapshot: FIRDataSnapshot!) in
+        DataService.ds.REF_SONGS.observeEventType(.ChildChanged) { (snapshot: FIRDataSnapshot!) in
             
             let app = UIApplication.sharedApplication().delegate as! AppDelegate
             let context = app.managedObjectContext
@@ -155,15 +156,21 @@ class Downloader {
                 
                 if !songs.isEmpty {
                     
-                    if let rating = snapshot.childSnapshotForPath("rating").value as? Double {
+                    if let songTitle = snapshot.childSnapshotForPath("title").value as? String {
                         
-                        var song = songs[0]
-                        song.setValue(rating, forKey: "rating")
-                        
-                        do {
-                            try song.managedObjectContext?.save()
-                        } catch let error as NSError {
-                            print(error.debugDescription)
+                        if songTitle != "Brev till Staben (och Martin)" {
+                            
+                            if let rating = snapshot.childSnapshotForPath("rating").value as? Double {
+                                
+                                var song = songs[0]
+                                song.setValue(rating, forKey: "rating")
+                                
+                                do {
+                                    try song.managedObjectContext?.save()
+                                } catch let error as NSError {
+                                    print(error.debugDescription)
+                                }
+                            }
                         }
                     }
                 }
@@ -197,15 +204,22 @@ class Downloader {
                         
                         if !songs.isEmpty {
                             
-                            var song = songs[0]
-                            
-                            if let rating = snap.childSnapshotForPath("rating").value as? Double {
-                                song.setValue(rating, forKey: "rating")
+                            if let songTitle = snap.childSnapshotForPath("title").value as? String {
                                 
-                                do {
-                                    try song.managedObjectContext?.save()
-                                } catch let error as NSError {
-                                    print(error.debugDescription)
+                                if songTitle != "Brev till Staben (och Martin)" {
+                                    
+                                    var song = songs[0]
+                                    
+                                    if let rating = snap.childSnapshotForPath("rating").value as? Double {
+                                        song.setValue(rating, forKey: "rating")
+                                        
+                                        do {
+                                            try song.managedObjectContext?.save()
+                                        } catch let error as NSError {
+                                            print(error.debugDescription)
+                                        }
+                                    }
+                                    
                                 }
                             }
                         }
@@ -236,9 +250,10 @@ class Downloader {
                 for (key, value) in dict {
                     
                     if let title = value["title"] as? String, let created = value["created"] as? String, let lyrics = value["lyrics"] as? String, let categoryTitle = value["categoryTitle"] as? String {
-                    
-                        self._availableSongs += 1
                         
+                        if title != "Brev till Staben (och Martin)" {
+                            self._availableSongs += 1
+                        }
                     }
                 }
             }
@@ -271,7 +286,9 @@ class Downloader {
                         let context = app.managedObjectContext
                         let entity = NSEntityDescription.entityForName("SongModel", inManagedObjectContext: context)!
                         
-                        if self.songDoesNotExist(key) {
+                        // Stab song hidden
+                        
+                        if self.songDoesNotExist(key) &&  title != "Brev till Staben (och Martin)" {
                             
                             let songModel = SongModel(entity: entity, insertIntoManagedObjectContext: context)
                             
@@ -304,20 +321,19 @@ class Downloader {
                                 print(error.debugDescription)
                             }
                             
+                            // Save to firebase if it does not exist
+                            
+                            self.saveNewSongToFirebase(key, song: songData as! Dictionary<String, AnyObject>)
+                            
+                            if !allCategories.contains(categoryTitle) {
+                                allCategories.append(categoryTitle)
+                            }
+                            
+                            self._availableSongs += 1
+                            
                         } else {
                             print("Song already exists!")
                         }
-                        
-                        // Save to firebase if it does not exist
-                        
-                        self.saveNewSongToFirebase(key, song: songData as! Dictionary<String, AnyObject>)
-                        
-                        if !allCategories.contains(categoryTitle) {
-                            allCategories.append(categoryTitle)
-                        }
-
-                        self._availableSongs += 1
-                        
                     }
                 }
             }

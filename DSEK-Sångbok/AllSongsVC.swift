@@ -44,13 +44,16 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
         tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
-
+        
         navigationItem.title = "SÅNGER"
         navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
         
         searchBar.delegate = self
         searchBar.keyboardAppearance = .Dark
         searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
+        
+        // If available, remove stab song
+        removeStabSong()
         
         UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
         
@@ -89,6 +92,36 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         } catch let err as NSError {
             print(err.debugDescription)
         }
+    }
+    
+    func removeStabSong() {
+        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let context = app.managedObjectContext
+        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        
+        let title = "Brev till Staben (och Martin)"
+        let predicate = NSPredicate(format: "title = %@", title)
+        fetchRequest.predicate = predicate
+        
+        do {
+            let results = try context.executeFetchRequest(fetchRequest)
+            let fetchedSongs = results as! [SongModel]
+            
+            for song in fetchedSongs {
+
+                context.deleteObject(song)
+                
+                do {
+                    try context.save()
+                } catch let error as NSError {
+                    print(error.debugDescription)
+                }
+            }
+        } catch let err as NSError {
+            print(err.debugDescription)
+        }
+        
+        loadSortMode()
     }
     
     func loadCategories() {
@@ -212,7 +245,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     }
     
     func setupMenuOptions() {
-
+        
         actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
             self.mode = .TITEL
             self.reloadData()
@@ -432,7 +465,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             if isConnectedToNetwork() {
                 authenticateUser()
                 if allSongs.isEmpty {
-                     setupData()
+                    setupData()
                 } else {
                     self.showMessage("\(allSongs.count) sånger har redan hämtats.", type: .Success , options: nil)
                 }
