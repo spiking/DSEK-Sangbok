@@ -14,18 +14,18 @@ class SongCell: MGSwipeTableCell {
     @IBOutlet weak var songTitleLbl: UILabel!
     @IBOutlet weak var songMelodyLbl: UILabel!
     
-    private var _song: SongModel!
+    fileprivate var _song: SongModel!
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.userInteractionEnabled = true
+        self.isUserInteractionEnabled = true
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
     
-    func configureCell(song: SongModel) {
+    func configureCell(_ song: SongModel) {
         self._song = song
         self.songTitleLbl.text = song.title
         self.songMelodyLbl.text = song.melodyTitle

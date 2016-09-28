@@ -12,8 +12,8 @@ import Firebase
 
 class DetailVC: UIViewController {
     
-    private var actionSheet = AHKActionSheet(title: "BETYGSÄTT SONG")
-    private var _song: SongModel!
+    fileprivate var actionSheet = AHKActionSheet(title: "BETYGSÄTT SONG")
+    fileprivate var _song: SongModel!
     
     var song: SongModel {
         get {
@@ -40,37 +40,40 @@ class DetailVC: UIViewController {
         
         lyricsTextView.text = song.lyrics
         lyricsTextView.font = UIFont(name: "Avenir-Roman", size: 15)
-        lyricsTextView.textAlignment = .Center
+        lyricsTextView.textAlignment = .center
+        
+        lyricsTextView.isScrollEnabled = false
+        lyricsTextView.isScrollEnabled = true
         
         setRating()
         setupMenuButton()
-        setupMenu(actionSheet)
+        setupMenu(actionSheet!)
         setupMenuOptions()
     }
     
     override func viewDidLayoutSubviews() {
-        lyricsTextView.setContentOffset(CGPointZero, animated: false)
+        lyricsTextView.setContentOffset(CGPoint.zero, animated: false)
     }
     
-    func dateCreated(timestamp: String) -> String {
-        let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
-        let formatter = NSDateFormatter()
+    func dateCreated(_ timestamp: String) -> String {
+        let date = Date(timeIntervalSince1970: Double(timestamp)!)
+        let formatter = DateFormatter()
         formatter.dateFormat = "MMM dd, yyyy"
-        return formatter.stringFromDate(date).capitalizedString
+        return formatter.string(from: date).capitalized
     }
     
     func setRating() {
         
         if !isConnectedToNetwork() {
-            self.showMessage("Ingen Internetanslutning", type: .Error , options: nil)
+            self.showMessage("Ingen Internetanslutning", type: .error , options: nil)
         }
         
         var rating: Double = 0
         
-        DataService.ds.REF_SONGS.child(self.song.key!).observeEventType(.Value) { (snapshot: FIRDataSnapshot) in
+        DataService.ds.REF_SONGS.child(self.song.key!).observe(.value) { (snapshot: FIRDataSnapshot) in
             
-            if let nbrOfVotes = snapshot.childSnapshotForPath("nbr_of_votes").value as? Int {
-                if let totalRatings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
+            if let nbrOfVotes = snapshot.childSnapshot(forPath: "nbr_of_votes").value as? Int {
+                if let totalRatings = snapshot.childSnapshot(forPath: "total_ratings").value as? Int {
                     if nbrOfVotes != 0 && totalRatings != 0 {
                         
                         rating = Double(totalRatings) / Double(nbrOfVotes)
@@ -88,42 +91,42 @@ class DetailVC: UIViewController {
     }
     
     func setupMenuButton() {
-        let menuButton = UIButton(type: UIButtonType.Custom)
-        menuButton.setImage(UIImage(named: "Menu.png"), forState: UIControlState.Normal)
-        menuButton.addTarget(self, action: #selector(DetailVC.showMenu), forControlEvents: UIControlEvents.TouchUpInside)
-        menuButton.frame = CGRectMake(0, 0, 25, 25)
+        let menuButton = UIButton(type: UIButtonType.custom)
+        menuButton.setImage(UIImage(named: "Menu.png"), for: UIControlState())
+        menuButton.addTarget(self, action: #selector(DetailVC.showMenu), for: UIControlEvents.touchUpInside)
+        menuButton.frame = CGRect(x: 0, y: 0, width: 25, height: 25)
         let barButton = UIBarButtonItem(customView: menuButton)
         self.navigationItem.rightBarButtonItem = barButton
     }
     
     func showMenu() {
-        actionSheet.show()
+        actionSheet?.show()
     }
     
     func showGradedAlert() {
-        let hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.mode = MBProgressHUDMode.CustomView
+        let hud = MBProgressHUD.showAdded(to: view, animated: true)
+        hud?.mode = MBProgressHUDMode.customView
         let image = UIImage(named: "Checkmark")
-        hud.labelFont = UIFont(name: "Avenir-Medium", size: 18)
-        hud.labelText = "BETYGSATT"
-        hud.customView = UIImageView(image: image)
-        hud.square = true
-        hud.hide(true, afterDelay: 1.0)
+        hud?.labelFont = UIFont(name: "Avenir-Medium", size: 18)
+        hud?.labelText = "BETYGSATT"
+        hud?.customView = UIImageView(image: image)
+        hud?.isSquare = true
+        hud?.hide(true, afterDelay: 1.0)
     }
     
-    func addRatingToFirebase(rating: Int, completed: DownloadComplete) {
+    func addRatingToFirebase(_ rating: Int, completed: @escaping DownloadComplete) {
     
         DataService.ds.REF_USERS_CURRENT.child("votes").child(self.song.key!).setValue(rating)
         
         let song_ref = DataService.ds.REF_SONGS.child(self.song.key!)
         
-        song_ref.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
-            if snapshot.childSnapshotForPath("votes").hasChild(userID()) {
-                if let oldRating = snapshot.childSnapshotForPath("votes").childSnapshotForPath(userID()).value as? Int {
+        song_ref.observeSingleEvent(of: .value) { (snapshot: FIRDataSnapshot!) in
+            if snapshot.childSnapshot(forPath: "votes").hasChild(userID()) {
+                if let oldRating = snapshot.childSnapshot(forPath: "votes").childSnapshot(forPath: userID()).value as? Int {
                     
                     let difference = rating - oldRating
                     
-                    if var totalRatings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
+                    if var totalRatings = snapshot.childSnapshot(forPath: "total_ratings").value as? Int {
                         if totalRatings + difference >= 0 {
                             totalRatings += difference
                             song_ref.child("total_ratings").setValue(totalRatings)
@@ -133,12 +136,12 @@ class DetailVC: UIViewController {
                 
             } else {
                 
-                if var votes = snapshot.childSnapshotForPath("nbr_of_votes").value as? Int {
+                if var votes = snapshot.childSnapshot(forPath: "nbr_of_votes").value as? Int {
                     votes += 1
                     song_ref.child("nbr_of_votes").setValue(votes)
                 }
                 
-                if var ratings = snapshot.childSnapshotForPath("total_ratings").value as? Int {
+                if var ratings = snapshot.childSnapshot(forPath: "total_ratings").value as? Int {
                     ratings += rating
                     song_ref.child("total_ratings").setValue(ratings)
                 }
@@ -148,46 +151,46 @@ class DetailVC: UIViewController {
         }
     }
     
-    func updateSongVotes(rating: Int) {
+    func updateSongVotes(_ rating: Int) {
         let song_ref = DataService.ds.REF_SONGS.child(self.song.key!)
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)) {
+        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.default).async {
             song_ref.child("votes").child(userID()).setValue(rating)
         }
     }
     
     func setupMenuOptions() {
         
-        actionSheet.addButtonWithTitle("5", image: UIImage(named: "StarFilled"), type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "5", image: UIImage(named: "StarFilled"), type: .default) { (actionSheet) in
             self.addRatingToFirebase(5) { () -> () in
                 self.updateSongVotes(5)
             }
         }
         
-        actionSheet.addButtonWithTitle("4", image: UIImage(named: "StarFilled"), type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "4", image: UIImage(named: "StarFilled"), type: .default) { (actionSheet) in
             self.addRatingToFirebase(4) { () -> () in
                 self.updateSongVotes(4)
             }
         }
 
-        actionSheet.addButtonWithTitle("3", image: UIImage(named: "StarFilled"), type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "3", image: UIImage(named: "StarFilled"), type: .default) { (actionSheet) in
             self.addRatingToFirebase(3) { () -> () in
                 self.updateSongVotes(3)
             }
         }
         
-        actionSheet.addButtonWithTitle("2", image: UIImage(named: "StarFilled"), type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "2", image: UIImage(named: "StarFilled"), type: .default) { (actionSheet) in
             self.addRatingToFirebase(2) { () -> () in
                 self.updateSongVotes(2)
             }
         }
         
-        actionSheet.addButtonWithTitle("1", image: UIImage(named: "StarFilled"), type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "1", image: UIImage(named: "StarFilled"), type: .default) { (actionSheet) in
             self.addRatingToFirebase(1) { () -> () in
                 self.updateSongVotes(1)
             }
         }
         
-        actionSheet.addButtonWithTitle("Favorit", image: UIImage(named: "Checkmark"), type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "Favorit", image: UIImage(named: "Checkmark"), type: .default) { (actionSheet) in
             
             if self.song.favorite == true {
                 showFavoriteAlert(false, view: self.view)

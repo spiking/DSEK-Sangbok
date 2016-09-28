@@ -13,13 +13,13 @@ class CategoryCell: UICollectionViewCell {
     @IBOutlet weak var imageBackground: UIImageView!
     @IBOutlet weak var categoryLbl: UILabel!
     
-    private var category: String!
+    fileprivate var category: String!
     
     override func awakeFromNib() {
         super.awakeFromNib()
     }
     
-    func configureCell(category: String) {
+    func configureCell(_ category: String) {
         self.category = category
         categoryLbl.text = category
     }

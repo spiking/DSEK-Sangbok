@@ -16,21 +16,21 @@ class ToplistCell: MGSwipeTableCell {
     @IBOutlet weak var yearLbl: UILabel!
     @IBOutlet weak var ratingLbl: UILabel!
     
-    private var _song: SongModel!
+    fileprivate var _song: SongModel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.userInteractionEnabled = true
+        self.isUserInteractionEnabled = true
     }
     
-    func dateCreated(timestamp: String) -> String {
-        let date = NSDate(timeIntervalSince1970: Double(timestamp)!)
-        let formatter = NSDateFormatter()
+    func dateCreated(_ timestamp: String) -> String {
+        let date = Date(timeIntervalSince1970: Double(timestamp)!)
+        let formatter = DateFormatter()
         formatter.dateFormat = "YYYY"
-        return formatter.stringFromDate(date)
+        return formatter.string(from: date)
     }
     
-    func configureCell(song: SongModel, number: Int) {
+    func configureCell(_ song: SongModel, number: Int) {
         
         self._song = song
         self.songLbl.text = song.title

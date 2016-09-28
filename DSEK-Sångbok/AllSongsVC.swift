@@ -14,20 +14,40 @@ import MGSwipeTableCell
 import DZNEmptyDataSet
 
 import CoreData
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
+}
+
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
+}
+
 
 class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, MGSwipeTableCellDelegate, DZNEmptyDataSetSource, DZNEmptyDataSetDelegate  {
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    private var inSearchMode = false
-    private var filteredSongs = [SongModel]()
-    private var mode = SORT_MODE.TITEL
-    private var hud = MBProgressHUD()
-    private var alert = false
-    private var songCount = allSongs.count
-    private var isDownloading = false
-    private var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
+    fileprivate var inSearchMode = false
+    fileprivate var filteredSongs = [SongModel]()
+    fileprivate var mode = SORT_MODE.TITEL
+    fileprivate var hud = MBProgressHUD()
+    fileprivate var alert = false
+    fileprivate var songCount = allSongs.count
+    fileprivate var isDownloading = false
+    fileprivate var actionSheet = AHKActionSheet(title: "SORTERA EFTER")
     
     enum SORT_MODE: String {
         case TITEL = "TITEL"
@@ -43,25 +63,22 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         tableView.tableFooterView = UIView()
         tableView.emptyDataSetSource = self
         tableView.emptyDataSetDelegate = self
-        tableView.registerNib(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
+        tableView.register(UINib(nibName: "SongCell", bundle: nil), forCellReuseIdentifier: "SongCell")
         
         navigationItem.title = "SÅNGER"
-        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
         
         searchBar.delegate = self
-        searchBar.keyboardAppearance = .Dark
-        searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
+        searchBar.keyboardAppearance = .dark
+        searchBar.setImage(UIImage(named: "Menu"), for: .bookmark, state: UIControlState())
         
-        // If available, remove stab song
-        removeStabSong()
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).textColor = UIColor.white
         
-        UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
+        Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(AllSongsVC.observeNetworkConnection), userInfo: nil, repeats: true)
         
-        NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(AllSongsVC.observeNetworkConnection), userInfo: nil, repeats: true)
+        NotificationCenter.default.addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: NSNotification.Name(rawValue: "reload"), object: nil)
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(AllSongsVC.reloadTableData(_:)), name: "reload", object: nil)
-        
-        setupMenu(actionSheet)
+        setupMenu(actionSheet!)
         setupMenuOptions()
         loadSortMode()
         authenticateUser()
@@ -69,59 +86,30 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         setupData()
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         inSearchMode = false
         saveSortMode()
+        dismisskeyboard()
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         loadSortMode()
     }
     
     func loadAllSongsFromCoreData() {
-        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let app = UIApplication.shared.delegate as! AppDelegate
         let context = app.managedObjectContext
-        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        let fetchRequest:NSFetchRequest<NSFetchRequestResult>  = NSFetchRequest(entityName: "SongModel")
         
         do {
-            let results = try context.executeFetchRequest(fetchRequest)
+            let results = try context.fetch(fetchRequest)
             allSongs = results as! [SongModel]
             loadCategories()
         } catch let err as NSError {
             print(err.debugDescription)
         }
-    }
-    
-    func removeStabSong() {
-        let app = UIApplication.sharedApplication().delegate as! AppDelegate
-        let context = app.managedObjectContext
-        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
-        
-        let title = "Brev till Staben (och Martin)"
-        let predicate = NSPredicate(format: "title = %@", title)
-        fetchRequest.predicate = predicate
-        
-        do {
-            let results = try context.executeFetchRequest(fetchRequest)
-            let fetchedSongs = results as! [SongModel]
-            
-            for song in fetchedSongs {
-
-                context.deleteObject(song)
-                
-                do {
-                    try context.save()
-                } catch let error as NSError {
-                    print(error.debugDescription)
-                }
-            }
-        } catch let err as NSError {
-            print(err.debugDescription)
-        }
-        
-        loadSortMode()
     }
     
     func loadCategories() {
@@ -150,18 +138,18 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     
     func authenticateUser() {
         
-        FIRAuth.auth()?.signInAnonymouslyWithCompletion() { (user, error) in
+        FIRAuth.auth()?.signInAnonymously() { (user, error) in
             
             if error != nil {
                 print(error.debugDescription)
             }
             
-            let isAnonymous = user!.anonymous
+            let isAnonymous = user!.isAnonymous
             let uid = user!.uid
             
-            NSUserDefaults.standardUserDefaults().setValue(uid, forKey: KEY_UID)
+            UserDefaults.standard.setValue(uid, forKey: KEY_UID)
             
-            DataService.ds.REF_USERS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
+            DataService.ds.REF_USERS.observeSingleEvent(of: .value) { (snapshot: FIRDataSnapshot!) in
                 
                 if !snapshot.hasChild(userID()) {
                     let data = ["ACTIVE" : true]
@@ -174,21 +162,21 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
     func observeNetworkConnection() {
         if !isConnectedToNetwork() {
             if !alert {
-                self.showMessage("Ingen Internetanslutning", type: .Error , options: nil)
+                self.showMessage("Ingen Internetanslutning", type: .error , options: nil)
                 alert = true
                 hud.hide(true, afterDelay: 0)
             }
         } else {
             if alert {
-                self.showMessage("Ansluten", type: .Success , options: nil)
+                self.showMessage("Ansluten", type: .success , options: nil)
                 alert = false
             }
         }
     }
     
     func showDownloadIndicator() {
-        hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.square = true
+        hud = MBProgressHUD.showAdded(to: view, animated: true)
+        hud.isSquare = true
     }
     
     func dismissDownloadIndicator() {
@@ -196,24 +184,24 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         hud.hide(true, afterDelay: 0)
         
         if songCount == 0 {
-            self.showMessage("\(allSongs.count) sånger har hämtats.", type: .Success , options: nil)
+            self.showMessage("\(allSongs.count) sånger har hämtats.", type: .success , options: nil)
         }
         
         songCount = allSongs.count
     }
     
-    func reloadTableData(notification: NSNotification) {
+    func reloadTableData(_ notification: Notification) {
         self.reloadData()
         dismissDownloadIndicator()
     }
     
     func saveSortMode() {
-        NSUserDefaults.standardUserDefaults().setValue("\(self.mode)", forKey: "SORT_MODE_ALL")
+        UserDefaults.standard.setValue("\(self.mode)", forKey: "SORT_MODE_ALL")
     }
     
     func loadSortMode() {
         
-        if let sortMode = NSUserDefaults.standardUserDefaults().valueForKey("SORT_MODE_ALL") as? String {
+        if let sortMode = UserDefaults.standard.value(forKey: "SORT_MODE_ALL") as? String {
             
             switch sortMode {
             case "TITEL":
@@ -230,7 +218,7 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         self.reloadData()
     }
     
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         dismisskeyboard()
         
         inSearchMode = false
@@ -238,25 +226,25 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         self.reloadData()
     }
     
-    func searchBarBookmarkButtonClicked(searchBar: UISearchBar) {
+    func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         dismisskeyboard()
         inSearchMode = false
-        actionSheet.show()
+        actionSheet?.show()
     }
     
     func setupMenuOptions() {
         
-        actionSheet.addButtonWithTitle("Titel", type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "Titel", type: .default) { (actionSheet) in
             self.mode = .TITEL
             self.reloadData()
         }
         
-        actionSheet.addButtonWithTitle("Melodi", type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "Melodi", type: .default) { (actionSheet) in
             self.mode = .MELODI
             self.reloadData()
         }
         
-        actionSheet.addButtonWithTitle("Senast Tillagd", type: .Default) { (actionSheet) in
+        actionSheet?.addButton(withTitle: "Senast Tillagd", type: .default) { (actionSheet) in
             self.mode = .SKAPAD
             self.reloadData()
         }
@@ -266,15 +254,15 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         
         switch self.mode {
         case .TITEL:
-            allSongs = allSongs.sort {
-                $0.title!.compare($1.title!, locale: SWEDISH) == .OrderedAscending
+            allSongs = allSongs.sorted {
+                $0.title!.compare($1.title!, locale: SWEDISH as Locale) == .orderedAscending
             }
         case .MELODI:
-            allSongs = allSongs.sort {
-                $0.melodyTitle!.compare($1.melodyTitle!, locale: SWEDISH) == .OrderedAscending
+            allSongs = allSongs.sorted {
+                $0.melodyTitle!.compare($1.melodyTitle!, locale: SWEDISH as Locale) == .orderedAscending
             }
         case .SKAPAD:
-            allSongs = allSongs.sort({$0.created > $1.created})
+            allSongs = allSongs.sorted(by: {$0.created > $1.created})
         default:
             break
         }
@@ -286,43 +274,43 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         self.view.endEditing(true)
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         dismisskeyboard()
     }
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == nil && searchBar.text != "" {
             inSearchMode = false
             dismisskeyboard()
         } else {
             inSearchMode = true
-            let lower = searchBar.text!.lowercaseString
-            filteredSongs = allSongs.filter({ $0.title!.lowercaseString.rangeOfString(lower) != nil })
+            let lower = searchBar.text!.lowercased()
+            filteredSongs = allSongs.filter({ $0.title!.lowercased().range(of: lower) != nil })
         }
         
         reloadData()
     }
     
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         dismisskeyboard()
         
         let song: SongModel!
         
         if inSearchMode {
-            song = filteredSongs[indexPath.row]
+            song = filteredSongs[(indexPath as NSIndexPath).row]
         } else {
-            song = allSongs[indexPath.row]
+            song = allSongs[(indexPath as NSIndexPath).row]
         }
         
-        performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
+        performSegue(withIdentifier: SEUGE_DETAILVC, sender: song)
         
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == SEUGE_DETAILVC {
-            if let detailVC = segue.destinationViewController as? DetailVC {
+            if let detailVC = segue.destination as? DetailVC {
                 if let song = sender as? SongModel {
                     detailVC.song = song
                 }
@@ -330,100 +318,142 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
         }
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return inSearchMode ? filteredSongs.count : allSongs.count
     }
     
-    func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
-        return allSongs[indexPath.row]
+    func songForIndexpath(_ indexPath: IndexPath) -> SongModel {
+        return allSongs[(indexPath as NSIndexPath).row]
     }
     
-    func swipeTableCell(cell: MGSwipeTableCell!, swipeButtonsForDirection direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
+    func swipeTableCell(_ cell: MGSwipeTableCell!, tappedButtonAt index: Int, direction: MGSwipeDirection, fromExpansion: Bool) -> Bool {
         
-        swipeSettings.transition = MGSwipeTransition.ClipCenter
-        swipeSettings.keepButtonsSwiped = false
-        expansionSettings.buttonIndex = 0
-        expansionSettings.threshold = 1.5
-        expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
-        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
-        expansionSettings.fillOnTrigger = true
+        let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
+        print(song.title)
         
         switch direction {
             
-        case .RightToLeft:
+        case .rightToLeft:
             
-            let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
-                
-                expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
-                
-                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
-                
-                if song.favorite != true {
-                    showFavoriteAlert(true, view: self.view)
-                    song.setValue(true, forKey: "favorite")
-                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
-                }
-                
-                do {
-                    try song.managedObjectContext?.save()
-                } catch let saveError as NSError {
-                    print(saveError.debugDescription)
-                }
-                
-                return true
-            })
+            if song.favorite != true {
+                showFavoriteAlert(true, view: self.view)
+                song.setValue(true, forKey: "favorite")
+                DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
+            }
             
-            return [addButton]
+            do {
+                try song.managedObjectContext?.save()
+            } catch let saveError as NSError {
+                print(saveError.debugDescription)
+            }
             
-        case .LeftToRight:
+        case .leftToRight:
             
-            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.redColor(), callback: { (cell) -> Bool in
-                
-                expansionSettings.expansionColor = UIColor.redColor()
-                
-                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
-                
-                if song.favorite == true {
-                    showFavoriteAlert(false, view: self.view)
-                    song.setValue(false, forKey: "favorite")
-                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
-                }
-                
-                do {
-                    try song.managedObjectContext?.save()
-                } catch let saveError as NSError {
-                    print(saveError.debugDescription)
-                }
-                
-                return true
-            })
+            if song.favorite == true {
+                showFavoriteAlert(false, view: self.view)
+                song.setValue(false, forKey: "favorite")
+                DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+            }
             
-            return [removeButton]
+            do {
+                try song.managedObjectContext?.save()
+            } catch let saveError as NSError {
+                print(saveError.debugDescription)
+            }
+
         default:
             break
         }
         
-        return nil
-    }
-    
-    func swipeTableCell(cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
         return true
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+//    func swipeTableCell(_ cell: MGSwipeTableCell!, swipeButtonsFor direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
+//        
+//        swipeSettings.transition = MGSwipeTransition.clipCenter
+//        swipeSettings.keepButtonsSwiped = false
+//        expansionSettings.buttonIndex = 0
+//        expansionSettings.threshold = 1.5
+//        expansionSettings.expansionLayout = MGSwipeExpansionLayout.center
+//        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.cubicOut
+//        expansionSettings.fillOnTrigger = true
+//        
+//        switch direction {
+//            
+//        case .rightToLeft:
+//            
+//            let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
+//                
+//                expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+//                
+//                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
+//                
+//                if song.favorite != true {
+//                    showFavoriteAlert(true, view: self.view)
+//                    song.setValue(true, forKey: "favorite")
+//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
+//                }
+//                
+//                do {
+//                    try song.managedObjectContext?.save()
+//                } catch let saveError as NSError {
+//                    print(saveError.debugDescription)
+//                }
+//                
+//                return true
+//            })
+//            
+//            return [addButton!]
+//            
+//        case .leftToRight:
+//            
+//            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.red, callback: { (cell) -> Bool in
+//                
+//                expansionSettings.expansionColor = UIColor.red
+//                
+//                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
+//                
+//                if song.favorite == true {
+//                    showFavoriteAlert(false, view: self.view)
+//                    song.setValue(false, forKey: "favorite")
+//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+//                }
+//                
+//                do {
+//                    try song.managedObjectContext?.save()
+//                } catch let saveError as NSError {
+//                    print(saveError.debugDescription)
+//                }
+//                
+//                return true
+//            })
+//            
+//            return [removeButton!]
+//        default:
+//            break
+//        }
+//        
+//        return nil
+//    }
+    
+    func swipeTableCell(_ cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCellWithIdentifier("SongCell") as? SongCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "SongCell") as? SongCell {
             
             var song: SongModel
             
             if inSearchMode {
-                song = filteredSongs[indexPath.row]
+                song = filteredSongs[(indexPath as NSIndexPath).row]
             } else {
-                song = allSongs[indexPath.row]
+                song = allSongs[(indexPath as NSIndexPath).row]
             }
             
             cell.configureCell(song)
@@ -435,51 +465,57 @@ class AllSongsVC: UIViewController, UITableViewDelegate, UITableViewDataSource, 
             cell.backgroundColor = UIColor(red: 23/255, green: 23/255, blue: 23/255, alpha: 1.0)
             cell.selectedBackgroundView = backgroundColorView
             
+            cell.leftButtons = [MGSwipeButton(title: "TA BORT FAVORIT", icon: UIImage(named:""), backgroundColor: UIColor.red)]
+            cell.leftSwipeSettings.transition = MGSwipeTransition.rotate3D
+            
+            cell.rightButtons = [MGSwipeButton(title: "SPARA FAVORIT", backgroundColor: UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0))]
+            cell.rightSwipeSettings.transition = MGSwipeTransition.rotate3D
+            
             return cell
         } else {
             return SongCell()
         }
     }
     
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
         return NSAttributedString(string: "Inga sånger", attributes: attribute)
     }
     
-    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
         
         return filteredSongs.isEmpty && !allSongs.isEmpty ? NSAttributedString(string: "Det finns inga sånger som matchar den angivna sökningen.", attributes: attribute) : NSAttributedString(string: "Om sångerna inte hämtas automatiskt, klicka på ikonen nedanför.", attributes: attribute)
     }
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
         return filteredSongs.isEmpty && !allSongs.isEmpty ? UIImage(named:"EmptyDataSearch") : UIImage(named: "")
     }
     
-    func buttonImageForEmptyDataSet(scrollView: UIScrollView!, forState state: UIControlState) -> UIImage! {
+    func buttonImage(forEmptyDataSet scrollView: UIScrollView!, for state: UIControlState) -> UIImage! {
         return allSongs.isEmpty ? UIImage(named:"DownloadMedium") : UIImage(named: "")
     }
     
-    func emptyDataSetDidTapButton(scrollView: UIScrollView!) {
+    func emptyDataSetDidTapButton(_ scrollView: UIScrollView!) {
         if !isDownloading {
             if isConnectedToNetwork() {
                 authenticateUser()
                 if allSongs.isEmpty {
                     setupData()
                 } else {
-                    self.showMessage("\(allSongs.count) sånger har redan hämtats.", type: .Success , options: nil)
+                    self.showMessage("\(allSongs.count) sånger har redan hämtats.", type: .success , options: nil)
                 }
             } else {
-                self.showMessage("Ingen Internetanslutning", type: .Error , options: nil)
+                self.showMessage("Ingen Internetanslutning", type: .error , options: nil)
             }
         }
     }
     
-    func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
         return iPhoneType == "4" ? -50 : -70
     }
     
-    func emptyDataSetDidTapView(scrollView: UIScrollView!) {
+    func emptyDataSetDidTap(_ scrollView: UIScrollView!) {
         dismisskeyboard()
     }
 }

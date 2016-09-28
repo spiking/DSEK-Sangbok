@@ -18,11 +18,11 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    private var inSearchMode = false
-    private var filteredSongs = [SongModel]()
-    private var toplistSongs = allSongs
-    private var refreshControl: UIRefreshControl!
-    private var spinner = UIActivityIndicatorView(activityIndicatorStyle: .Gray)
+    fileprivate var inSearchMode = false
+    fileprivate var filteredSongs = [SongModel]()
+    fileprivate var toplistSongs = allSongs
+    fileprivate var refreshControl: UIRefreshControl!
+    fileprivate var spinner = UIActivityIndicatorView(activityIndicatorStyle: .gray)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,45 +33,45 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         tableView.emptyDataSetSource = self
         tableView.tableFooterView = UIView()
         tableView.estimatedRowHeight = 70
-        tableView.registerNib(UINib(nibName: "ToplistCell", bundle: nil), forCellReuseIdentifier: "ToplistCell")
+        tableView.register(UINib(nibName: "ToplistCell", bundle: nil), forCellReuseIdentifier: "ToplistCell")
         
         searchBar.delegate = self
-        searchBar.keyboardAppearance = .Dark
-        searchBar.setImage(UIImage(named: "Menu"), forSearchBarIcon: .Bookmark, state: .Normal)
+        searchBar.keyboardAppearance = .dark
+        searchBar.setImage(UIImage(named: "Menu"), for: .bookmark, state: UIControlState())
         
         navigationItem.title = "TOPPLISTA"
-        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.Plain, target:nil, action:nil)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title:"", style:.plain, target:nil, action:nil)
         
         refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(ToplistVC.refresh(_:)), forControlEvents: UIControlEvents.ValueChanged)
+        refreshControl.addTarget(self, action: #selector(ToplistVC.refresh(_:)), for: UIControlEvents.valueChanged)
         tableView.addSubview(refreshControl)
         
         spinner.hidesWhenStopped = true
-        spinner.color = UIColor.grayColor()
-        spinner.frame = CGRectMake(0, 0, 320, 44);
+        spinner.color = UIColor.gray
+        spinner.frame = CGRect(x: 0, y: 0, width: 320, height: 44);
         tableView.tableFooterView = spinner;
         
-        UITextField.appearanceWhenContainedInInstancesOfClasses([UISearchBar.self]).textColor = UIColor.whiteColor()
+        UITextField.appearance(whenContainedInInstancesOf: [UISearchBar.self]).textColor = UIColor.white
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ToplistVC.reloadTableData(_:)), name: "reloadToplist", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(ToplistVC.reloadTableData(_:)), name: NSNotification.Name(rawValue: "reloadToplist"), object: nil)
         
         setupResult()
     }
     
     func setupResult() {
         
-        let app = UIApplication.sharedApplication().delegate as! AppDelegate
+        let app = UIApplication.shared.delegate as! AppDelegate
         let context = app.managedObjectContext
-        let fetchRequest  = NSFetchRequest(entityName: "SongModel")
+        let fetchRequest:NSFetchRequest<NSFetchRequestResult>  = NSFetchRequest(entityName: "SongModel")
         
         let rating = 0.0
         let predicate = NSPredicate(format: "rating != \(rating)", rating)
         fetchRequest.predicate = predicate
         
         do {
-            let results = try context.executeFetchRequest(fetchRequest)
+            let results = try context.fetch(fetchRequest)
             toplistSongs = results as! [SongModel]
-            toplistSongs = self.toplistSongs.sort({Double($0.rating!) > Double($1.rating!)})
+            toplistSongs = self.toplistSongs.sorted(by: {Double($0.rating!) > Double($1.rating!)})
         
             self.tableView.reloadData()
             
@@ -80,22 +80,33 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         }
     }
     
-    func refresh(sender:AnyObject) {
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        inSearchMode = false
+        dismisskeyboard()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.tableView.reloadData()
+    }
+    
+    func refresh(_ sender:AnyObject) {
         
         if isConnectedToNetwork() {
             Downloader.downloader.loadToplistFromFirebase()
         } else {
-            self.showMessage("Ingen Internetanslutning", type: .Error , options: nil)
+            self.showMessage("Ingen Internetanslutning", type: .error , options: nil)
             refreshControl.endRefreshing()
         }
     }
     
-    func reloadTableData(notification: NSNotification) {
+    func reloadTableData(_ notification: Notification) {
         setupResult()
         refreshControl.endRefreshing()
     }
     
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         dismisskeyboard()
         
         inSearchMode = false
@@ -104,23 +115,13 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
     }
     
     func showDownloadIndicator() {
-        hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-        hud.square = true
+        hud = MBProgressHUD.showAdded(to: view, animated: true)
+        hud.isSquare = true
     }
     
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        inSearchMode = false
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        self.tableView.reloadData()
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == SEUGE_DETAILVC {
-            if let detailVC = segue.destinationViewController as? DetailVC {
+            if let detailVC = segue.destination as? DetailVC {
                 if let song = sender as? SongModel {
                     detailVC.song = song
                 }
@@ -136,68 +137,68 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         self.view.endEditing(true)
     }
     
-    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         dismisskeyboard()
     }
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == nil && searchBar.text != "" {
             inSearchMode = false
             view.endEditing(true)
             tableView.reloadData()
         } else {
             inSearchMode = true
-            let lower = searchBar.text!.lowercaseString
-            filteredSongs = toplistSongs.filter({ $0.title!.lowercaseString.rangeOfString(lower) != nil })
+            let lower = searchBar.text!.lowercased()
+            filteredSongs = toplistSongs.filter({ $0.title!.lowercased().range(of: lower) != nil })
             tableView.reloadData()
         }
     }
     
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
         let song: SongModel!
         
         if inSearchMode {
-            song = filteredSongs[indexPath.row]
+            song = filteredSongs[(indexPath as NSIndexPath).row]
         } else {
-            song = toplistSongs[indexPath.row]
+            song = toplistSongs[(indexPath as NSIndexPath).row]
         }
         
-        performSegueWithIdentifier(SEUGE_DETAILVC, sender: song)
+        performSegue(withIdentifier: SEUGE_DETAILVC, sender: song)
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return inSearchMode ? filteredSongs.count : toplistSongs.count
     }
     
-    func songForIndexpath(indexPath: NSIndexPath) -> SongModel {
-        return toplistSongs[indexPath.row]
+    func songForIndexpath(_ indexPath: IndexPath) -> SongModel {
+        return toplistSongs[(indexPath as NSIndexPath).row]
     }
     
-    func swipeTableCell(cell: MGSwipeTableCell!, swipeButtonsForDirection direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
+    func swipeTableCell(_ cell: MGSwipeTableCell!, swipeButtonsFor direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
         
-        swipeSettings.transition = MGSwipeTransition.ClipCenter
+        swipeSettings.transition = MGSwipeTransition.clipCenter
         swipeSettings.keepButtonsSwiped = false
         expansionSettings.buttonIndex = 0
         expansionSettings.threshold = 1.5
-        expansionSettings.expansionLayout = MGSwipeExpansionLayout.Center
-        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.CubicOut
+        expansionSettings.expansionLayout = MGSwipeExpansionLayout.center
+        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.cubicOut
         expansionSettings.fillOnTrigger = true
         
         switch direction {
             
-        case .RightToLeft:
+        case .rightToLeft:
             
             let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
                 
                 expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
                 
-                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
                 
                 if song.favorite != true {
                     showFavoriteAlert(true, view: self.view)
@@ -214,15 +215,15 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 return true
             })
             
-            return [addButton]
+            return [addButton!]
             
-        case .LeftToRight:
+        case .leftToRight:
             
-            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.redColor(), callback: { (cell) -> Bool in
+            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.red, callback: { (cell) -> Bool in
                 
-                expansionSettings.expansionColor = UIColor.redColor()
+                expansionSettings.expansionColor = UIColor.red
                 
-                let song = self.songForIndexpath(self.tableView.indexPathForCell(cell)!)
+                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
                 
                 if song.favorite == true {
                     showFavoriteAlert(false, view: self.view)
@@ -239,7 +240,7 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
                 return true
             })
             
-            return [removeButton]
+            return [removeButton!]
         default:
             break
         }
@@ -247,23 +248,23 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         return nil
     }
     
-    func swipeTableCell(cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
+    func swipeTableCell(_ cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
         return true
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if let cell = tableView.dequeueReusableCellWithIdentifier("ToplistCell") as? ToplistCell {
+        if let cell = tableView.dequeueReusableCell(withIdentifier: "ToplistCell") as? ToplistCell {
             
             var song: SongModel
             
             if inSearchMode {
-                song = filteredSongs[indexPath.row]
+                song = filteredSongs[(indexPath as NSIndexPath).row]
             } else {
-                song = toplistSongs[indexPath.row]
+                song = toplistSongs[(indexPath as NSIndexPath).row]
             }
             
-            cell.configureCell(song, number: indexPath.row)
+            cell.configureCell(song, number: (indexPath as NSIndexPath).row)
             
             cell.delegate = self
             
@@ -278,26 +279,26 @@ class ToplistVC: UIViewController, UITableViewDelegate, UITableViewDataSource, U
         }
     }
     
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
         return NSAttributedString(string: "Inga sånger", attributes: attribute)
     }
     
-    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
         
         return filteredSongs.isEmpty && !toplistSongs.isEmpty ? NSAttributedString(string: "Det finns inga sånger som matchar den angivna sökningen.", attributes: attribute) : NSAttributedString(string: "Det finns i nulägt inga sånger på topplistan.", attributes: attribute)
     }
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
         return filteredSongs.isEmpty && !toplistSongs.isEmpty ? UIImage(named:"EmptyDataSearch") : UIImage(named: "EmptyDataStar")
     }
     
-    func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
         return iPhoneType == "4" ? -50 : -70
     }
     
-    func emptyDataSetDidTapView(scrollView: UIScrollView!) {
+    func emptyDataSetDidTap(_ scrollView: UIScrollView!) {
         dismisskeyboard()
     }
     

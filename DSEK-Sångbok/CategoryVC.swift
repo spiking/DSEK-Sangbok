@@ -15,9 +15,9 @@ class CategoryVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
     
-    private var categories = allCategories
-    private var filteredCategories = [String]()
-    private var inSearchMode = false
+    fileprivate var categories = allCategories
+    fileprivate var filteredCategories = [String]()
+    fileprivate var inSearchMode = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,32 +26,32 @@ class CategoryVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         collectionView.dataSource = self
         collectionView.emptyDataSetSource = self
         collectionView.emptyDataSetDelegate = self
-        collectionView.registerNib(UINib(nibName: "CategoryCell", bundle: nil), forCellWithReuseIdentifier: "CategoryCell")
+        collectionView.register(UINib(nibName: "CategoryCell", bundle: nil), forCellWithReuseIdentifier: "CategoryCell")
         
         searchBar.delegate = self
-        searchBar.keyboardAppearance = .Dark
+        searchBar.keyboardAppearance = .dark
         
         navigationItem.title = "KATEGORIER"
-        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .Plain, target: nil, action: nil)
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         
-        categories = allCategories.sort()
+        categories = allCategories.sorted()
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         collectionView.reloadData()
     }
     
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         inSearchMode = false
     }
 
-    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
-    func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return inSearchMode ? filteredCategories.count : categories.count
     }
 
@@ -60,40 +60,40 @@ class CategoryVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         view.endEditing(true)
     }
     
-    func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         dismisskeyboard()
         
         let category: String!
         
         if inSearchMode {
-            category = filteredCategories[indexPath.row]
+            category = filteredCategories[(indexPath as NSIndexPath).row]
         } else {
-            category = categories[indexPath.row]
+            category = categories[(indexPath as NSIndexPath).row]
         }
         
-        performSegueWithIdentifier("categorySongsVC", sender: category)
+        performSegue(withIdentifier: "categorySongsVC", sender: category)
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         let numberOfColumns: CGFloat = 3
-        let itemWidth = (CGRectGetWidth(self.collectionView!.frame) - 2 - (numberOfColumns - 1)) / numberOfColumns
+        let itemWidth = (self.collectionView!.frame.width - 2 - (numberOfColumns - 1)) / numberOfColumns
         
-        return CGSizeMake(itemWidth, itemWidth)
+        return CGSize(width: itemWidth, height: itemWidth)
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAtIndex section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 2.0
     }
     
-    func collectionView(collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAtIndex section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 2.0
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "categorySongsVC" {
-            if let categorySongsVC = segue.destinationViewController as? CategorySongsVC {
+            if let categorySongsVC = segue.destination as? CategorySongsVC {
                 if let category = sender as? String {
                     categorySongsVC.category = category
                 }
@@ -101,36 +101,36 @@ class CategoryVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         }
     }
     
-    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         dismisskeyboard()
         inSearchMode = false
         searchBar.text = ""
         collectionView.reloadData()
     }
     
-    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if searchBar.text == nil && searchBar.text != "" {
             inSearchMode = false
             dismisskeyboard()
         } else {
             inSearchMode = true
-            let lower = searchBar.text!.lowercaseString
-            filteredCategories = categories.filter({ $0.lowercaseString.rangeOfString(lower) != nil })
+            let lower = searchBar.text!.lowercased()
+            filteredCategories = categories.filter({ $0.lowercased().range(of: lower) != nil })
         }
         
         collectionView.reloadData()
     }
     
-    func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
-        if let cell = collectionView.dequeueReusableCellWithReuseIdentifier("CategoryCell", forIndexPath: indexPath) as? CategoryCell {
+        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CategoryCell", for: indexPath) as? CategoryCell {
             
             var category: String
             
             if inSearchMode {
-                category = filteredCategories[indexPath.row]
+                category = filteredCategories[(indexPath as NSIndexPath).row]
             } else {
-                category = categories[indexPath.row]
+                category = categories[(indexPath as NSIndexPath).row]
             }
             
             cell.configureCell(category)
@@ -146,26 +146,26 @@ class CategoryVC: UIViewController, UICollectionViewDelegate, UICollectionViewDa
         }
     }
 
-    func titleForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Heavy", size: 19)!]
         return NSAttributedString(string: "Inga kategorier", attributes: attribute)
     }
     
-    func descriptionForEmptyDataSet(scrollView: UIScrollView!) -> NSAttributedString! {
+    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
         let attribute = [NSFontAttributeName: UIFont(name: "Avenir-Medium", size: 17)!]
         
         return filteredCategories.isEmpty && !allCategories.isEmpty ? NSAttributedString(string: "Det finns inga kategorier som matchar den angivna sökningen.", attributes: attribute) : NSAttributedString(string: "Det finns i nuläget inga kategorier.", attributes: attribute)
     }
     
-    func imageForEmptyDataSet(scrollView: UIScrollView!) -> UIImage! {
+    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
         return filteredCategories.isEmpty && !categories.isEmpty ? UIImage(named: "EmptyDataSearch") : UIImage(named: "EmptyDataStar")
     }
     
-    func verticalOffsetForEmptyDataSet(scrollView: UIScrollView!) -> CGFloat {
+    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
         return iPhoneType == "4" ? -50 : -70
     }
     
-    func emptyDataSetDidTapView(scrollView: UIScrollView!) {
+    func emptyDataSetDidTap(_ scrollView: UIScrollView!) {
         dismisskeyboard()
     }
 }

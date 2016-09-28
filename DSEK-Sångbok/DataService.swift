@@ -15,10 +15,10 @@ class DataService {
     
     static let ds =  DataService()
     
-    private var _REF_BASE = URL_BASE
-    private var _REF_USERS = URL_BASE.child("users")
-    private var _REF_USERS_CURRENT = URL_BASE.child("users").child(userID())
-    private var _REF_SONGS = URL_BASE.child("songs")
+    fileprivate var _REF_BASE = URL_BASE
+    fileprivate var _REF_USERS = URL_BASE.child("users")
+    fileprivate var _REF_USERS_CURRENT = URL_BASE.child("users").child(userID())
+    fileprivate var _REF_SONGS = URL_BASE.child("songs")
     
     var REF_BASE: FIRDatabaseReference {
         return _REF_BASE

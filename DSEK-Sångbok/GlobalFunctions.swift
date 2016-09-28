@@ -9,9 +9,10 @@
 import Foundation
 import MBProgressHUD
 import Firebase
+import AHKActionSheet
 
 func isUserAuthenticated() {
-    DataService.ds.REF_USERS.observeSingleEventOfType(.Value) { (snapshot: FIRDataSnapshot!) in
+    DataService.ds.REF_USERS.observeSingleEvent(of: .value) { (snapshot: FIRDataSnapshot!) in
         
         if snapshot.hasChild(userID()) {
             print("Authenticated!")
@@ -21,16 +22,16 @@ func isUserAuthenticated() {
     }
 }
 
-func dateSincePosted(timestamp: String) -> String {
-    let dateCreated = NSDate(timeIntervalSince1970: Double(timestamp)!)
-    let dateDiff = NSDate().offsetFrom(dateCreated)
+func dateSincePosted(_ timestamp: String) -> String {
+    let dateCreated = Date(timeIntervalSince1970: Double(timestamp)!)
+    let dateDiff = Date().offsetFrom(dateCreated)
     
     return dateDiff
 }
 
-func checkiPhoneModel() {
-    if UIDevice().userInterfaceIdiom == .Phone {
-        switch UIScreen.mainScreen().nativeBounds.height {
+func detectPhoneModel() {
+    if UIDevice().userInterfaceIdiom == .phone {
+        switch UIScreen.main.nativeBounds.height {
         case 480:
             print("iPhone Classic")
         case 960:
@@ -40,10 +41,10 @@ func checkiPhoneModel() {
             print("iPhone 5 or 5S or 5C")
             iPhoneType = "5"
         case 1334:
-            print("iPhone 6 or 6S")
+            print("iPhone 6 or 6S or 7")
             iPhoneType = "6"
         case 2208:
-            print("iPhone 6+ or 6S+")
+            print("iPhone 6+ or 6S+ or 7+")
             iPhoneType = "6+"
         default:
             print("Unknown")
@@ -51,7 +52,7 @@ func checkiPhoneModel() {
     }
 }
 
-func setupMenu(actionSheet: AHKActionSheet) {
+func setupMenu(_ actionSheet: AHKActionSheet) {
     actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
     actionSheet.blurRadius = 8.0
     
@@ -66,35 +67,32 @@ func setupMenu(actionSheet: AHKActionSheet) {
     actionSheet.cancelButtonHeight = 80
     actionSheet.animationDuration = 0.5
     actionSheet.cancelButtonShadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1)
+    // Seperator not working in iOS 10 yet
     actionSheet.separatorColor = UIColor(red: 30, green: 30, blue: 30, alpha: 0.2)
     actionSheet.selectedBackgroundColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.25)
     let font = UIFont(name: "Avenir", size: 17)
-    actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
-    actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.grayColor()]
-    actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.redColor()]
-    actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.whiteColor()]
+    actionSheet.buttonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.white]
+    actionSheet.disabledButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.gray]
+    actionSheet.destructiveButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.red]
+    actionSheet.cancelButtonTextAttributes = [NSFontAttributeName: font!, NSForegroundColorAttributeName: UIColor.white]
 }
 
 func userID() -> String {
-    if let uid = NSUserDefaults.standardUserDefaults().valueForKey(KEY_UID) as? String {
+    if let uid = UserDefaults.standard.value(forKey: KEY_UID) as? String {
         return uid
     } else {
         return " "
     }
 }
 
-func delay(delay:Double, closure:()->()) {
-    dispatch_after(
-        dispatch_time(
-            DISPATCH_TIME_NOW,
-            Int64(delay * Double(NSEC_PER_SEC))
-        ),
-        dispatch_get_main_queue(), closure)
+func delay(_ delay:Double, closure:@escaping ()->()) {
+    DispatchQueue.main.asyncAfter(
+        deadline: DispatchTime.now() + Double(Int64(delay * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC), execute: closure)
 }
 
-func showFavoriteAlert(favorite: Bool, view: UIView) {
-    hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
-    hud.mode = MBProgressHUDMode.CustomView
+func showFavoriteAlert(_ favorite: Bool, view: UIView) {
+    hud = MBProgressHUD.showAdded(to: view, animated: true)
+    hud.mode = MBProgressHUDMode.customView
     
     var image: UIImage
     

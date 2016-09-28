@@ -14,5 +14,5 @@ var hud = MBProgressHUD()
 var isDownloadingSetupData = true
 var allSongs = [SongModel]()
 var allCategories = [String]()
-let SWEDISH = NSLocale(localeIdentifier: "sv")
+let SWEDISH = Locale(identifier: "sv")
 typealias DownloadComplete = () -> ()
