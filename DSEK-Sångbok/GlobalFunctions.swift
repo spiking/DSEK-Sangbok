@@ -53,7 +53,7 @@ func detectPhoneModel() {
 }
 
 func setupMenu(_ actionSheet: AHKActionSheet) {
-    actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+    actionSheet.blurTintColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1.0)
     actionSheet.blurRadius = 8.0
     
     if iPhoneType == "4" || iPhoneType == "5" {
