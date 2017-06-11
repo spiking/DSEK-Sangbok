@@ -21,6 +21,8 @@ class Downloader {
     var availableSongs: Int {
         get {
             if let songs = UserDefaults.standard.value(forKey: "AVAILABLE_SONGS") as? Int {
+                print("Available songs = \(songs)")
+                print("All songs = \(allSongs.count)")
                 return songs - allSongs.count
             } else {
                 return _availableSongs
@@ -83,75 +85,18 @@ class Downloader {
                                     print(error.debugDescription)
                                 }
                                 
-                            } else {
-                                print("Song already exists!")
                             }
                         }
                     }
                 }
             }
             
-//          self.loadFavorites()
             self.saveToAllSongs()
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "updateSongCount"), object: nil)
             NotificationCenter.default.post(name: Notification.Name(rawValue: "reload"), object: nil)
         }
     }
-    
-//    Function currently disabled
-//
-//    func loadFavorites() {
-//        
-//        print(userID())
-//        
-//        if (userID() == "") {
-//            return;
-//        } else {
-//            // Save
-//        }
-//        
-//        DataService.ds.REF_USERS_CURRENT.child("favorites").observeSingleEvent(of: .value) { (snapshot: FIRDataSnapshot!) in
-//            
-//            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
-//                for snap in snapshot {
-//                    
-//                    let app = UIApplication.shared.delegate as! AppDelegate
-//                    let context = app.managedObjectContext
-//                    let fetchRequest:NSFetchRequest<NSFetchRequestResult>  = NSFetchRequest(entityName: "SongModel")
-//                    
-//                    let songKey = snap.key
-//                    let predicate = NSPredicate(format: "key = %@", songKey)
-//                    fetchRequest.predicate = predicate
-//                    
-//                    print(snapshot)
-//                    print(DataService.ds.REF_USERS_CURRENT)
-//                    
-//                    do {
-//                        let results = try context.fetch(fetchRequest)
-//                        var songs = results as! [SongModel]
-//                        
-//                        if !songs.isEmpty {
-//                            
-//                            var song = songs[0]
-//                            
-//                            if let favorite = snap.value as? Bool {
-//                                song.setValue(favorite, forKey: "favorite")
-//                                
-//                                do {
-//                                    try song.managedObjectContext?.save()
-//                                } catch let error as NSError {
-//                                    print(error.debugDescription)
-//                                }
-//                            }
-//                        }
-//                    } catch let error as NSError {
-//                        print(error.debugDescription)
-//                    }
-//                }
-//            }
-//        }
-//    }
     
     func toplistObserver() {
         
@@ -212,9 +157,9 @@ class Downloader {
                         
                         if !songs.isEmpty {
                             
-                            if let songTitle = snap.childSnapshot(forPath: "title").value as? String {
+                            if (snap.childSnapshot(forPath: "title").value as? String) != nil {
                                 
-                                var song = songs[0]
+                                let song = songs[0]
                                 
                                 if let rating = snap.childSnapshot(forPath: "rating").value as? Double {
                                     song.setValue(rating, forKey: "rating")
@@ -252,8 +197,8 @@ class Downloader {
             
             if let dict = result.value as? Dictionary<String, AnyObject> {
                 
-                for (key, value) in dict {
-                    if let title = value["title"] as? String, let created = value["created"] as? String, let lyrics = value["lyrics"] as? String, let categoryTitle = value["categoryTitle"] as? String {
+                for (_, value) in dict {
+                    if let _ = value["title"] as? String, let _ = value["created"] as? String, let _ = value["lyrics"] as? String, let _ = value["categoryTitle"] as? String {
                         self._availableSongs += 1
                     }
                 }
@@ -271,8 +216,6 @@ class Downloader {
         let urlStr = "http://www.dsek.se/arkiv/sanger/api.php?showAll"
         
         let url = URL(string: urlStr)!
-        
-        self._availableSongs = 0
         
         Alamofire.request(url).responseJSON { response in
             let result = response.result
@@ -327,11 +270,6 @@ class Downloader {
                             if !allCategories.contains(categoryTitle) {
                                 allCategories.append(categoryTitle)
                             }
-                            
-                            self._availableSongs += 1
-                            
-                        } else {
-                            print("Song already exists!")
                         }
                     }
                 }
@@ -369,7 +307,7 @@ class Downloader {
         
         do {
             let results = try context.fetch(fetchRequest)
-            var songs = results as! [SongModel]
+            let songs = results as! [SongModel]
             return songs.isEmpty
         } catch let error as NSError {
             print(error.debugDescription)
@@ -403,6 +341,60 @@ class Downloader {
             }
         }
     }
+    
+    //    Function currently disabled
+    //
+    //    func loadFavorites() {
+    //
+    //        print(userID())
+    //
+    //        if (userID() == "") {
+    //            return;
+    //        } else {
+    //            // Save
+    //        }
+    //
+    //        DataService.ds.REF_USERS_CURRENT.child("favorites").observeSingleEvent(of: .value) { (snapshot: FIRDataSnapshot!) in
+    //
+    //            if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
+    //                for snap in snapshot {
+    //
+    //                    let app = UIApplication.shared.delegate as! AppDelegate
+    //                    let context = app.managedObjectContext
+    //                    let fetchRequest:NSFetchRequest<NSFetchRequestResult>  = NSFetchRequest(entityName: "SongModel")
+    //
+    //                    let songKey = snap.key
+    //                    let predicate = NSPredicate(format: "key = %@", songKey)
+    //                    fetchRequest.predicate = predicate
+    //
+    //                    print(snapshot)
+    //                    print(DataService.ds.REF_USERS_CURRENT)
+    //
+    //                    do {
+    //                        let results = try context.fetch(fetchRequest)
+    //                        var songs = results as! [SongModel]
+    //
+    //                        if !songs.isEmpty {
+    //
+    //                            var song = songs[0]
+    //
+    //                            if let favorite = snap.value as? Bool {
+    //                                song.setValue(favorite, forKey: "favorite")
+    //
+    //                                do {
+    //                                    try song.managedObjectContext?.save()
+    //                                } catch let error as NSError {
+    //                                    print(error.debugDescription)
+    //                                }
+    //                            }
+    //                        }
+    //                    } catch let error as NSError {
+    //                        print(error.debugDescription)
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
 }
 
 

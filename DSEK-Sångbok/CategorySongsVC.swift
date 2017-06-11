@@ -298,74 +298,6 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
         return true
     }
     
-//    func swipeTableCell(_ cell: MGSwipeTableCell!, swipeButtonsFor direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
-//        
-//        swipeSettings.transition = MGSwipeTransition.clipCenter
-//        swipeSettings.keepButtonsSwiped = false
-//        expansionSettings.buttonIndex = 0
-//        expansionSettings.threshold = 1.5
-//        expansionSettings.expansionLayout = MGSwipeExpansionLayout.center
-//        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.cubicOut
-//        expansionSettings.fillOnTrigger = true
-//        
-//        switch direction {
-//            
-//        case .rightToLeft:
-//            
-//            let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
-//                
-//                expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
-//                
-//                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
-//                
-//                if song.favorite != true {
-//                    showFavoriteAlert(true, view: self.view)
-//                    song.setValue(true, forKey: "favorite")
-//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
-//                }
-//                
-//                do {
-//                    try song.managedObjectContext?.save()
-//                } catch let saveError as NSError {
-//                    print(saveError.debugDescription)
-//                }
-//                
-//                return true
-//            })
-//            
-//            return [addButton!]
-//            
-//        case .leftToRight:
-//            
-//            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.red, callback: { (cell) -> Bool in
-//                
-//                expansionSettings.expansionColor = UIColor.red
-//                
-//                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
-//                
-//                if song.favorite == true {
-//                    showFavoriteAlert(false, view: self.view)
-//                    song.setValue(false, forKey: "favorite")
-//                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
-//                }
-//                
-//                do {
-//                    try song.managedObjectContext?.save()
-//                } catch let saveError as NSError {
-//                    print(saveError.debugDescription)
-//                }
-//                
-//                return true
-//            })
-//            
-//            return [removeButton!]
-//        default:
-//            break
-//        }
-//        
-//        return nil
-//    }
-    
     func swipeTableCell(_ cell: MGSwipeTableCell!, canSwipe direction: MGSwipeDirection) -> Bool {
         return true
     }
@@ -426,5 +358,73 @@ class CategorySongsVC: UIViewController, UITableViewDataSource, UITableViewDeleg
     func emptyDataSetDidTap(_ scrollView: UIScrollView!) {
         dismisskeyboard()
     }
+    
+    //    func swipeTableCell(_ cell: MGSwipeTableCell!, swipeButtonsFor direction: MGSwipeDirection, swipeSettings: MGSwipeSettings!, expansionSettings: MGSwipeExpansionSettings!) -> [AnyObject]! {
+    //
+    //        swipeSettings.transition = MGSwipeTransition.clipCenter
+    //        swipeSettings.keepButtonsSwiped = false
+    //        expansionSettings.buttonIndex = 0
+    //        expansionSettings.threshold = 1.5
+    //        expansionSettings.expansionLayout = MGSwipeExpansionLayout.center
+    //        expansionSettings.triggerAnimation.easingFunction = MGSwipeEasingFunction.cubicOut
+    //        expansionSettings.fillOnTrigger = true
+    //
+    //        switch direction {
+    //
+    //        case .rightToLeft:
+    //
+    //            let addButton = MGSwipeButton.init(title: "SPARA FAVORIT", backgroundColor:  UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0), callback: { (cell) -> Bool in
+    //
+    //                expansionSettings.expansionColor = UIColor(red: 240/255, green: 129/255, blue: 162/255, alpha: 1.0)
+    //
+    //                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
+    //
+    //                if song.favorite != true {
+    //                    showFavoriteAlert(true, view: self.view)
+    //                    song.setValue(true, forKey: "favorite")
+    //                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).setValue(true)
+    //                }
+    //
+    //                do {
+    //                    try song.managedObjectContext?.save()
+    //                } catch let saveError as NSError {
+    //                    print(saveError.debugDescription)
+    //                }
+    //
+    //                return true
+    //            })
+    //
+    //            return [addButton!]
+    //
+    //        case .leftToRight:
+    //
+    //            let removeButton = MGSwipeButton.init(title: "TA BORT FAVORIT", backgroundColor:  UIColor.red, callback: { (cell) -> Bool in
+    //
+    //                expansionSettings.expansionColor = UIColor.red
+    //
+    //                let song = self.songForIndexpath(self.tableView.indexPath(for: cell!)!)
+    //
+    //                if song.favorite == true {
+    //                    showFavoriteAlert(false, view: self.view)
+    //                    song.setValue(false, forKey: "favorite")
+    //                    DataService.ds.REF_USERS_CURRENT.child("favorites").child(song.key!).removeValue()
+    //                }
+    //
+    //                do {
+    //                    try song.managedObjectContext?.save()
+    //                } catch let saveError as NSError {
+    //                    print(saveError.debugDescription)
+    //                }
+    //                
+    //                return true
+    //            })
+    //            
+    //            return [removeButton!]
+    //        default:
+    //            break
+    //        }
+    //        
+    //        return nil
+    //    }
     
 }
