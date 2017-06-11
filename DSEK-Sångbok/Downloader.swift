@@ -35,8 +35,6 @@ class Downloader {
     
     func downloadSongsFromFirebase() {
         
-        var x = 0
-        
         DataService.ds.REF_SONGS.observeSingleEvent(of: .value) { (snapshot: FIRDataSnapshot!) in
             
             if let snapshot = snapshot.children.allObjects as? [FIRDataSnapshot] {
@@ -52,12 +50,6 @@ class Downloader {
                             let entity = NSEntityDescription.entity(forEntityName: "SongModel", in: context)!
                             
                             if self.songDoesNotExist(key) {
-                                
-                                x += 1
-                                
-                                if x == 1000 {
-                                    break
-                                }
                                 
                                 let songModel = SongModel(entity: entity, insertInto: context)
                                 
@@ -93,8 +85,6 @@ class Downloader {
                                     print(error.debugDescription)
                                 }
                                 
-                            } else {
-                                print("Song already exists!")
                             }
                         }
                     }
@@ -227,8 +217,6 @@ class Downloader {
         
         let url = URL(string: urlStr)!
         
-        var x = 0
-        
         Alamofire.request(url).responseJSON { response in
             let result = response.result
             
@@ -243,12 +231,6 @@ class Downloader {
                         let entity = NSEntityDescription.entity(forEntityName: "SongModel", in: context)!
                         
                         if self.songDoesNotExist(key) {
-                            
-                            x += 1
-                            
-                            if x >= 20 {
-                                break
-                            }
                             
                             let songModel = SongModel(entity: entity, insertInto: context)
                             
@@ -292,8 +274,6 @@ class Downloader {
                     }
                 }
             }
-            
-            self._availableSongs
             
             self.saveToAllSongs()
             UserDefaults.standard.setValue(self._availableSongs, forKey: "AVAILABLE_SONGS")
